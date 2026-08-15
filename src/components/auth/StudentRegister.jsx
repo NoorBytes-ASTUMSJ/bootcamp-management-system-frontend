@@ -6,11 +6,10 @@ import SelectField from "../ui/SelectField";
 import Button from "../ui/Button";
 import { Link2, Code, Terminal, Clock } from "lucide-react";
 
-export default function StudentRegister() {
+export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
   const [step, setStep] = useState(1);
   const totalSteps = 3;
 
-  // Form State
   const [formData, setFormData] = useState({
     // Step 1
     fullName: "",
@@ -53,262 +52,290 @@ export default function StudentRegister() {
 
   const stepTitles = {
     1: "Personal Information",
-    2: "Academic",
+    2: "Academic & Tech",
     3: "Commitment",
   };
 
   return (
     <FormCard>
-      {/* Top Stepper Indicator */}
-      <Stepper
-        currentStep={step}
-        totalSteps={totalSteps}
-        stepTitle={stepTitles[step]}
-      />
+      <div>
+        {/* Top Left: Back to selection */}
+        <div className="mb-2">
+          <button
+            type="button"
+            onClick={onBackToHome}
+            className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 dark:text-brand-dark-muted dark:hover:text-brand-dark-text transition-colors cursor-pointer"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to selection
+          </button>
+        </div>
 
-      <form onSubmit={step === totalSteps ? handleSubmit : handleNext}>
-        {/* ================= STEP 1: PERSONAL INFORMATION ================= */}
-        {step === 1 && (
-          <div>
-            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-brand-dark-text mb-6">
-              Student Registration
-            </h2>
+        {/* Top Stepper Indicator */}
+        <Stepper
+          currentStep={step}
+          totalSteps={totalSteps}
+          stepTitle={stepTitles[step]}
+        />
 
-            <InputField
-              label="Full Name"
-              name="fullName"
-              placeholder="Ahmed Mohammed"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-            />
+        <form
+          onSubmit={step === totalSteps ? handleSubmit : handleNext}
+          className="mt-4"
+        >
+          {/* ================= STEP 1: PERSONAL INFORMATION ================= */}
+          {step === 1 && (
+            <div>
+              <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-brand-dark-text mb-4">
+                Student Registration
+              </h2>
 
-            <InputField
-              label="Email Address"
-              type="email"
-              name="email"
-              placeholder="ahmed@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+              <InputField
+                label="Full Name"
+                name="fullName"
+                placeholder="Ahmed Mohammed"
+                value={formData.fullName}
+                onChange={handleChange}
+                required
+              />
 
-            <InputField
-              label="Phone Number"
-              type="tel"
-              name="phone"
-              placeholder="+251 900 000-000"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
+              <InputField
+                label="Email Address"
+                type="email"
+                name="email"
+                placeholder="ahmed@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
 
-            <InputField
-              label="Password"
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+              <InputField
+                label="Phone Number"
+                type="tel"
+                name="phone"
+                placeholder="+251 900 000-000"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
 
-            <InputField
-              label="Confirm Password"
-              type="password"
-              name="confirmPassword"
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
+              <InputField
+                label="Password"
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
 
-            <div className="mt-6">
-              <Button type="submit">Next</Button>
+              <InputField
+                label="Confirm Password"
+                type="password"
+                name="confirmPassword"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+
+              <div className="mt-6">
+                <Button type="submit">Next</Button>
+              </div>
+
+              <p className="text-center text-xs text-gray-500 dark:text-brand-dark-muted mt-5">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={onNavigateLogin}
+                  className="text-brand dark:text-brand-dark-accent font-medium hover:underline cursor-pointer"
+                >
+                  Log In
+                </button>
+              </p>
             </div>
+          )}
 
-            <p className="text-center text-xs text-gray-500 dark:text-brand-dark-muted mt-6">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="text-brand dark:text-brand-dark-accent font-medium hover:underline"
-              >
-                Log In
-              </a>
-            </p>
-          </div>
-        )}
+          {/* ================= STEP 2: ACADEMIC & TECH ================= */}
+          {step === 2 && (
+            <div>
+              <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-brand-dark-text mb-1">
+                Academic & Tech
+              </h2>
+              <p className="text-xs text-center text-gray-500 dark:text-brand-dark-muted mb-5">
+                Provide your academic details and technical profiles.
+              </p>
 
-        {/* ================= STEP 2: ACADEMIC & TECH ================= */}
-        {step === 2 && (
-          <div>
-            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-brand-dark-text mb-2">
-              Academic & Tech
-            </h2>
-            <p className="text-xs text-center text-gray-500 dark:text-brand-dark-muted mb-6">
-              Provide your academic details and technical profiles to help us
-              tailor the bootcamp experience.
-            </p>
+              {/* Gender & Academic Year side-by-side */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SelectField
+                  label="Gender"
+                  name="gender"
+                  placeholder="Select Gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  options={[
+                    { value: "male", label: "Male" },
+                    { value: "female", label: "Female" },
+                  ]}
+                  required
+                />
 
-            {/* Gender & Academic Year side-by-side */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <SelectField
+                  label="Academic Year"
+                  name="academicYear"
+                  placeholder="Select Year"
+                  value={formData.academicYear}
+                  onChange={handleChange}
+                  options={[
+                    { value: "1st", label: "1st Year" },
+                    { value: "2nd", label: "2nd Year" },
+                    { value: "3rd", label: "3rd Year" },
+                    { value: "4th", label: "4th Year" },
+                    { value: "5th", label: "5th Year" },
+                    { value: "graduated", label: "Graduated" },
+                  ]}
+                  required
+                />
+              </div>
+
               <SelectField
-                label="Gender"
-                name="gender"
-                placeholder="Select Gender"
-                value={formData.gender}
+                label="Department"
+                name="department"
+                placeholder="Select Department"
+                value={formData.department}
                 onChange={handleChange}
                 options={[
-                  { value: "male", label: "Male" },
-                  { value: "female", label: "Female" },
+                  { value: "cse", label: "Computer Science & Engineering" },
+                  { value: "software", label: "Software Engineering" },
+                  { value: "ece", label: "Electrical & Computer Engineering" },
+                  { value: "other", label: "Other Engineering" },
                 ]}
                 required
               />
 
-              <SelectField
-                label="Academic Year"
-                name="academicYear"
-                placeholder="Select Year"
-                value={formData.academicYear}
+              {/* Technical Profiles Header Divider */}
+              <div className="border-t border-gray-100 dark:border-brand-dark-border pt-3 mt-2 mb-3">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-brand-dark-text">
+                  <Terminal size={14} className="text-gray-500" />
+                  <span>Technical Profiles</span>
+                </div>
+              </div>
+
+              <InputField
+                label="GitHub URL"
+                name="githubUrl"
+                placeholder="https://github.com/username"
+                value={formData.githubUrl}
                 onChange={handleChange}
-                options={[
-                  { value: "1st", label: "1st Year" },
-                  { value: "2nd", label: "2nd Year" },
-                  { value: "3rd", label: "3rd Year" },
-                  { value: "4th", label: "4th Year" },
-                  { value: "5th", label: "5th Year" },
-                  { value: "graduated", label: "Graduated" },
-                ]}
-                required
+                icon={Link2}
               />
-            </div>
 
-            <SelectField
-              label="Department"
-              name="department"
-              placeholder="Select Department"
-              value={formData.department}
-              onChange={handleChange}
-              options={[
-                { value: "cse", label: "Computer Science & Engineering" },
-                { value: "software", label: "Software Engineering" },
-                { value: "ece", label: "Electrical & Computer Engineering" },
-                { value: "other", label: "Other Engineering" },
-              ]}
-              required
-            />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <InputField
+                  label="Codeforces URL"
+                  name="codeforcesUrl"
+                  placeholder="Profile URL"
+                  value={formData.codeforcesUrl}
+                  onChange={handleChange}
+                  icon={Code}
+                />
 
-            {/* Technical Profiles Header Divider */}
-            <div className="border-t border-gray-100 dark:border-brand-dark-border pt-4 mt-2 mb-4">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-brand-dark-text">
-                <Terminal size={14} className="text-gray-500" />
-                <span>Technical Profiles</span>
+                <InputField
+                  label="LeetCode URL"
+                  name="leetcodeUrl"
+                  placeholder="Profile URL"
+                  value={formData.leetcodeUrl}
+                  onChange={handleChange}
+                  icon={Terminal}
+                />
+              </div>
+
+              {/* Navigation Buttons */}
+              <div className="flex items-center gap-4 mt-6">
+                <Button type="button" variant="secondary" onClick={handlePrev}>
+                  Previous
+                </Button>
+                <Button type="submit">Next</Button>
               </div>
             </div>
+          )}
 
-            <InputField
-              label="GitHub URL"
-              name="githubUrl"
-              placeholder="https://github.com/username"
-              value={formData.githubUrl}
-              onChange={handleChange}
-              icon={Link2}
-            />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <InputField
-                label="Codeforces URL"
-                name="codeforcesUrl"
-                placeholder="Profile URL"
-                value={formData.codeforcesUrl}
-                onChange={handleChange}
-                icon={Code}
-              />
+          {/* ================= STEP 3: COMMITMENT DETAILS ================= */}
+          {step === 3 && (
+            <div>
+              <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-brand-dark-text mb-1">
+                Final Commitment Details
+              </h2>
+              <p className="text-xs text-center text-gray-500 dark:text-brand-dark-muted mb-5">
+                Please provide your availability and motivation for joining.
+              </p>
 
               <InputField
-                label="LeetCode URL"
-                name="leetcodeUrl"
-                placeholder="Profile URL"
-                value={formData.leetcodeUrl}
+                label="Daily Available Hours"
+                name="dailyHours"
+                placeholder="e.g., 4"
+                value={formData.dailyHours}
                 onChange={handleChange}
-                icon={Terminal}
-              />
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex items-center gap-3 mt-6">
-              <Button type="button" variant="secondary" onClick={handlePrev}>
-                Previous
-              </Button>
-              <Button type="submit">Next</Button>
-            </div>
-          </div>
-        )}
-
-        {/* ================= STEP 3: COMMITMENT DETAILS ================= */}
-        {step === 3 && (
-          <div>
-            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-brand-dark-text mb-2">
-              Final Commitment Details
-            </h2>
-            <p className="text-xs text-center text-gray-500 dark:text-brand-dark-muted mb-6">
-              Almost done. Please provide your availability and motivation for
-              joining the bootcamp.
-            </p>
-
-            <InputField
-              label="Daily Available Hours"
-              name="dailyHours"
-              placeholder="e.g., 4"
-              value={formData.dailyHours}
-              onChange={handleChange}
-              icon={Clock}
-              required
-            />
-            <p className="text-[11px] text-gray-400 dark:text-brand-dark-muted -mt-2.5 mb-4">
-              How many hours can you dedicate to the bootcamp daily?
-            </p>
-
-            <div className="w-full mb-4">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-brand-dark-text mb-1.5">
-                Availability Description
-              </label>
-              <textarea
-                name="availability"
-                rows={3}
-                value={formData.availability}
-                onChange={handleChange}
-                placeholder="Please describe your general availability (e.g., evenings, weekends, any specific constraints)."
-                className="w-full bg-white dark:bg-brand-dark-surface border border-gray-200 dark:border-brand-dark-border rounded-lg px-3.5 py-2.5 text-sm text-gray-900 dark:text-brand-dark-text placeholder:text-gray-400 dark:placeholder:text-brand-dark-muted/60 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all resize-none"
+                icon={Clock}
                 required
               />
-            </div>
+              <p className="text-[11px] text-gray-400 dark:text-brand-dark-muted -mt-2.5 mb-4">
+                How many hours can you dedicate to the bootcamp daily?
+              </p>
 
-            <div className="w-full mb-4">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-brand-dark-text mb-1.5">
-                Motivation
-              </label>
-              <textarea
-                name="motivation"
-                rows={3}
-                value={formData.motivation}
-                onChange={handleChange}
-                placeholder="Why do you want to join the ASTU MSJ Bootcamp? What do you hope to achieve?"
-                className="w-full bg-white dark:bg-brand-dark-surface border border-gray-200 dark:border-brand-dark-border rounded-lg px-3.5 py-2.5 text-sm text-gray-900 dark:text-brand-dark-text placeholder:text-gray-400 dark:placeholder:text-brand-dark-muted/60 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all resize-none"
-                required
-              />
-            </div>
+              <div className="w-full mb-3">
+                <label className="block text-[10px] font-bold tracking-wider text-gray-500 dark:text-brand-dark-muted uppercase mb-1">
+                  Availability Description
+                </label>
+                <textarea
+                  name="availability"
+                  rows={3}
+                  value={formData.availability}
+                  onChange={handleChange}
+                  placeholder="Please describe your general availability (e.g., evenings, weekends)."
+                  className="w-full bg-white dark:bg-brand-dark-surface border border-gray-200 dark:border-brand-dark-border rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-brand-dark-text placeholder:text-gray-400 dark:placeholder:text-brand-dark-muted/60 focus:outline-none focus:ring-1 focus:ring-[#B93325] focus:border-[#B93325] transition-all resize-none shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                  required
+                />
+              </div>
 
-            {/* Submit Actions */}
-            <div className="flex items-center gap-3 mt-6">
-              <Button type="button" variant="secondary" onClick={handlePrev}>
-                Previous
-              </Button>
-              <Button type="submit">Submit</Button>
+              <div className="w-full mb-3">
+                <label className="block text-[10px] font-bold tracking-wider text-gray-500 dark:text-brand-dark-muted uppercase mb-1">
+                  Motivation
+                </label>
+                <textarea
+                  name="motivation"
+                  rows={3}
+                  value={formData.motivation}
+                  onChange={handleChange}
+                  placeholder="Why do you want to join the ASTU MSJ Bootcamp?"
+                  className="w-full bg-white dark:bg-brand-dark-surface border border-gray-200 dark:border-brand-dark-border rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-brand-dark-text placeholder:text-gray-400 dark:placeholder:text-brand-dark-muted/60 focus:outline-none focus:ring-1 focus:ring-[#B93325] focus:border-[#B93325] transition-all resize-none shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                  required
+                />
+              </div>
+
+              {/* Submit Actions */}
+              <div className="flex items-center gap-4 mt-6">
+                <Button type="button" variant="secondary" onClick={handlePrev}>
+                  Previous
+                </Button>
+                <Button type="submit">Submit Application</Button>
+              </div>
             </div>
-          </div>
-        )}
-      </form>
+          )}
+        </form>
+      </div>
     </FormCard>
   );
 }

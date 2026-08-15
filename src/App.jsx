@@ -1,38 +1,57 @@
 import { useState } from "react";
+import Login from "./components/auth/Login";
+import RoleSelect from "./components/auth/RoleSelect";
 import StudentRegister from "./components/auth/StudentRegister";
 import MentorRegister from "./components/auth/MentorRegister";
 
 export default function App() {
-  // 'student' or 'mentor' to choose which registration from to display.
-  const [currentView, setCurrentView] = useState("mentor");
+  // view states: 'login' | 'role-select' | 'student-register' | 'mentor-register'
+  const [currentView, setCurrentView] = useState("login");
+
+  const handleBackToHome = () => {
+    // በኋላ ወደ Landing Page ራውት የሚደረግበት
+    setCurrentView("login");
+  };
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] dark:bg-brand-dark-bg transition-colors duration-200">
-      <div className="fixed top-4 right-4 z-50 flex items-center bg-white dark:bg-brand-dark-surface p-1 rounded-lg border border-gray-200 dark:border-brand-dark-border shadow-sm text-xs font-medium">
-        <button
-          onClick={() => setCurrentView("student")}
-          className={`px-3 py-1.5 rounded-md transition-all ${
-            currentView === "student"
-              ? "bg-[#B93325] text-white"
-              : "text-gray-600 dark:text-brand-dark-muted hover:text-gray-900"
-          }`}
-        >
-          Student
-        </button>
-        <button
-          onClick={() => setCurrentView("mentor")}
-          className={`px-3 py-1.5 rounded-md transition-all ${
-            currentView === "mentor"
-              ? "bg-[#B93325] text-white"
-              : "text-gray-600 dark:text-brand-dark-muted hover:text-gray-900"
-          }`}
-        >
-          Mentor
-        </button>
-      </div>
+      {/* 1. Login Page */}
+      {currentView === "login" && (
+        <Login
+          onNavigateSignUp={() => setCurrentView("role-select")}
+          onBackToPublic={handleBackToHome}
+          onForgotPassword={() => alert("Forgot password flow...")}
+        />
+      )}
 
-      {/* Render the appropriate registration form based on the current view */}
-      {currentView === "student" ? <StudentRegister /> : <MentorRegister />}
+      {/* 2. Choose Role (Middle Step) */}
+      {currentView === "role-select" && (
+        <RoleSelect
+          onSelectRole={(role) =>
+            setCurrentView(
+              role === "student" ? "student-register" : "mentor-register",
+            )
+          }
+          onNavigateLogin={() => setCurrentView("login")}
+          onBackToHome={() => setCurrentView("login")}
+        />
+      )}
+
+      {/* 3. Student Multi-step Registration */}
+      {currentView === "student-register" && (
+        <StudentRegister
+          onNavigateLogin={() => setCurrentView("login")}
+          onBackToHome={() => setCurrentView("role-select")}
+        />
+      )}
+
+      {/* 4. Mentor Multi-step Application */}
+      {currentView === "mentor-register" && (
+        <MentorRegister
+          onNavigateLogin={() => setCurrentView("login")}
+          onBackToHome={() => setCurrentView("role-select")}
+        />
+      )}
     </main>
   );
 }
