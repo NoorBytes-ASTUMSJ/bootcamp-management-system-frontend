@@ -57,7 +57,7 @@ export default function RoleSelect({
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-brand-dark-text group-hover:text-[#B93325] transition-colors">
-                    Join as a Student
+                    Apply as a Student
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-brand-dark-muted mt-0.5 leading-relaxed">
                     Participate in bootcamps, solve problems, and access
@@ -84,7 +84,7 @@ export default function RoleSelect({
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-brand-dark-text group-hover:text-[#B93325] transition-colors">
-                    Apply as a Mentor
+                    Join as a Mentor
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-brand-dark-muted mt-0.5 leading-relaxed">
                     Share your experience, mentor junior students, and lead
