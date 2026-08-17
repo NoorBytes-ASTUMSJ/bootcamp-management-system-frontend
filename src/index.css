@@ -1,14 +1,44 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg-main: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-subtle: #fcfcfd;
+  --text-primary: #111827;
+  --text-muted: #6b7280;
+  --border-color: #f3f4f6;
+  --border-subtle: #e5e7eb;
+}
+
+.dark {
+  --bg-main: #0c0d0e;
+  --bg-surface: #151718;
+  --bg-subtle: #1c1e21;
+  --text-primary: #f3f4f6;
+  --text-muted: #9ca3af;
+  --border-color: #272a2e;
+  --border-subtle: #33363b;
+}
+
 @theme {
   --color-brand: #b93325;
-  --color-brand-hover: #9e2a1e;
+  --color-brand-hover: #a32c1f;
+  --color-brand-light: #fbf1f0;
 
-  --color-brand-dark-accent: #e57368;
-  --color-brand-dark-bg: #161313;
-  --color-brand-dark-surface: #211c1c;
-  --color-brand-dark-elevated: #2c2626;
-  --color-brand-dark-border: #3d3535;
-  --color-brand-dark-text: #f5f3f3;
-  --color-brand-dark-muted: #a89f9e;
+  --color-theme-bg: var(--bg-main);
+  --color-theme-surface: var(--bg-surface);
+  --color-theme-subtle: var(--bg-subtle);
+  --color-theme-text: var(--text-primary);
+  --color-theme-muted: var(--text-muted);
+  --color-theme-border: var(--border-color);
+  --color-theme-border-subtle: var(--border-subtle);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
 }

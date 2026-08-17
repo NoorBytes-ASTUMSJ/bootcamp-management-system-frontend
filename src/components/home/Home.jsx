@@ -131,7 +131,7 @@ export default function Home({
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-brand-dark-bg text-gray-900 dark:text-brand-dark-text transition-colors">
+    <div className="min-h-screen bg-theme-bg text-theme-text transition-colors">
       <Navbar
         currentView="home"
         onNavigatePage={onNavigatePage}
@@ -145,19 +145,19 @@ export default function Home({
         className="pt-16 pb-20 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto"
       >
         {/* Tag Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-brand-dark-surface border border-red-100 dark:border-brand-dark-border text-[11px] font-medium text-[#B93325] mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B93325]/10 border border-[#B93325]/20 text-[11px] font-medium text-[#B93325] mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-[#B93325]" />
           for ASTU Muslim Students
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.15] mb-6">
+        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-theme-text leading-[1.15] mb-6">
           Discipline. Practice. <br />
           <span className="text-[#B93325]">Full-Stack Mentorship.</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-sm sm:text-base text-gray-600 dark:text-brand-dark-muted max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-sm sm:text-base text-theme-muted max-w-2xl mx-auto mb-10 leading-relaxed">
           A structured, beginner-friendly journey into web development. No
           previous programming experience required. Replace scattered learning
           with a clear path.
@@ -175,7 +175,7 @@ export default function Home({
           <button
             type="button"
             onClick={() => onNavigatePage && onNavigatePage("tracks")}
-            className="px-6 py-3 rounded-lg bg-gray-50 dark:bg-brand-dark-surface hover:bg-gray-100 dark:hover:bg-brand-dark-border text-gray-700 dark:text-brand-dark-text text-xs sm:text-sm font-semibold transition-all border border-gray-200 dark:border-brand-dark-border cursor-pointer"
+            className="px-6 py-3 rounded-lg bg-theme-surface hover:bg-theme-subtle text-theme-text text-xs sm:text-sm font-semibold transition-all border border-theme-border cursor-pointer shadow-xs"
           >
             Explore the Bootcamp
           </button>
@@ -183,23 +183,19 @@ export default function Home({
       </section>
 
       {/* ================= 2. STATS SECTION ================= */}
-      <section className="border-y border-gray-100 dark:border-brand-dark-border bg-[#FCFCFD] dark:bg-brand-dark-surface/40">
+      <section className="border-y border-theme-border bg-theme-subtle">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x-0 md:divide-x divide-gray-200 dark:divide-brand-dark-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x-0 md:divide-x divide-theme-border">
             {stats.map((stat, idx) => (
               <div key={idx} className="px-4">
                 <div
                   className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-1 ${
-                    idx === 3
-                      ? "text-[#B93325]"
-                      : "text-gray-900 dark:text-white"
+                    idx === 3 ? "text-[#B93325]" : "text-theme-text"
                   }`}
                 >
                   {stat.label}
                 </div>
-                <div className="text-[11px] text-gray-500 dark:text-brand-dark-muted">
-                  {stat.sub}
-                </div>
+                <div className="text-[11px] text-theme-muted">{stat.sub}</div>
               </div>
             ))}
           </div>
@@ -212,10 +208,10 @@ export default function Home({
         className="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto"
       >
         <div className="mb-14">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-theme-text mb-3">
             A Structured Journey
           </h2>
-          <p className="text-xs sm:text-sm text-gray-600 dark:text-brand-dark-muted max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-theme-muted max-w-3xl leading-relaxed">
             We believe in learning through doing. This bootcamp replaces the
             endless cycle of scattered tutorials with a rigid, structured
             journey. You will learn concepts, practice them immediately, compete
@@ -228,13 +224,13 @@ export default function Home({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
           {features.map((item, idx) => (
             <div key={idx} className="space-y-2.5">
-              <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-brand-dark-surface border border-red-100 dark:border-brand-dark-border flex items-center justify-center">
+              <div className="w-9 h-9 rounded-lg bg-[#B93325]/10 border border-[#B93325]/20 flex items-center justify-center">
                 {item.icon}
               </div>
-              <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
+              <h3 className="text-sm sm:text-base font-bold text-theme-text">
                 {item.title}
               </h3>
-              <p className="text-xs text-gray-500 dark:text-brand-dark-muted leading-relaxed">
+              <p className="text-xs text-theme-muted leading-relaxed">
                 {item.desc}
               </p>
             </div>

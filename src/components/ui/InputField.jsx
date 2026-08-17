@@ -17,13 +17,13 @@ export default function InputField({
   return (
     <div className="w-full mb-3">
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-brand-dark-text mb-1.5">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-theme-text mb-1.5">
           {label}
         </label>
       )}
       <div className="relative flex items-center">
         {Icon && (
-          <div className="absolute left-3 text-gray-400 dark:text-brand-dark-muted">
+          <div className="absolute left-3 text-theme-muted">
             <Icon size={15} />
           </div>
         )}
@@ -34,7 +34,7 @@ export default function InputField({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          className={`w-full bg-white dark:bg-brand-dark-surface border border-gray-200 dark:border-brand-dark-border rounded-lg px-3.5 py-2.5 text-sm text-gray-900 dark:text-brand-dark-text placeholder:text-gray-400 dark:placeholder:text-brand-dark-muted/60 focus:outline-none focus:ring-1 focus:ring-[#B93325] focus:border-[#B93325] transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] ${
+          className={`w-full bg-theme-surface border border-theme-border rounded-lg px-3.5 py-2.5 text-sm text-theme-text placeholder:text-theme-muted/60 focus:outline-none focus:ring-1 focus:ring-[#B93325] focus:border-[#B93325] transition-all shadow-2xs ${
             Icon ? "pl-9" : ""
           } ${isPassword ? "pr-9" : ""}`}
         />
@@ -42,7 +42,7 @@ export default function InputField({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 text-gray-400 hover:text-gray-600 dark:hover:text-brand-dark-text focus:outline-none"
+            className="absolute right-3 text-theme-muted hover:text-theme-text focus:outline-none cursor-pointer"
           >
             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>

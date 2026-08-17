@@ -12,7 +12,7 @@ export default function SelectField({
   return (
     <div className="w-full mb-4">
       {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-brand-dark-text mb-1.5">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-theme-text mb-1.5">
           {label}
         </label>
       )}
@@ -22,18 +22,26 @@ export default function SelectField({
           value={value}
           onChange={onChange}
           required={required}
-          className="w-full bg-white dark:bg-brand-dark-surface border border-gray-200 dark:border-brand-dark-border rounded-lg px-3.5 py-2.5 text-sm text-gray-900 dark:text-brand-dark-text appearance-none focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all cursor-pointer"
+          className="w-full bg-theme-surface border border-theme-border rounded-lg px-3.5 py-2.5 text-sm text-theme-text appearance-none focus:outline-none focus:ring-1 focus:ring-[#B93325] focus:border-[#B93325] transition-all cursor-pointer shadow-2xs"
         >
-          <option value="" disabled>
+          <option
+            value=""
+            disabled
+            className="bg-theme-surface text-theme-muted"
+          >
             {placeholder}
           </option>
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
+            <option
+              key={opt.value}
+              value={opt.value}
+              className="bg-theme-surface text-theme-text"
+            >
               {opt.label}
             </option>
           ))}
         </select>
-        <div className="absolute right-3.5 pointer-events-none text-gray-400 dark:text-brand-dark-muted">
+        <div className="absolute right-3.5 pointer-events-none text-theme-muted">
           <ChevronDown size={16} />
         </div>
       </div>

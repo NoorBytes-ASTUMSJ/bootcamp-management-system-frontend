@@ -31,7 +31,7 @@ export default function Login({
         <button
           type="button"
           onClick={onBackToPublic}
-          className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 dark:text-brand-dark-muted dark:hover:text-brand-dark-text transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs text-theme-muted hover:text-theme-text transition-colors cursor-pointer"
         >
           <svg
             className="w-4 h-4"
@@ -53,10 +53,10 @@ export default function Login({
       <div className="pt-2 pb-1">
         {/* Header Section */}
         <div className="text-center mb-6">
-          <h1 className="font-serif text-3xl font-normal text-gray-900 dark:text-brand-dark-text tracking-tight mb-2">
+          <h1 className="font-serif text-3xl font-normal text-theme-text tracking-tight mb-2">
             Welcome back.
           </h1>
-          <p className="text-sm text-gray-500 dark:text-brand-dark-muted">
+          <p className="text-sm text-theme-muted">
             Log in to your ASTU MSJ account
           </p>
         </div>
@@ -90,12 +90,12 @@ export default function Login({
 
         {/* Footer Navigation Links */}
         <div className="mt-8 text-center space-y-3 text-xs">
-          <p className="text-gray-600 dark:text-brand-dark-muted">
+          <p className="text-theme-muted">
             Don't have an account?{" "}
             <button
               type="button"
               onClick={onNavigateSignUp}
-              className="text-[#B93325] dark:text-brand-dark-accent font-semibold hover:underline cursor-pointer"
+              className="text-[#B93325] font-semibold hover:underline cursor-pointer"
             >
               Sign up
             </button>
@@ -105,7 +105,7 @@ export default function Login({
             <button
               type="button"
               onClick={onForgotPassword}
-              className="text-[#B93325] dark:text-brand-dark-accent font-medium hover:underline transition-colors cursor-pointer"
+              className="text-[#B93325] font-medium hover:underline transition-colors cursor-pointer"
             >
               Forgot password?
             </button>

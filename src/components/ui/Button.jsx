@@ -13,10 +13,9 @@ export default function Button({
     "w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
-    primary:
-      "bg-brand hover:bg-brand-hover text-white dark:bg-brand dark:hover:bg-brand-hover shadow-sm",
+    primary: "bg-[#B93325] hover:bg-[#a32c1f] text-white shadow-sm",
     secondary:
-      "bg-transparent border border-gray-200 dark:border-brand-dark-border text-gray-700 dark:text-brand-dark-text hover:bg-gray-50 dark:hover:bg-brand-dark-elevated",
+      "bg-transparent border border-theme-border text-theme-text hover:bg-theme-subtle",
   };
 
   return (

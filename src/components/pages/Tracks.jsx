@@ -10,7 +10,7 @@ export default function Tracks({
     {
       icon: (
         <svg
-          className="w-3.5 h-3.5 text-gray-500 dark:text-brand-dark-muted"
+          className="w-3.5 h-3.5 text-theme-muted"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -28,7 +28,7 @@ export default function Tracks({
     {
       icon: (
         <svg
-          className="w-3.5 h-3.5 text-gray-500 dark:text-brand-dark-muted"
+          className="w-3.5 h-3.5 text-theme-muted"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -46,7 +46,7 @@ export default function Tracks({
     {
       icon: (
         <svg
-          className="w-3.5 h-3.5 text-gray-500 dark:text-brand-dark-muted"
+          className="w-3.5 h-3.5 text-theme-muted"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -64,7 +64,7 @@ export default function Tracks({
     {
       icon: (
         <svg
-          className="w-3.5 h-3.5 text-gray-500 dark:text-brand-dark-muted"
+          className="w-3.5 h-3.5 text-theme-muted"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -82,7 +82,7 @@ export default function Tracks({
     {
       icon: (
         <svg
-          className="w-3.5 h-3.5 text-gray-500 dark:text-brand-dark-muted"
+          className="w-3.5 h-3.5 text-theme-muted"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -100,7 +100,7 @@ export default function Tracks({
     {
       icon: (
         <svg
-          className="w-3.5 h-3.5 text-gray-500 dark:text-brand-dark-muted"
+          className="w-3.5 h-3.5 text-theme-muted"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -118,7 +118,7 @@ export default function Tracks({
   ];
 
   return (
-    <div className="min-h-screen bg-[#FCFCFC] dark:bg-brand-dark-bg text-gray-900 dark:text-brand-dark-text transition-colors">
+    <div className="min-h-screen bg-theme-bg text-theme-text transition-colors">
       <Navbar
         currentView="tracks"
         onNavigatePage={onNavigatePage}
@@ -128,11 +128,11 @@ export default function Tracks({
 
       {/* ================= 1. HERO SECTION ================= */}
       <section className="pt-16 pb-14 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
-        <div className="inline-block px-3 py-1 rounded-full bg-gray-100/80 dark:bg-brand-dark-surface text-gray-500 dark:text-brand-dark-muted text-[10px] font-mono tracking-widest uppercase mb-6">
+        <div className="inline-block px-3 py-1 rounded-full bg-theme-subtle border border-theme-border-subtle text-theme-muted text-[10px] font-mono tracking-widest uppercase mb-6">
           THE LEARNING JOURNEY
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.2] mb-6">
+        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-theme-text leading-[1.2] mb-6">
           Start from the basics. <br />
           Build the skills. <br />
           <span className="text-[#B93325]">
@@ -140,25 +140,25 @@ export default function Tracks({
           </span>
         </h1>
 
-        <p className="text-xs sm:text-sm text-gray-500 dark:text-brand-dark-muted max-w-2xl mx-auto leading-relaxed mb-8">
+        <p className="text-xs sm:text-sm text-theme-muted max-w-2xl mx-auto leading-relaxed mb-8">
           A rigorous 12-week online program exclusively for ASTU Muslim
           students. No previous programming experience required. Completely
           free.
         </p>
 
         {/* 3 Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-gray-600 dark:text-brand-dark-muted">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-brand-dark-surface border border-gray-200/80 dark:border-brand-dark-border shadow-2xs">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-theme-muted">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-theme-surface border border-theme-border shadow-xs">
             <span className="text-xs">📅</span>
-            <span>12 Weeks</span>
+            <span className="text-theme-text">12 Weeks</span>
           </div>
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-brand-dark-surface border border-gray-200/80 dark:border-brand-dark-border shadow-2xs">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-theme-surface border border-theme-border shadow-xs">
             <span className="text-xs">💻</span>
-            <span>100% Online</span>
+            <span className="text-theme-text">100% Online</span>
           </div>
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-brand-dark-surface border border-gray-200/80 dark:border-brand-dark-border shadow-2xs">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-theme-surface border border-theme-border shadow-xs">
             <span className="text-xs">🎓</span>
-            <span>Free Tuition</span>
+            <span className="text-theme-text">Free Tuition</span>
           </div>
         </div>
       </section>
@@ -167,36 +167,36 @@ export default function Tracks({
       <section className="px-4 sm:px-6 lg:px-8 pb-20 max-w-4xl mx-auto">
         <div className="relative pl-6 sm:pl-10 space-y-10">
           {/* Vertical Timeline Bar */}
-          <div className="absolute left-2 sm:left-3.5 top-6 bottom-10 w-[1.5px] bg-[#E5E7EB] dark:bg-brand-dark-border" />
+          <div className="absolute left-2 sm:left-3.5 top-6 bottom-10 w-[1.5px] bg-theme-border-subtle" />
 
           {/* ---------------- CARD 1: FOUNDATION ---------------- */}
           <div className="relative">
             {/* Node Dot */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-white dark:bg-brand-dark-bg border-2 border-gray-300 dark:border-gray-600 z-10" />
+            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-theme-bg border-2 border-theme-border-subtle z-10" />
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-brand-dark-surface border border-gray-100/90 dark:border-brand-dark-border shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+            <div className="p-6 sm:p-8 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-brand-dark-bg border border-gray-200/60 dark:border-brand-dark-border flex items-center justify-center text-xs text-gray-600 dark:text-gray-300 font-bold">
+                <div className="w-8 h-8 rounded-lg bg-theme-subtle border border-theme-border-subtle flex items-center justify-center text-xs text-theme-text font-bold">
                   📄
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono tracking-wider text-gray-400 dark:text-brand-dark-muted uppercase block">
+                  <span className="text-[10px] font-mono tracking-wider text-theme-muted uppercase block">
                     FOUNDATION
                   </span>
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                  <h3 className="text-base sm:text-lg font-bold text-theme-text">
                     Python & Problem Solving
                   </h3>
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500 dark:text-brand-dark-muted leading-relaxed mb-6">
+              <p className="text-xs text-theme-muted leading-relaxed mb-6">
                 We start from zero. Learn the syntax, control structures, and
                 fundamental logic required to tell computers what to do. Focus
                 on building strong analytical thinking skills before touching
                 advanced frameworks.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-4 text-xs text-gray-600 dark:text-brand-dark-text">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-4 text-xs text-theme-text">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#B93325]" />
                   <span>Basic Python Syntax</span>
@@ -220,17 +220,17 @@ export default function Tracks({
           {/* ---------------- CARD 2: PHASE 1 ---------------- */}
           <div className="relative">
             {/* Node Dot (Red Ring) */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-white dark:bg-brand-dark-bg border-2 border-[#B93325] z-10" />
+            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-theme-bg border-2 border-[#B93325] z-10" />
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-brand-dark-surface border border-gray-100/90 dark:border-brand-dark-border shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+            <div className="p-6 sm:p-8 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
               <span className="text-[10px] font-mono tracking-wider text-[#B93325] uppercase block mb-1">
                 PHASE 1
               </span>
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2.5">
+              <h3 className="text-base sm:text-lg font-bold text-theme-text mb-2.5">
                 Competitive Programming
               </h3>
 
-              <p className="text-xs text-gray-500 dark:text-brand-dark-muted leading-relaxed mb-6">
+              <p className="text-xs text-theme-muted leading-relaxed mb-6">
                 Shift focus entirely to algorithmic thinking. This phase is
                 about discipline, consistency, and tackling complex problems
                 under pressure.
@@ -238,32 +238,32 @@ export default function Tracks({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
                 {/* Note Callout */}
-                <div className="p-3.5 rounded-xl bg-gray-50 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border flex items-start gap-2.5 text-[11px] text-gray-500 dark:text-brand-dark-muted leading-relaxed">
-                  <span className="text-gray-400 mt-0.5">ⓘ</span>
+                <div className="p-3.5 rounded-xl bg-theme-subtle border border-theme-border flex items-start gap-2.5 text-[11px] text-theme-muted leading-relaxed">
+                  <span className="text-theme-muted mt-0.5">ⓘ</span>
                   <span>
-                    <strong>Note:</strong> Focus is on learning and contests,
-                    not weekly projects.
+                    <strong className="text-theme-text">Note:</strong> Focus is
+                    on learning and contests, not weekly projects.
                   </span>
                 </div>
 
                 {/* Meter Bars */}
                 <div className="space-y-3 pt-1">
                   <div>
-                    <div className="flex justify-between text-[11px] font-medium text-gray-700 dark:text-brand-dark-text mb-1">
+                    <div className="flex justify-between text-[11px] font-medium text-theme-text mb-1">
                       <span>Contests</span>
                       <span className="text-xs">📍</span>
                     </div>
-                    <div className="w-full bg-gray-100 dark:bg-brand-dark-bg rounded-full h-1.5">
+                    <div className="w-full bg-theme-border-subtle rounded-full h-1.5">
                       <div className="bg-[#B93325] h-1.5 rounded-full w-[45%]" />
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[11px] font-medium text-gray-700 dark:text-brand-dark-text mb-1">
+                    <div className="flex justify-between text-[11px] font-medium text-theme-text mb-1">
                       <span>Discipline</span>
                       <span className="text-xs">📈</span>
                     </div>
-                    <div className="w-full bg-gray-100 dark:bg-brand-dark-bg rounded-full h-1.5">
+                    <div className="w-full bg-theme-border-subtle rounded-full h-1.5">
                       <div className="bg-[#B93325] h-1.5 rounded-full w-[65%]" />
                     </div>
                   </div>
@@ -275,23 +275,23 @@ export default function Tracks({
           {/* ---------------- CARD 3: PHASE 2 ---------------- */}
           <div className="relative">
             {/* Node Dot (Double Ring) */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-white dark:bg-brand-dark-bg border-2 border-[#B93325] ring-2 ring-red-100 dark:ring-red-950 z-10" />
+            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-theme-bg border-2 border-[#B93325] ring-2 ring-[#B93325]/20 z-10" />
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-brand-dark-surface border border-gray-100/90 dark:border-brand-dark-border shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+            <div className="p-6 sm:p-8 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[10px] font-mono tracking-wider text-[#B93325] uppercase block">
                   PHASE 2
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-50 dark:bg-brand-dark-bg text-[#B93325] text-[10px] font-medium border border-red-100 dark:border-brand-dark-border">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#B93325]/10 text-[#B93325] text-[10px] font-medium border border-[#B93325]/20">
                   ✨ Weekly Projects Included
                 </span>
               </div>
 
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2.5">
+              <h3 className="text-base sm:text-lg font-bold text-theme-text mb-2.5">
                 Development
               </h3>
 
-              <p className="text-xs text-gray-500 dark:text-brand-dark-muted leading-relaxed mb-6">
+              <p className="text-xs text-theme-muted leading-relaxed mb-6">
                 Transition from terminal to browser. Build actual, scalable web
                 applications using industry-standard tools and frameworks. Apply
                 the logic learned in Phase 1 to real-world software
@@ -301,71 +301,71 @@ export default function Tracks({
               {/* Tech Stack Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {/* HTML & CSS */}
-                <div className="p-3 rounded-xl bg-gray-50/70 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-orange-50 dark:bg-brand-dark-surface text-orange-600 font-bold text-xs flex items-center justify-center mb-1.5">
+                <div className="p-3 rounded-xl bg-theme-subtle border border-theme-border text-center">
+                  <div className="w-8 h-8 mx-auto rounded-lg bg-orange-500/10 text-orange-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     H5
                   </div>
-                  <span className="text-[11px] font-medium text-gray-700 dark:text-brand-dark-text block">
+                  <span className="text-[11px] font-medium text-theme-text block">
                     HTML & CSS
                   </span>
                 </div>
 
                 {/* JavaScript */}
-                <div className="p-3 rounded-xl bg-gray-50/70 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-yellow-50 dark:bg-brand-dark-surface text-yellow-600 font-bold text-xs flex items-center justify-center mb-1.5">
+                <div className="p-3 rounded-xl bg-theme-subtle border border-theme-border text-center">
+                  <div className="w-8 h-8 mx-auto rounded-lg bg-yellow-500/10 text-yellow-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     JS
                   </div>
-                  <span className="text-[11px] font-medium text-gray-700 dark:text-brand-dark-text block">
+                  <span className="text-[11px] font-medium text-theme-text block">
                     JavaScript
                   </span>
                 </div>
 
                 {/* React */}
-                <div className="p-3 rounded-xl bg-gray-50/70 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-sky-50 dark:bg-brand-dark-surface text-sky-600 font-bold text-xs flex items-center justify-center mb-1.5">
+                <div className="p-3 rounded-xl bg-theme-subtle border border-theme-border text-center">
+                  <div className="w-8 h-8 mx-auto rounded-lg bg-sky-500/10 text-sky-500 font-bold text-xs flex items-center justify-center mb-1.5">
                     Re
                   </div>
-                  <span className="text-[11px] font-medium text-gray-700 dark:text-brand-dark-text block">
+                  <span className="text-[11px] font-medium text-theme-text block">
                     React
                   </span>
                 </div>
 
                 {/* Node.js */}
-                <div className="p-3 rounded-xl bg-gray-50/70 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-emerald-50 dark:bg-brand-dark-surface text-emerald-600 font-bold text-xs flex items-center justify-center mb-1.5">
+                <div className="p-3 rounded-xl bg-theme-subtle border border-theme-border text-center">
+                  <div className="w-8 h-8 mx-auto rounded-lg bg-emerald-500/10 text-emerald-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     No
                   </div>
-                  <span className="text-[11px] font-medium text-gray-700 dark:text-brand-dark-text block">
+                  <span className="text-[11px] font-medium text-theme-text block">
                     Node.js
                   </span>
                 </div>
 
                 {/* Express.js */}
-                <div className="p-3 rounded-xl bg-gray-50/70 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-gray-100 dark:bg-brand-dark-surface text-gray-700 dark:text-gray-300 font-bold text-xs flex items-center justify-center mb-1.5">
+                <div className="p-3 rounded-xl bg-theme-subtle border border-theme-border text-center">
+                  <div className="w-8 h-8 mx-auto rounded-lg bg-gray-500/10 text-theme-text font-bold text-xs flex items-center justify-center mb-1.5">
                     Ex
                   </div>
-                  <span className="text-[11px] font-medium text-gray-700 dark:text-brand-dark-text block">
+                  <span className="text-[11px] font-medium text-theme-text block">
                     Express.js
                   </span>
                 </div>
 
                 {/* MongoDB */}
-                <div className="p-3 rounded-xl bg-gray-50/70 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-green-50 dark:bg-brand-dark-surface text-green-600 font-bold text-xs flex items-center justify-center mb-1.5">
+                <div className="p-3 rounded-xl bg-theme-subtle border border-theme-border text-center">
+                  <div className="w-8 h-8 mx-auto rounded-lg bg-green-500/10 text-green-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     Mo
                   </div>
-                  <span className="text-[11px] font-medium text-gray-700 dark:text-brand-dark-text block">
+                  <span className="text-[11px] font-medium text-theme-text block">
                     MongoDB
                   </span>
                 </div>
 
                 {/* Git / GitHub */}
-                <div className="p-3 rounded-xl bg-gray-50/70 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border text-center col-span-2">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-red-50 dark:bg-brand-dark-surface text-[#B93325] font-bold text-xs flex items-center justify-center mb-1.5">
+                <div className="p-3 rounded-xl bg-theme-subtle border border-theme-border text-center col-span-2">
+                  <div className="w-8 h-8 mx-auto rounded-lg bg-[#B93325]/10 text-[#B93325] font-bold text-xs flex items-center justify-center mb-1.5">
                     Git
                   </div>
-                  <span className="text-[11px] font-medium text-gray-700 dark:text-brand-dark-text block">
+                  <span className="text-[11px] font-medium text-theme-text block">
                     Git / GitHub Workflow
                   </span>
                 </div>
@@ -376,9 +376,9 @@ export default function Tracks({
           {/* ---------------- MILESTONE BANNER ---------------- */}
           <div className="relative">
             {/* Solid Red Node Dot */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-6 w-3.5 h-3.5 rounded-full bg-[#B93325] border-2 border-white dark:border-brand-dark-bg shadow-sm z-10" />
+            <div className="absolute -left-[20px] sm:-left-[32.5px] top-6 w-3.5 h-3.5 rounded-full bg-[#B93325] border-2 border-theme-bg shadow-xs z-10" />
 
-            <div className="p-7 sm:p-9 rounded-2xl bg-[#1A1A1A] dark:bg-[#121212] text-white border border-gray-800 text-center shadow-lg">
+            <div className="p-7 sm:p-9 rounded-2xl bg-[#18191B] text-white border border-gray-800 text-center shadow-lg">
               <h3 className="text-lg sm:text-xl font-bold tracking-tight mb-1">
                 Become a Full-Stack Web Developer.
               </h3>
@@ -392,16 +392,16 @@ export default function Tracks({
 
       {/* ================= 3. SUPPORT SYSTEM (GUIDED BY EXPERTS) ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-24 max-w-4xl mx-auto">
-        <div className="p-7 sm:p-10 rounded-2xl bg-white dark:bg-brand-dark-surface border border-gray-100/90 dark:border-brand-dark-border shadow-[0_4px_24px_rgba(0,0,0,0.03)] grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        <div className="p-7 sm:p-10 rounded-2xl bg-theme-surface border border-theme-border shadow-xs grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           {/* Left Column: Information & Points */}
           <div className="md:col-span-7">
-            <span className="text-[10px] font-mono tracking-wider text-gray-400 dark:text-brand-dark-muted uppercase block mb-1">
+            <span className="text-[10px] font-mono tracking-wider text-theme-muted uppercase block mb-1">
               SUPPORT SYSTEM
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-theme-text mb-2">
               Guided by Experts.
             </h2>
-            <p className="text-xs text-gray-500 dark:text-brand-dark-muted leading-relaxed mb-6">
+            <p className="text-xs text-theme-muted leading-relaxed mb-6">
               You are never learning alone. Mentorship is integrated throughout
               every phase of the journey to ensure you never get permanently
               stuck.
@@ -410,12 +410,10 @@ export default function Tracks({
             <div className="grid grid-cols-2 gap-y-3 gap-x-4">
               {supportPoints.map((pt, idx) => (
                 <div key={idx} className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-gray-50 dark:bg-brand-dark-bg border border-gray-200/60 dark:border-brand-dark-border flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-theme-subtle border border-theme-border-subtle flex items-center justify-center shrink-0">
                     {pt.icon}
                   </div>
-                  <span className="text-[11px] text-gray-600 dark:text-brand-dark-text">
-                    {pt.text}
-                  </span>
+                  <span className="text-[11px] text-theme-text">{pt.text}</span>
                 </div>
               ))}
             </div>
@@ -423,10 +421,10 @@ export default function Tracks({
 
           {/* Right Column: Connection Graphic Card */}
           <div className="md:col-span-5 flex items-center justify-center">
-            <div className="w-full h-48 rounded-xl bg-gray-50/80 dark:bg-brand-dark-bg border border-gray-100 dark:border-brand-dark-border flex items-center justify-center px-6">
+            <div className="w-full h-48 rounded-xl bg-theme-subtle border border-theme-border flex items-center justify-center px-6">
               <div className="flex items-center gap-3">
                 {/* Student Node */}
-                <div className="w-10 h-10 rounded-full bg-white dark:bg-brand-dark-surface border border-gray-200 dark:border-brand-dark-border shadow-xs flex items-center justify-center text-gray-600 dark:text-gray-300">
+                <div className="w-10 h-10 rounded-full bg-theme-surface border border-theme-border shadow-xs flex items-center justify-center text-theme-text">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -443,7 +441,7 @@ export default function Tracks({
                 </div>
 
                 {/* Connecting Line */}
-                <div className="w-10 sm:w-12 h-[2px] bg-[#B93325]/30 dark:bg-[#B93325]/50" />
+                <div className="w-10 sm:w-12 h-[2px] bg-[#B93325]/30" />
 
                 {/* Mentor Node */}
                 <div className="w-12 h-12 rounded-full bg-[#B93325] text-white shadow-md flex items-center justify-center">
