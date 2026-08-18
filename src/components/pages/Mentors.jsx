@@ -8,7 +8,7 @@ export default function Mentors({
   onNavigateSignUp,
 }) {
   return (
-    <div className="min-h-screen bg-theme-bg text-theme-text transition-colors">
+    <div className="min-h-screen bg-background text-text-primary transition-colors">
       <Navbar
         currentView="mentors"
         onNavigatePage={onNavigatePage}
@@ -18,16 +18,16 @@ export default function Mentors({
 
       {/* ================= 1. HERO SECTION ================= */}
       <section className="pt-20 pb-20 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-theme-text leading-[1.15] mb-6">
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-text-primary leading-[1.15] mb-6">
           Learn from experienced <br />
           mentors.{" "}
-          <span className="text-[#B93325]">
+          <span className="text-primary">
             Get continuous <br />
             guidance.
           </span>
         </h1>
 
-        <p className="text-xs sm:text-sm text-theme-muted max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-text-muted max-w-xl mx-auto leading-relaxed">
           You don't have to learn alone. Our mentorship program pairs you with
           experienced peers to accelerate your growth and provide personalized
           support throughout your bootcamp journey.
@@ -36,25 +36,25 @@ export default function Mentors({
 
       {/* ================= 2. GUIDED BY EXCELLENCE CARD ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-32 max-w-5xl mx-auto">
-        <div className="p-8 sm:p-10 rounded-3xl bg-theme-surface border border-theme-border shadow-xs grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="p-8 sm:p-10 rounded-3xl bg-surface border border-border shadow-xs grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Text */}
           <div className="md:col-span-6 space-y-4">
-            <span className="inline-block px-3 py-1 rounded-md bg-[#B93325]/10 text-[#B93325] text-[10px] font-mono tracking-wider font-semibold uppercase">
+            <span className="inline-block px-3 py-1 rounded-md bg-secondary text-primary text-[10px] font-mono tracking-wider font-semibold uppercase">
               Our Philosophy
             </span>
 
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-theme-text tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
               Guided by Excellence
             </h2>
 
-            <p className="text-xs text-theme-muted leading-relaxed">
+            <p className="text-xs text-text-muted leading-relaxed">
               Our mentors are a select group of approximately 20 high-performing
               current ASTU students. They bring diverse technological expertise
               across various domains, ensuring that no matter your interest,
               there is a mentor ready to guide you.
             </p>
 
-            <p className="text-xs text-theme-muted leading-relaxed">
+            <p className="text-xs text-text-muted leading-relaxed">
               They are not just instructors; they are peers who have
               successfully navigated the same challenges you will face, offering
               empathetic, relevant, and actionable advice.
@@ -63,7 +63,7 @@ export default function Mentors({
 
           {/* Right Column: Image */}
           <div className="md:col-span-6">
-            <div className="overflow-hidden rounded-2xl border border-theme-border shadow-xs">
+            <div className="overflow-hidden rounded-2xl border border-border shadow-xs">
               <img
                 src="/mentors-group.png"
                 alt="ASTU MSJ Mentorship Group"
@@ -76,15 +76,15 @@ export default function Mentors({
 
       {/* ================= 3. PERSONALIZED MENTOR MATCHING ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-28 text-center max-w-3xl mx-auto">
-        <div className="flex items-center justify-center text-[#B93325] mb-4">
+        <div className="flex items-center justify-center text-primary mb-4">
           <MdHandshake className="w-10 h-10" />
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-theme-text mb-3.5 tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-text-primary mb-3.5 tracking-tight">
           Personalized Mentor Matching
         </h2>
 
-        <p className="text-xs sm:text-sm text-theme-muted max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-text-muted max-w-xl mx-auto leading-relaxed">
           Every student is specifically assigned to a dedicated mentor. This
           ensures you receive a personalized, consistent experience with someone
           who understands your unique learning style, tracks your individual
@@ -95,10 +95,10 @@ export default function Mentors({
       {/* ================= 4. WHAT MENTORS DO (4 CARDS) ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-28 max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-theme-text mb-2 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-text-primary mb-2 tracking-tight">
             What Mentors Do
           </h2>
-          <p className="text-xs sm:text-sm text-theme-muted max-w-md mx-auto">
+          <p className="text-xs sm:text-sm text-text-muted max-w-md mx-auto">
             Comprehensive support designed to ensure you never feel stuck and
             constantly move forward.
           </p>
@@ -106,9 +106,9 @@ export default function Mentors({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Card 1: Academic Support */}
-          <div className="p-7 rounded-2xl bg-theme-surface border border-theme-border shadow-xs flex flex-col">
-            <div className="flex items-center gap-3 pb-5 border-b border-theme-border mb-5">
-              <div className="w-9 h-9 rounded-xl bg-[#B93325]/10 border border-[#B93325]/20 flex items-center justify-center text-[#B93325]">
+          <div className="p-7 rounded-2xl bg-surface border border-border shadow-xs flex flex-col">
+            <div className="flex items-center gap-3 pb-5 border-b border-border mb-5">
+              <div className="w-9 h-9 rounded-xl bg-secondary border border-border-subtle flex items-center justify-center text-primary">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -129,14 +129,14 @@ export default function Mentors({
                   />
                 </svg>
               </div>
-              <h3 className="font-bold text-base text-theme-text">
+              <h3 className="font-bold text-base text-text-primary">
                 Academic Support
               </h3>
             </div>
             <div className="space-y-3.5 flex-1">
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -151,9 +151,9 @@ export default function Mentors({
                 </svg>
                 <span>Teach core concepts and simplify complex topics.</span>
               </div>
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -170,9 +170,9 @@ export default function Mentors({
                   Answer questions and provide immediate technical assistance.
                 </span>
               </div>
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -194,9 +194,9 @@ export default function Mentors({
           </div>
 
           {/* Card 2: Progress Tracking */}
-          <div className="p-7 rounded-2xl bg-theme-surface border border-theme-border shadow-xs flex flex-col">
-            <div className="flex items-center gap-3 pb-5 border-b border-theme-border mb-5">
-              <div className="w-9 h-9 rounded-xl bg-[#B93325]/10 border border-[#B93325]/20 flex items-center justify-center text-[#B93325]">
+          <div className="p-7 rounded-2xl bg-surface border border-border shadow-xs flex flex-col">
+            <div className="flex items-center gap-3 pb-5 border-b border-border mb-5">
+              <div className="w-9 h-9 rounded-xl bg-secondary border border-border-subtle flex items-center justify-center text-primary">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -211,14 +211,14 @@ export default function Mentors({
                   />
                 </svg>
               </div>
-              <h3 className="font-bold text-base text-theme-text">
+              <h3 className="font-bold text-base text-text-primary">
                 Progress Tracking
               </h3>
             </div>
             <div className="space-y-3.5 flex-1">
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -235,9 +235,9 @@ export default function Mentors({
                   Track overall progress and manage session attendance.
                 </span>
               </div>
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -258,9 +258,9 @@ export default function Mentors({
           </div>
 
           {/* Card 3: Assessment */}
-          <div className="p-7 rounded-2xl bg-theme-surface border border-theme-border shadow-xs flex flex-col">
-            <div className="flex items-center gap-3 pb-5 border-b border-theme-border mb-5">
-              <div className="w-9 h-9 rounded-xl bg-[#B93325]/10 border border-[#B93325]/20 flex items-center justify-center text-[#B93325]">
+          <div className="p-7 rounded-2xl bg-surface border border-border shadow-xs flex flex-col">
+            <div className="flex items-center gap-3 pb-5 border-b border-border mb-5">
+              <div className="w-9 h-9 rounded-xl bg-secondary border border-border-subtle flex items-center justify-center text-primary">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -275,14 +275,14 @@ export default function Mentors({
                   />
                 </svg>
               </div>
-              <h3 className="font-bold text-base text-theme-text">
+              <h3 className="font-bold text-base text-text-primary">
                 Assessment
               </h3>
             </div>
             <div className="space-y-3.5 flex-1">
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -297,9 +297,9 @@ export default function Mentors({
                 </svg>
                 <span>Review projects and assignments rigorously.</span>
               </div>
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -320,9 +320,9 @@ export default function Mentors({
           </div>
 
           {/* Card 4: Specialized Guidance */}
-          <div className="p-7 rounded-2xl bg-theme-surface border border-theme-border shadow-xs flex flex-col">
-            <div className="flex items-center gap-3 pb-5 border-b border-theme-border mb-5">
-              <div className="w-9 h-9 rounded-xl bg-[#B93325]/10 border border-[#B93325]/20 flex items-center justify-center text-[#B93325]">
+          <div className="p-7 rounded-2xl bg-surface border border-border shadow-xs flex flex-col">
+            <div className="flex items-center gap-3 pb-5 border-b border-border mb-5">
+              <div className="w-9 h-9 rounded-xl bg-secondary border border-border-subtle flex items-center justify-center text-primary">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -334,14 +334,14 @@ export default function Mentors({
                   <circle cx="12" cy="12" r="1.5" fill="currentColor" />
                 </svg>
               </div>
-              <h3 className="font-bold text-base text-theme-text">
+              <h3 className="font-bold text-base text-text-primary">
                 Specialized Guidance
               </h3>
             </div>
             <div className="space-y-3.5 flex-1">
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -358,9 +358,9 @@ export default function Mentors({
                   Provide targeted guidance for competitive programming.
                 </span>
               </div>
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -377,9 +377,9 @@ export default function Mentors({
                   Offer holistic support to help students improve continuously.
                 </span>
               </div>
-              <div className="flex items-start gap-2.5 text-xs text-theme-muted leading-relaxed">
+              <div className="flex items-start gap-2.5 text-xs text-text-muted leading-relaxed">
                 <svg
-                  className="w-4 h-4 text-[#B93325] shrink-0 mt-0.5"
+                  className="w-4 h-4 text-primary shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -402,16 +402,16 @@ export default function Mentors({
         </div>
       </section>
 
-      {/* ================= 5. ALUMNI INSIGHTS (DARK BANNER) ================= */}
-      <section className="bg-[#18191B] text-white py-20 px-4 sm:px-6 lg:px-8">
+      {/* ================= 5. ALUMNI INSIGHTS ================= */}
+      <section className="bg-surface-muted border-t border-b border-border py-20 px-4 sm:px-6 lg:px-8 transition-colors">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 items-center">
           <div className="md:col-span-7 space-y-5">
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-primary leading-tight">
               Alumni Insights & Experience <br />
               Sharing
             </h2>
 
-            <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-lg">
+            <p className="text-xs sm:text-sm text-text-muted leading-relaxed max-w-lg">
               Beyond daily mentorship, successful Muslim ASTU graduates
               frequently return to share their professional journeys. These
               sessions offer invaluable real-world perspectives outside the
@@ -419,9 +419,9 @@ export default function Mentors({
             </p>
 
             <div className="space-y-3 pt-2">
-              <div className="flex items-center gap-3 text-xs text-gray-300">
+              <div className="flex items-center gap-3 text-xs text-text-secondary">
                 <svg
-                  className="w-4 h-4 text-gray-400 shrink-0"
+                  className="w-4 h-4 text-text-muted shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -436,9 +436,9 @@ export default function Mentors({
                 <span>Personal Journeys & Career Paths</span>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-gray-300">
+              <div className="flex items-center gap-3 text-xs text-text-secondary">
                 <svg
-                  className="w-4 h-4 text-gray-400 shrink-0"
+                  className="w-4 h-4 text-text-muted shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -453,9 +453,9 @@ export default function Mentors({
                 <span>Crucial Lessons Learned</span>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-gray-300">
+              <div className="flex items-center gap-3 text-xs text-text-secondary">
                 <svg
-                  className="w-4 h-4 text-gray-400 shrink-0"
+                  className="w-4 h-4 text-text-muted shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -470,9 +470,9 @@ export default function Mentors({
                 <span>Real-World Industry Experience</span>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-gray-300">
+              <div className="flex items-center gap-3 text-xs text-text-secondary">
                 <svg
-                  className="w-4 h-4 text-gray-400 shrink-0"
+                  className="w-4 h-4 text-text-muted shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -490,11 +490,11 @@ export default function Mentors({
           </div>
 
           <div className="md:col-span-5">
-            <div className="p-7 sm:p-8 rounded-2xl bg-[#202225] border border-gray-800 shadow-xl">
-              <span className="text-3xl text-gray-500 font-serif leading-none block mb-2">
+            <div className="p-7 sm:p-8 rounded-2xl bg-surface border border-border shadow-xs">
+              <span className="text-3xl text-text-muted font-serif leading-none block mb-2">
                 “
               </span>
-              <p className="text-xs sm:text-sm italic text-gray-300 leading-relaxed mb-6">
+              <p className="text-xs sm:text-sm italic text-text-secondary leading-relaxed mb-6">
                 "The transition from academia to industry is challenging. We
                 come back to ensure the next generation understands the
                 practical realities of software engineering, beyond just writing
@@ -505,13 +505,13 @@ export default function Mentors({
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
                   alt="Tarik Ibrahim"
-                  className="w-10 h-10 rounded-full object-cover border border-gray-700 shadow-xs"
+                  className="w-10 h-10 rounded-full object-cover border border-border shadow-xs"
                 />
                 <div>
-                  <h4 className="text-xs font-bold text-white">
+                  <h4 className="text-xs font-bold text-text-primary">
                     Tarik Ibrahim
                   </h4>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-[10px] text-text-muted">
                     Senior Engineer at TechCorp, Class of '20
                   </p>
                 </div>

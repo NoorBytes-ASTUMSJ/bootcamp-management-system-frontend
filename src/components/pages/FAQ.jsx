@@ -95,7 +95,7 @@ export default function FAQ({
   ];
 
   return (
-    <div className="min-h-screen bg-theme-bg text-theme-text transition-colors">
+    <div className="min-h-screen bg-background text-text-primary transition-colors">
       <Navbar
         currentView="faq"
         onNavigatePage={onNavigatePage}
@@ -105,12 +105,12 @@ export default function FAQ({
 
       {/* ================= 1. HERO SECTION ================= */}
       <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-center max-w-3xl mx-auto">
-        <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-theme-text leading-[1.15] mb-4">
-          Frequently <span className="text-[#B93325]">Asked</span> <br />
-          <span className="text-[#B93325]">Questions</span>
+        <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-text-primary leading-[1.15] mb-4">
+          Frequently <span className="text-primary">Asked</span> <br />
+          <span className="text-primary">Questions</span>
         </h1>
 
-        <p className="text-xs sm:text-sm text-theme-muted max-w-md mx-auto">
+        <p className="text-xs sm:text-sm text-text-muted max-w-md mx-auto">
           Everything you need to know before starting your journey.
         </p>
       </section>
@@ -120,9 +120,9 @@ export default function FAQ({
         {faqData.map((group, groupIdx) => (
           <div key={groupIdx} className="space-y-4">
             {/* Category Header */}
-            <h2 className="text-sm font-bold tracking-tight text-theme-text">
+            <h2 className="text-sm font-bold tracking-tight text-text-primary">
               {group.category}{" "}
-              <span className="text-[#B93325]">{group.categoryHighlight}</span>
+              <span className="text-primary">{group.categoryHighlight}</span>
             </h2>
 
             {/* Accordion Item Cards */}
@@ -132,19 +132,19 @@ export default function FAQ({
                 return (
                   <div
                     key={item.id}
-                    className="bg-theme-surface border border-theme-border rounded-xl transition-all duration-200 shadow-xs overflow-hidden"
+                    className="bg-surface border border-border rounded-xl transition-all duration-200 shadow-xs overflow-hidden"
                   >
                     <button
                       type="button"
                       onClick={() => toggleAccordion(item.id)}
-                      className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-theme-subtle transition-colors"
+                      className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-subtle transition-colors"
                     >
-                      <span className="text-xs sm:text-[13px] font-semibold text-theme-text">
+                      <span className="text-xs sm:text-[13px] font-semibold text-text-primary">
                         {item.q}
                       </span>
                       <svg
-                        className={`w-4 h-4 text-theme-muted shrink-0 transition-transform duration-200 ${
-                          isOpen ? "rotate-180 text-[#B93325]" : ""
+                        className={`w-4 h-4 text-text-muted shrink-0 transition-transform duration-200 ${
+                          isOpen ? "rotate-180 text-primary" : ""
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -160,7 +160,7 @@ export default function FAQ({
                     </button>
 
                     {isOpen && (
-                      <div className="px-5 pb-4 pt-1 border-t border-theme-border text-xs text-theme-muted leading-relaxed">
+                      <div className="px-5 pb-4 pt-1 border-t border-border text-xs text-text-muted leading-relaxed">
                         {item.a}
                       </div>
                     )}
@@ -174,16 +174,16 @@ export default function FAQ({
 
       {/* ================= 3. STILL HAVE QUESTIONS CARD ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-24 max-w-xl mx-auto">
-        <div className="bg-theme-surface border border-theme-border rounded-2xl p-8 text-center shadow-xs space-y-4">
-          <div className="w-8 h-8 rounded-full bg-[#B93325]/10 border border-[#B93325]/20 text-[#B93325] mx-auto flex items-center justify-center text-sm font-bold">
+        <div className="bg-surface border border-border rounded-2xl p-8 text-center shadow-xs space-y-4">
+          <div className="w-8 h-8 rounded-full bg-secondary border border-border-subtle text-primary mx-auto flex items-center justify-center text-sm font-bold">
             ?
           </div>
 
-          <h3 className="text-base font-bold text-theme-text">
+          <h3 className="text-base font-bold text-text-primary">
             Still have questions?
           </h3>
 
-          <p className="text-xs text-theme-muted max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-text-muted max-w-xs mx-auto leading-relaxed">
             Can't find the answer you're looking for? Reach out to our team
             directly.
           </p>
@@ -192,7 +192,7 @@ export default function FAQ({
             <button
               type="button"
               onClick={() => onNavigatePage && onNavigatePage("contact")}
-              className="inline-block px-5 py-2 rounded-lg border border-theme-border-subtle bg-theme-surface hover:bg-theme-subtle text-xs font-semibold text-theme-text transition-colors shadow-xs cursor-pointer"
+              className="inline-block px-5 py-2 rounded-lg border border-border bg-surface hover:bg-surface-subtle text-xs font-semibold text-text-primary transition-colors shadow-xs cursor-pointer"
             >
               Contact Support
             </button>

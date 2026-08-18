@@ -11,7 +11,7 @@ export default function About({
     {
       icon: (
         <svg
-          className="w-4 h-4 text-[#B93325]"
+          className="w-4 h-4 text-primary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -22,12 +22,12 @@ export default function About({
         </svg>
       ),
       title: "Our Purpose",
-      desc: "To empower ASTU Muslim students with highly practical, industry-grade technical skills, bridging the gap between academic theory and real-world software engineering demands.",
+      desc: "To empower ASTU Muslim students with practical, industry-grade technical skills, bridging the gap between academic theory and real-world software engineering demands.",
     },
     {
       icon: (
         <svg
-          className="w-4 h-4 text-[#B93325]"
+          className="w-4 h-4 text-primary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -46,7 +46,7 @@ export default function About({
     {
       icon: (
         <svg
-          className="w-4 h-4 text-[#B93325]"
+          className="w-4 h-4 text-primary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -77,7 +77,7 @@ export default function About({
   ];
 
   return (
-    <div className="min-h-screen bg-theme-bg text-theme-text transition-colors">
+    <div className="min-h-screen bg-background text-text-primary transition-colors">
       <Navbar
         currentView="about"
         onNavigatePage={onNavigatePage}
@@ -87,17 +87,17 @@ export default function About({
 
       {/* ================= 1. HERO SECTION ================= */}
       <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B93325]/10 border border-[#B93325]/20 text-[11px] font-mono font-medium text-[#B93325] tracking-wider uppercase mb-8">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#B93325]" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary border border-border-subtle text-[11px] font-mono font-medium text-primary tracking-wider uppercase mb-8">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           SUMMER BOOTCAMP
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-theme-text leading-[1.15] mb-6">
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-text-primary leading-[1.15] mb-6">
           Engineering Excellence. <br />
-          <span className="text-[#B93325]">Serving the Ummah.</span>
+          <span className="text-primary">Serving the Ummah.</span>
         </h1>
 
-        <p className="text-xs sm:text-sm text-theme-muted max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-text-muted max-w-xl mx-auto leading-relaxed">
           Forging full-stack developers through rigorous discipline, relentless
           practice, expert mentorship, and a deep-rooted commitment to community
           service.
@@ -110,17 +110,17 @@ export default function About({
           {coreCards.map((item, idx) => (
             <div
               key={idx}
-              className="p-7 rounded-2xl bg-theme-surface border border-theme-border shadow-xs flex flex-col justify-start"
+              className="p-7 rounded-2xl bg-surface border border-border shadow-xs flex flex-col justify-start"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#B93325]/10 border border-[#B93325]/20 flex items-center justify-center mb-6">
+              <div className="w-9 h-9 rounded-xl bg-secondary border border-border-subtle flex items-center justify-center mb-6">
                 {item.icon}
               </div>
 
-              <h3 className="font-bold text-base text-theme-text pb-3 border-b border-theme-border mb-3.5">
+              <h3 className="font-bold text-base text-text-primary pb-3 border-b border-border mb-3.5">
                 {item.title}
               </h3>
 
-              <p className="text-xs text-theme-muted leading-relaxed">
+              <p className="text-xs text-text-muted leading-relaxed">
                 {item.desc}
               </p>
             </div>
@@ -131,11 +131,11 @@ export default function About({
       {/* ================= 3. OUR APPROACH ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-28 max-w-5xl mx-auto">
         <div className="mb-8">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-theme-text mb-2 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-text-primary mb-2 tracking-tight">
             Our Approach
           </h2>
 
-          <p className="text-xs text-theme-muted">
+          <p className="text-xs text-text-muted">
             A systematic philosophy for building competent engineers.
           </p>
         </div>
@@ -143,9 +143,9 @@ export default function About({
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
             {/* 1. Build Real Projects */}
-            <div className="md:col-span-6 p-7 rounded-2xl bg-theme-surface border border-theme-border shadow-xs flex flex-col justify-between">
+            <div className="md:col-span-6 p-7 rounded-2xl bg-surface border border-border shadow-xs flex flex-col justify-between">
               <div>
-                <div className="w-7 h-6 rounded bg-[#B93325] text-white flex items-center justify-center mb-5 shadow-2xs">
+                <div className="w-7 h-6 rounded bg-primary text-primary-foreground flex items-center justify-center mb-5 shadow-2xs">
                   <svg
                     className="w-4 h-4"
                     viewBox="0 0 20 20"
@@ -166,11 +166,11 @@ export default function About({
                   </svg>
                 </div>
 
-                <h3 className="font-bold text-base text-theme-text mb-2.5">
+                <h3 className="font-bold text-base text-text-primary mb-2.5">
                   Build Real Projects
                 </h3>
 
-                <p className="text-xs text-theme-muted leading-relaxed">
+                <p className="text-xs text-text-muted leading-relaxed">
                   Theory is meaningless without application. We mandate
                   project-based learning, requiring students to architect,
                   develop, and deploy functional applications from scratch,
@@ -182,9 +182,9 @@ export default function About({
             {/* 4 Small Sub-cards */}
             <div className="md:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* 2. Start from Basics */}
-              <div className="p-5 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
+              <div className="p-5 rounded-2xl bg-surface border border-border shadow-xs">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[#B93325]">
+                  <span className="text-primary">
                     <svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
@@ -209,20 +209,20 @@ export default function About({
                     </svg>
                   </span>
 
-                  <h4 className="font-bold text-xs text-theme-text">
+                  <h4 className="font-bold text-xs text-text-primary">
                     Start from Basics
                   </h4>
                 </div>
 
-                <p className="text-[11px] text-theme-muted leading-relaxed">
+                <p className="text-[11px] text-text-muted leading-relaxed">
                   Solidifying fundamental concepts before scaling complexity.
                 </p>
               </div>
 
               {/* 3. Learn Consistently */}
-              <div className="p-5 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
+              <div className="p-5 rounded-2xl bg-surface border border-border shadow-xs">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[#B93325]">
+                  <span className="text-primary">
                     <svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
@@ -244,20 +244,20 @@ export default function About({
                     </svg>
                   </span>
 
-                  <h4 className="font-bold text-xs text-theme-text">
+                  <h4 className="font-bold text-xs text-text-primary">
                     Learn Consistently
                   </h4>
                 </div>
 
-                <p className="text-[11px] text-theme-muted leading-relaxed">
+                <p className="text-[11px] text-text-muted leading-relaxed">
                   Daily compounding knowledge over sporadic bursts.
                 </p>
               </div>
 
               {/* 4. Solve Problems */}
-              <div className="p-5 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
+              <div className="p-5 rounded-2xl bg-surface border border-border shadow-xs">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[#B93325]">
+                  <span className="text-primary">
                     <svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
@@ -274,21 +274,21 @@ export default function About({
                     </svg>
                   </span>
 
-                  <h4 className="font-bold text-xs text-theme-text">
+                  <h4 className="font-bold text-xs text-text-primary">
                     Solve Problems
                   </h4>
                 </div>
 
-                <p className="text-[11px] text-theme-muted leading-relaxed">
+                <p className="text-[11px] text-text-muted leading-relaxed">
                   Cultivating analytical thinking and algorithmic
                   troubleshooting.
                 </p>
               </div>
 
               {/* 5. Practice Daily */}
-              <div className="p-5 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
+              <div className="p-5 rounded-2xl bg-surface border border-border shadow-xs">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[#B93325]">
+                  <span className="text-primary">
                     <svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
@@ -314,12 +314,12 @@ export default function About({
                     </svg>
                   </span>
 
-                  <h4 className="font-bold text-xs text-theme-text">
+                  <h4 className="font-bold text-xs text-text-primary">
                     Practice Daily
                   </h4>
                 </div>
 
-                <p className="text-[11px] text-theme-muted leading-relaxed">
+                <p className="text-[11px] text-text-muted leading-relaxed">
                   Repetition builds muscle memory in code syntax.
                 </p>
               </div>
@@ -327,19 +327,19 @@ export default function About({
           </div>
 
           {/* 6. Mentorship & Discipline */}
-          <div className="p-6 rounded-2xl bg-theme-surface border border-theme-border shadow-xs flex items-center gap-5">
-            <div className="w-11 h-11 rounded-full bg-[#B93325]/10 text-[#B93325] flex items-center justify-center shrink-0">
+          <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex items-center gap-5">
+            <div className="w-11 h-11 rounded-full bg-secondary text-primary flex items-center justify-center shrink-0">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
               </svg>
             </div>
 
             <div>
-              <h3 className="font-bold text-sm text-theme-text mb-1">
+              <h3 className="font-bold text-sm text-text-primary mb-1">
                 Mentorship & Discipline
               </h3>
 
-              <p className="text-xs text-theme-muted leading-relaxed max-w-xl">
+              <p className="text-xs text-text-muted leading-relaxed max-w-xl">
                 Guidance from experienced peers fosters rigorous discipline,
                 while the ultimate goal remains leveraging tech to help others.
               </p>
@@ -351,11 +351,11 @@ export default function About({
       {/* ================= 4. OUR JOURNEY ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-28 max-w-5xl mx-auto">
         <div className="mb-10">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-theme-text mb-1.5 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-text-primary mb-1.5 tracking-tight">
             Our Journey
           </h2>
 
-          <p className="text-xs text-theme-muted">
+          <p className="text-xs text-text-muted">
             A history of continuous growth and commitment.
           </p>
         </div>
@@ -372,7 +372,7 @@ export default function About({
               after:top-[30px]
               after:h-[calc(100%+30px)]
               after:w-[1.5px]
-              after:bg-theme-border-subtle
+              after:bg-border-subtle
               after:z-0
             "
           >
@@ -387,23 +387,23 @@ export default function About({
                 h-3
                 rounded-full
                 border-2
-                border-theme-border-subtle
-                bg-theme-bg
+                border-border-subtle
+                bg-background
                 z-10
               "
             />
 
             {/* Card */}
-            <div className="w-full md:w-[75%] p-6 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
-              <span className="inline-block text-[10px] font-mono text-theme-muted uppercase tracking-wider mb-1">
+            <div className="w-full md:w-[75%] p-6 rounded-2xl bg-surface border border-border shadow-xs">
+              <span className="inline-block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">
                 Year 1
               </span>
 
-              <h3 className="text-base font-bold text-theme-text mb-1.5">
+              <h3 className="text-base font-bold text-text-primary mb-1.5">
                 The Foundation
               </h3>
 
-              <p className="text-xs text-theme-muted leading-relaxed">
+              <p className="text-xs text-text-muted leading-relaxed">
                 Establishing the core curriculum and testing the mentorship
                 model with our first cohort of dedicated students.
               </p>
@@ -420,7 +420,7 @@ export default function About({
               after:top-[30px]
               after:h-[calc(100%+30px)]
               after:w-[1.5px]
-              after:bg-theme-border-subtle
+              after:bg-border-subtle
               after:z-0
             "
           >
@@ -435,23 +435,23 @@ export default function About({
                 h-3
                 rounded-full
                 border-2
-                border-theme-border-subtle
-                bg-theme-bg
+                border-border-subtle
+                bg-background
                 z-10
               "
             />
 
             {/* Card */}
-            <div className="w-full md:w-[80%] md:ml-[18%] p-6 rounded-2xl bg-theme-surface border border-theme-border shadow-xs">
-              <span className="inline-block text-[10px] font-mono text-theme-muted uppercase tracking-wider mb-1">
+            <div className="w-full md:w-[80%] md:ml-[18%] p-6 rounded-2xl bg-surface border border-border shadow-xs">
+              <span className="inline-block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">
                 Year 2
               </span>
 
-              <h3 className="text-base font-bold text-theme-text mb-1.5">
+              <h3 className="text-base font-bold text-text-primary mb-1.5">
                 Scaling Impact (100+ Participants)
               </h3>
 
-              <p className="text-xs text-theme-muted leading-relaxed">
+              <p className="text-xs text-text-muted leading-relaxed">
                 Refining the program and expanding reach. Over 100 participants
                 completed rigorous tracks in frontend, backend, and competitive
                 programming.
@@ -471,25 +471,25 @@ export default function About({
                 w-3
                 h-3
                 rounded-full
-                bg-[#B93325]
+                bg-primary
                 border-2
-                border-theme-bg
+                border-background
                 shadow-xs
                 z-10
               "
             />
 
             {/* Card */}
-            <div className="w-full md:w-[75%] p-6 rounded-2xl bg-theme-surface border border-[#B93325]/20 shadow-xs">
-              <span className="inline-block text-[10px] font-mono text-[#B93325] font-semibold uppercase tracking-wider mb-1">
+            <div className="w-full md:w-[75%] p-6 rounded-2xl bg-surface border border-border shadow-xs">
+              <span className="inline-block text-[10px] font-mono text-primary font-semibold uppercase tracking-wider mb-1">
                 Upcoming
               </span>
 
-              <h3 className="text-base font-bold text-theme-text mb-1.5">
+              <h3 className="text-base font-bold text-text-primary mb-1.5">
                 The 3rd Batch
               </h3>
 
-              <p className="text-xs text-theme-muted leading-relaxed">
+              <p className="text-xs text-text-muted leading-relaxed">
                 Our most comprehensive curriculum yet, featuring specialized
                 tracks for Frontend development, Backend engineering, and
                 high-level Competitive Programming.
@@ -500,17 +500,17 @@ export default function About({
       </section>
 
       {/* ================= 5. BEYOND SYNTAX ================= */}
-      <section className="bg-[#18191B] text-white py-20 px-4 sm:px-6 lg:px-8 text-center">
+      <section className="bg-surface-muted border-t border-b border-border py-20 px-4 sm:px-6 lg:px-8 text-center transition-colors">
         <div className="max-w-3xl mx-auto space-y-4">
           <div className="flex items-center justify-center mb-3">
-            <MdLightbulb className="w-8 h-8 text-[#FCA59C]" />
+            <MdLightbulb className="w-8 h-8 text-primary" />
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-text-primary">
             Beyond Syntax
           </h2>
 
-          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-xl mx-auto pt-2">
+          <p className="text-xs sm:text-sm text-text-muted leading-relaxed max-w-xl mx-auto pt-2">
             Our ultimate goal transcends mere coding proficiency. We strive to
             mold capable, ethical developers who view their technical skills as
             a tool to benefit the Ummah and solve meaningful societal problems.

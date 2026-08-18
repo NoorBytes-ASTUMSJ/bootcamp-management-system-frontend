@@ -64,7 +64,7 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
           <button
             type="button"
             onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-xs text-theme-muted hover:text-theme-text transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -97,7 +97,7 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
           {/* ================= STEP 1: PERSONAL INFORMATION ================= */}
           {step === 1 && (
             <div>
-              <h2 className="text-2xl font-bold text-center text-theme-text mb-4">
+              <h2 className="text-2xl font-bold text-center text-text-primary mb-4">
                 Student Registration
               </h2>
 
@@ -154,12 +154,12 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
                 <Button type="submit">Next</Button>
               </div>
 
-              <p className="text-center text-xs text-theme-muted mt-5">
+              <p className="text-center text-xs text-text-muted mt-5">
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={onNavigateLogin}
-                  className="text-[#B93325] font-medium hover:underline cursor-pointer"
+                  className="text-primary font-medium hover:underline cursor-pointer"
                 >
                   Log In
                 </button>
@@ -170,10 +170,10 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
           {/* ================= STEP 2: ACADEMIC & TECH ================= */}
           {step === 2 && (
             <div>
-              <h2 className="text-2xl font-bold text-center text-theme-text mb-1">
+              <h2 className="text-2xl font-bold text-center text-text-primary mb-1">
                 Academic & Tech
               </h2>
-              <p className="text-xs text-center text-theme-muted mb-5">
+              <p className="text-xs text-center text-text-muted mb-5">
                 Provide your academic details and technical profiles.
               </p>
 
@@ -226,9 +226,9 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
               />
 
               {/* Technical Profiles Header Divider */}
-              <div className="border-t border-theme-border pt-3 mt-2 mb-3">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-theme-text">
-                  <Terminal size={14} className="text-theme-muted" />
+              <div className="border-t border-border pt-3 mt-2 mb-3">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-text-primary">
+                  <Terminal size={14} className="text-text-muted" />
                   <span>Technical Profiles</span>
                 </div>
               </div>
@@ -275,10 +275,10 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
           {/* ================= STEP 3: COMMITMENT DETAILS ================= */}
           {step === 3 && (
             <div>
-              <h2 className="text-2xl font-bold text-center text-theme-text mb-1">
+              <h2 className="text-2xl font-bold text-center text-text-primary mb-1">
                 Final Commitment Details
               </h2>
-              <p className="text-xs text-center text-theme-muted mb-5">
+              <p className="text-xs text-center text-text-muted mb-5">
                 Please provide your availability and motivation for joining.
               </p>
 
@@ -291,12 +291,12 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
                 icon={Clock}
                 required
               />
-              <p className="text-[11px] text-theme-muted -mt-2.5 mb-4">
+              <p className="text-[11px] text-text-muted -mt-2.5 mb-4">
                 How many hours can you dedicate to the bootcamp daily?
               </p>
 
               <div className="w-full mb-3">
-                <label className="block text-[10px] font-bold tracking-wider text-theme-muted uppercase mb-1">
+                <label className="block text-[10px] font-bold tracking-wider text-text-muted uppercase mb-1">
                   Availability Description
                 </label>
                 <textarea
@@ -305,13 +305,13 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
                   value={formData.availability}
                   onChange={handleChange}
                   placeholder="Please describe your general availability (e.g., evenings, weekends)."
-                  className="w-full bg-theme-surface border border-theme-border rounded-lg px-3 py-2 text-sm text-theme-text placeholder:text-theme-muted/60 focus:outline-none focus:ring-1 focus:ring-[#B93325] focus:border-[#B93325] transition-all resize-none shadow-2xs"
+                  className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none shadow-2xs"
                   required
                 />
               </div>
 
               <div className="w-full mb-3">
-                <label className="block text-[10px] font-bold tracking-wider text-theme-muted uppercase mb-1">
+                <label className="block text-[10px] font-bold tracking-wider text-text-muted uppercase mb-1">
                   Motivation
                 </label>
                 <textarea
@@ -320,7 +320,7 @@ export default function StudentRegister({ onNavigateLogin, onBackToHome }) {
                   value={formData.motivation}
                   onChange={handleChange}
                   placeholder="Why do you want to join the ASTU MSJ Bootcamp?"
-                  className="w-full bg-theme-surface border border-theme-border rounded-lg px-3 py-2 text-sm text-theme-text placeholder:text-theme-muted/60 focus:outline-none focus:ring-1 focus:ring-[#B93325] focus:border-[#B93325] transition-all resize-none shadow-2xs"
+                  className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none shadow-2xs"
                   required
                 />
               </div>

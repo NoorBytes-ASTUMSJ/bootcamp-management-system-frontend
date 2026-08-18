@@ -10,12 +10,13 @@ export default function Button({
   className = "",
 }) {
   const baseStyles =
-    "w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+    "w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
-    primary: "bg-[#B93325] hover:bg-[#a32c1f] text-white shadow-sm",
+    primary:
+      "bg-primary hover:bg-primary-hover text-primary-foreground shadow-sm",
     secondary:
-      "bg-transparent border border-theme-border text-theme-text hover:bg-theme-subtle",
+      "bg-transparent border border-border text-text-primary hover:bg-surface-subtle",
   };
 
   return (

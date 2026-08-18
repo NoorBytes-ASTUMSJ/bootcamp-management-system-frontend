@@ -73,7 +73,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
           <button
             type="button"
             onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-xs text-theme-muted hover:text-theme-text transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -92,7 +92,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
           </button>
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-theme-text mb-2">
+        <h2 className="text-2xl font-bold text-center text-text-primary mb-2">
           Mentor Application
         </h2>
 
@@ -165,12 +165,12 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
                 <Button type="submit">Next</Button>
               </div>
 
-              <p className="text-center text-xs text-theme-muted mt-4">
+              <p className="text-center text-xs text-text-muted mt-4">
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={onNavigateLogin}
-                  className="text-[#B93325] font-medium hover:underline cursor-pointer"
+                  className="text-primary font-medium hover:underline cursor-pointer"
                 >
                   Log In
                 </button>
@@ -217,7 +217,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
                   onChange={handleChange}
                   required
                 />
-                <p className="text-[11px] text-theme-muted -mt-2 mb-4">
+                <p className="text-[11px] text-text-muted -mt-2 mb-4">
                   Required for 2nd year and above.
                 </p>
               </div>

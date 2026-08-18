@@ -7,6 +7,7 @@ export default function Login({
   onNavigateSignUp,
   onBackToPublic,
   onForgotPassword,
+  onSuccessLogin,
 }) {
   const [formData, setFormData] = useState({
     email: "",
@@ -21,7 +22,9 @@ export default function Login({
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Login credentials:", formData);
-    alert("Logged in successfully!");
+    if (onSuccessLogin) {
+      onSuccessLogin();
+    }
   };
 
   return (
@@ -31,7 +34,7 @@ export default function Login({
         <button
           type="button"
           onClick={onBackToPublic}
-          className="inline-flex items-center gap-1.5 text-xs text-theme-muted hover:text-theme-text transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
         >
           <svg
             className="w-4 h-4"
@@ -53,10 +56,10 @@ export default function Login({
       <div className="pt-2 pb-1">
         {/* Header Section */}
         <div className="text-center mb-6">
-          <h1 className="font-serif text-3xl font-normal text-theme-text tracking-tight mb-2">
+          <h1 className="font-serif text-3xl font-normal text-text-primary tracking-tight mb-2">
             Welcome back.
           </h1>
-          <p className="text-sm text-theme-muted">
+          <p className="text-sm text-text-muted">
             Log in to your ASTU MSJ account
           </p>
         </div>
@@ -90,12 +93,12 @@ export default function Login({
 
         {/* Footer Navigation Links */}
         <div className="mt-8 text-center space-y-3 text-xs">
-          <p className="text-theme-muted">
+          <p className="text-text-muted">
             Don't have an account?{" "}
             <button
               type="button"
               onClick={onNavigateSignUp}
-              className="text-[#B93325] font-semibold hover:underline cursor-pointer"
+              className="text-primary font-semibold hover:underline cursor-pointer"
             >
               Sign up
             </button>
@@ -105,7 +108,7 @@ export default function Login({
             <button
               type="button"
               onClick={onForgotPassword}
-              className="text-[#B93325] font-medium hover:underline transition-colors cursor-pointer"
+              className="text-primary font-medium hover:underline transition-colors cursor-pointer"
             >
               Forgot password?
             </button>

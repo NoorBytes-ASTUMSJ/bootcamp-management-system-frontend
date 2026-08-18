@@ -13,7 +13,7 @@ export default function RoleSelect({
           <button
             type="button"
             onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-xs text-theme-muted hover:text-theme-text transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -34,10 +34,10 @@ export default function RoleSelect({
 
         {/* Header */}
         <div className="text-center mb-8 pt-4">
-          <h2 className="text-2xl font-bold text-theme-text tracking-tight mb-2">
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight mb-2">
             Join ASTU MSJ
           </h2>
-          <p className="text-xs text-theme-muted">
+          <p className="text-xs text-text-muted">
             Choose how you want to get started
           </p>
         </div>
@@ -48,24 +48,24 @@ export default function RoleSelect({
           <button
             type="button"
             onClick={() => onSelectRole("student")}
-            className="w-full text-left p-4 rounded-xl border border-theme-border hover:border-[#B93325] bg-theme-surface hover:bg-[#B93325]/5 transition-all duration-200 group cursor-pointer shadow-xs"
+            className="w-full text-left p-4 rounded-xl border border-border hover:border-primary bg-surface hover:bg-secondary transition-all duration-200 group cursor-pointer shadow-xs"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-lg bg-[#B93325]/10 flex items-center justify-center text-[#B93325] font-bold text-lg group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-primary font-bold text-lg group-hover:scale-105 transition-transform">
                   🎓
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-theme-text group-hover:text-[#B93325] transition-colors">
+                  <h3 className="text-sm font-semibold text-text-primary group-hover:text-primary transition-colors">
                     Apply as a Student
                   </h3>
-                  <p className="text-xs text-theme-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
                     Participate in bootcamps, solve problems, and access
                     learning tracks.
                   </p>
                 </div>
               </div>
-              <span className="text-theme-muted group-hover:text-[#B93325] group-hover:translate-x-1 transition-all text-sm ml-2">
+              <span className="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
                 →
               </span>
             </div>
@@ -75,24 +75,24 @@ export default function RoleSelect({
           <button
             type="button"
             onClick={() => onSelectRole("mentor")}
-            className="w-full text-left p-4 rounded-xl border border-theme-border hover:border-[#B93325] bg-theme-surface hover:bg-[#B93325]/5 transition-all duration-200 group cursor-pointer shadow-xs"
+            className="w-full text-left p-4 rounded-xl border border-border hover:border-primary bg-surface hover:bg-secondary transition-all duration-200 group cursor-pointer shadow-xs"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-lg bg-[#B93325]/10 flex items-center justify-center text-[#B93325] font-bold text-lg group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-primary font-bold text-lg group-hover:scale-105 transition-transform">
                   💼
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-theme-text group-hover:text-[#B93325] transition-colors">
+                  <h3 className="text-sm font-semibold text-text-primary group-hover:text-primary transition-colors">
                     Join as a Mentor
                   </h3>
-                  <p className="text-xs text-theme-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
                     Share your experience, mentor junior students, and lead
                     study tracks.
                   </p>
                 </div>
               </div>
-              <span className="text-theme-muted group-hover:text-[#B93325] group-hover:translate-x-1 transition-all text-sm ml-2">
+              <span className="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
                 →
               </span>
             </div>
@@ -100,12 +100,12 @@ export default function RoleSelect({
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-theme-muted mt-10">
+        <p className="text-center text-xs text-text-muted mt-10">
           Already have an account?{" "}
           <button
             type="button"
             onClick={onNavigateLogin}
-            className="text-[#B93325] font-semibold hover:underline cursor-pointer"
+            className="text-primary font-semibold hover:underline cursor-pointer"
           >
             Log In
           </button>
