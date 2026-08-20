@@ -1,9 +1,9 @@
 import { useState } from "react";
-import FormCard from "../ui/FormCard";
-import Stepper from "../ui/Stepper";
-import InputField from "../ui/InputField";
-import SelectField from "../ui/SelectField";
-import Button from "../ui/Button";
+import FormCard from "../common/FormCard";
+import Stepper from "../common/Stepper";
+import InputField from "../forms/InputField";
+import SelectField from "../forms/SelectField";
+import Button from "../common/Button";
 import { Link2, Code, Terminal, Clock } from "lucide-react";
 
 export default function StudentRegister({ onNavigateLogin, onBackToHome }) {

@@ -1,4 +1,4 @@
-import FormCard from "../ui/FormCard";
+import FormCard from "../common/FormCard";
 
 export default function RoleSelect({
   onSelectRole,

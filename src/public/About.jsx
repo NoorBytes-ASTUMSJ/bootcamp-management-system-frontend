@@ -1,5 +1,5 @@
-import Navbar from "../layout/Navbar";
-import Footer from "../layout/Footer";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
 import { MdLightbulb } from "react-icons/md";
 
 export default function About({
@@ -369,7 +369,7 @@ export default function About({
               after:absolute
               after:left-[-17.75px]
               sm:after:left-[-19.75px]
-              after:top-[30px]
+              after:top-7.5
               after:h-[calc(100%+30px)]
               after:w-[1.5px]
               after:bg-border-subtle
@@ -380,8 +380,8 @@ export default function About({
             <div
               className="
                 absolute
-                -left-[23px]
-                sm:-left-[25px]
+                -left-5.75
+                sm:-left-6.25
                 top-6
                 w-3
                 h-3
@@ -417,7 +417,7 @@ export default function About({
               after:absolute
               after:left-[-17.75px]
               sm:after:left-[-19.75px]
-              after:top-[30px]
+              after:top-7.5
               after:h-[calc(100%+30px)]
               after:w-[1.5px]
               after:bg-border-subtle
@@ -428,8 +428,8 @@ export default function About({
             <div
               className="
                 absolute
-                -left-[23px]
-                sm:-left-[25px]
+                -left-5.75
+                sm:-left-6.25
                 top-6
                 w-3
                 h-3
@@ -465,8 +465,8 @@ export default function About({
             <div
               className="
                 absolute
-                -left-[23px]
-                sm:-left-[25px]
+                -left-5.75
+                sm:-left-6.25
                 top-6
                 w-3
                 h-3
