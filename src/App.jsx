@@ -1,163 +1,213 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 
-// Public pages
-import Home from "./components/home/Home";
-import About from "./components/pages/About";
-import Tracks from "./components/pages/Tracks";
-import Mentors from "./components/pages/Mentors";
-import FAQ from "./components/pages/FAQ";
-import Contact from "./components/pages/Contact";
+import Home from "./public/Home";
+import About from "./public/About";
+import Tracks from "./public/Tracks";
+import Mentors from "./public/Mentors";
+import FAQ from "./public/FAQ";
+import Contact from "./public/Contact";
+import Login from "./components/forms/Login";
+import RoleSelect from "./components/forms/RoleSelect";
+import StudentRegister from "./components/forms/StudentRegister";
+import MentorRegister from "./components/forms/MentorRegister";
 
-// Authentication
-import Login from "./components/auth/Login";
-import RoleSelect from "./components/auth/RoleSelect";
-import StudentRegister from "./components/auth/StudentRegister";
-import MentorRegister from "./components/auth/MentorRegister";
-
-// Existing dashboard
-import MembersDashboard from "./components/dashboard/MembersDashboard";
-
-// Student dashboard
 import StudentLayout from "./layouts/StudentLayout";
-import StudentDashboard from "./pages/student/Dashboard";
-import StudentAttendance from "./pages/student/Attendance";
+import StudentDashboard from "./pages/student/StudentDashboard";
+import StudentAttendance from "./pages/student/StudentAttendance";
 import StudentProgress from "./pages/student/StudentProgress";
 import StudentAssignments from "./pages/student/StudentAssignments";
+import StudentSubmissions from "./pages/student/StudentSubmissions";
 
-export default function App() {
-  const [currentView, setCurrentView] = useState("home");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+import MentorLayout from "./layouts/MentorLayout";
+import MentorSubmissions from "./pages/mentor/MentorSubmissions";
 
-  // Theme
-  const handleToggleTheme = (dark) => {
-    setIsDarkMode(dark);
-
-    if (dark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+function AppRoutes() {
+  const navigate = useNavigate();
 
   return (
-    <BrowserRouter>
-      {/* PUBLIC / AUTH / EXISTING DASHBOARD */}
-      <main className="min-h-screen bg-theme-bg text-theme-text transition-colors duration-200">
-        {/* 1. Landing Page */}
-        {currentView === "home" && (
-          <Home
-            onNavigatePage={(page) => setCurrentView(page)}
-            onNavigateLogin={() => setCurrentView("login")}
-            onNavigateSignUp={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 2. About Page */}
-        {currentView === "about" && (
-          <About
-            onNavigatePage={(page) => setCurrentView(page)}
-            onNavigateLogin={() => setCurrentView("login")}
-            onNavigateSignUp={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 3. Tracks Page */}
-        {currentView === "tracks" && (
-          <Tracks
-            onNavigatePage={(page) => setCurrentView(page)}
-            onNavigateLogin={() => setCurrentView("login")}
-            onNavigateSignUp={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 4. Mentors Page */}
-        {currentView === "mentors" && (
-          <Mentors
-            onNavigatePage={(page) => setCurrentView(page)}
-            onNavigateLogin={() => setCurrentView("login")}
-            onNavigateSignUp={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 5. FAQ Page */}
-        {currentView === "faq" && (
-          <FAQ
-            onNavigatePage={(page) => setCurrentView(page)}
-            onNavigateLogin={() => setCurrentView("login")}
-            onNavigateSignUp={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 6. Contact Page */}
-        {currentView === "contact" && (
-          <Contact
-            onNavigatePage={(page) => setCurrentView(page)}
-            onNavigateLogin={() => setCurrentView("login")}
-            onNavigateSignUp={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 7. Login */}
-        {currentView === "login" && (
-          <Login
-            onNavigateSignUp={() => setCurrentView("role-select")}
-            onBackToPublic={() => setCurrentView("home")}
-            onForgotPassword={() => alert("Forgot password flow...")}
-            onSuccessLogin={() => setCurrentView("dashboard")}
-          />
-        )}
-
-        {/* 8. Role Selection */}
-        {currentView === "role-select" && (
-          <RoleSelect
-            onSelectRole={(role) =>
-              setCurrentView(
-                role === "student" ? "student-register" : "mentor-register",
-              )
-            }
-            onNavigateLogin={() => setCurrentView("login")}
-            onBackToHome={() => setCurrentView("home")}
-          />
-        )}
-
-        {/* 9. Student Registration */}
-        {currentView === "student-register" && (
-          <StudentRegister
-            onNavigateLogin={() => setCurrentView("login")}
-            onBackToHome={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 10. Mentor Registration */}
-        {currentView === "mentor-register" && (
-          <MentorRegister
-            onNavigateLogin={() => setCurrentView("login")}
-            onBackToHome={() => setCurrentView("role-select")}
-          />
-        )}
-
-        {/* 11. Existing Members Dashboard */}
-        {currentView === "dashboard" && (
-          <MembersDashboard
-            isDarkMode={isDarkMode}
-            onToggleTheme={handleToggleTheme}
-          />
-        )}
-      </main>
-
-      {/* STUDENT ROUTES */}
+    <main className="min-h-screen bg-theme-bg text-theme-text transition-colors duration-200">
       <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              onNavigatePage={(page) => navigate(`/${page}`)}
+              onNavigateLogin={() => navigate("/login")}
+              onNavigateSignUp={() => navigate("/role-select")}
+            />
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <About
+              onNavigatePage={(page) => navigate(`/${page}`)}
+              onNavigateLogin={() => navigate("/login")}
+              onNavigateSignUp={() => navigate("/role-select")}
+            />
+          }
+        />
+        <Route
+          path="/tracks"
+          element={
+            <Tracks
+              onNavigatePage={(page) => navigate(`/${page}`)}
+              onNavigateLogin={() => navigate("/login")}
+              onNavigateSignUp={() => navigate("/role-select")}
+            />
+          }
+        />
+        <Route
+          path="/mentors"
+          element={
+            <Mentors
+              onNavigatePage={(page) => navigate(`/${page}`)}
+              onNavigateLogin={() => navigate("/login")}
+              onNavigateSignUp={() => navigate("/role-select")}
+            />
+          }
+        />
+        <Route
+          path="/faq"
+          element={
+            <FAQ
+              onNavigatePage={(page) => navigate(`/${page}`)}
+              onNavigateLogin={() => navigate("/login")}
+              onNavigateSignUp={() => navigate("/role-select")}
+            />
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <Contact
+              onNavigatePage={(page) => navigate(`/${page}`)}
+              onNavigateLogin={() => navigate("/login")}
+              onNavigateSignUp={() => navigate("/role-select")}
+            />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <Login
+              onNavigateSignUp={() => navigate("/role-select")}
+              onBackToPublic={() => navigate("/")}
+              onForgotPassword={() => alert("Forgot password flow...")}
+              onSuccessLogin={() => navigate("/student/dashboard")}
+            />
+          }
+        />
+        <Route
+          path="/role-select"
+          element={
+            <RoleSelect
+              onSelectRole={(role) =>
+                navigate(
+                  role === "student" ? "/student-register" : "/mentor-register",
+                )
+              }
+              onNavigateLogin={() => navigate("/login")}
+              onBackToHome={() => navigate("/")}
+            />
+          }
+        />
+        <Route
+          path="/student-register"
+          element={
+            <StudentRegister
+              onNavigateLogin={() => navigate("/login")}
+              onBackToHome={() => navigate("/role-select")}
+            />
+          }
+        />
+        <Route
+          path="/mentor-register"
+          element={
+            <MentorRegister
+              onNavigateLogin={() => navigate("/login")}
+              onBackToHome={() => navigate("/role-select")}
+            />
+          }
+        />
+
         <Route path="/student" element={<StudentLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<StudentDashboard />} />
-
           <Route path="attendance" element={<StudentAttendance />} />
-
           <Route path="progress" element={<StudentProgress />} />
-
           <Route path="assignments" element={<StudentAssignments />} />
+          <Route path="submissions" element={<StudentSubmissions />} />
+        </Route>
+
+        <Route path="/mentor" element={<MentorLayout />}>
+          <Route index element={<Navigate to="submissions" replace />} />
+          <Route path="submissions" element={<MentorSubmissions />} />
+          <Route
+            path="students"
+            element={
+              <div className="p-6 text-text-primary font-bold">
+                My Students Page
+              </div>
+            }
+          />
+          <Route
+            path="attendance"
+            element={
+              <div className="p-6 text-text-primary font-bold">
+                Attendance Page
+              </div>
+            }
+          />
+          <Route
+            path="progress"
+            element={
+              <div className="p-6 text-text-primary font-bold">
+                Progress Page
+              </div>
+            }
+          />
+          <Route
+            path="assignments"
+            element={
+              <div className="p-6 text-text-primary font-bold">
+                Assignments Page
+              </div>
+            }
+          />
+          <Route
+            path="announcements"
+            element={
+              <div className="p-6 text-text-primary font-bold">
+                Announcements Page
+              </div>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <div className="p-6 text-text-primary font-bold">
+                Settings Page
+              </div>
+            }
+          />
         </Route>
       </Routes>
+    </main>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   );
 }

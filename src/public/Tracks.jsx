@@ -1,5 +1,5 @@
-import Navbar from "../layout/Navbar";
-import Footer from "../layout/Footer";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
 
 export default function Tracks({
   onNavigatePage,
@@ -171,10 +171,9 @@ export default function Tracks({
 
           {/* ---------------- CARD 1: FOUNDATION ---------------- */}
           <div className="relative">
-            {/* Node Dot */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-background border-2 border-border-subtle z-10" />
+            <div className="absolute -left-5 sm:left-[-32.5px] top-7 w-3.5 h-3.5 rounded-full bg-background border-2 border-border-subtle z-10" />
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-border shadow-xs">
+            <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-border shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-surface-subtle border border-border-subtle flex items-center justify-center text-xs text-text-primary font-bold">
                   📄
@@ -219,10 +218,9 @@ export default function Tracks({
 
           {/* ---------------- CARD 2: PHASE 1 ---------------- */}
           <div className="relative">
-            {/* Node Dot (Red Ring) */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-background border-2 border-primary z-10" />
+            <div className="absolute -left-5 sm:left-[-32.5px] top-7 w-3.5 h-3.5 rounded-full bg-background border-2 border-primary z-10" />
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-border shadow-xs">
+            <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-border shadow-lg">
               <span className="text-[10px] font-mono tracking-wider text-primary uppercase block mb-1">
                 PHASE 1
               </span>
@@ -237,7 +235,6 @@ export default function Tracks({
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
-                {/* Note Callout */}
                 <div className="p-3.5 rounded-xl bg-surface-subtle border border-border flex items-start gap-2.5 text-[11px] text-text-muted leading-relaxed">
                   <span className="text-text-muted mt-0.5">ⓘ</span>
                   <span>
@@ -246,12 +243,11 @@ export default function Tracks({
                   </span>
                 </div>
 
-                {/* Meter Bars */}
                 <div className="space-y-3 pt-1">
                   <div>
                     <div className="flex justify-between text-[11px] font-medium text-text-primary mb-1">
                       <span>Contests</span>
-                      <span className="text-xs">📍</span>
+                      <span className="text-xs"></span>
                     </div>
                     <div className="w-full bg-border-subtle rounded-full h-1.5">
                       <div className="bg-primary h-1.5 rounded-full w-[45%]" />
@@ -261,7 +257,7 @@ export default function Tracks({
                   <div>
                     <div className="flex justify-between text-[11px] font-medium text-text-primary mb-1">
                       <span>Discipline</span>
-                      <span className="text-xs">📈</span>
+                      <span className="text-xs"></span>
                     </div>
                     <div className="w-full bg-border-subtle rounded-full h-1.5">
                       <div className="bg-primary h-1.5 rounded-full w-[65%]" />
@@ -274,16 +270,15 @@ export default function Tracks({
 
           {/* ---------------- CARD 3: PHASE 2 ---------------- */}
           <div className="relative">
-            {/* Node Dot (Double Ring) */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-7 w-3.5 h-3.5 rounded-full bg-background border-2 border-primary ring-2 ring-primary/20 z-10" />
+            <div className="absolute -left-5 sm:left-[-32.5px] top-7 w-3.5 h-3.5 rounded-full bg-background border-2 border-primary ring-2 ring-primary/20 z-10" />
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-border shadow-xs">
+            <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-border shadow-lg">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[10px] font-mono tracking-wider text-primary uppercase block">
                   PHASE 2
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary text-primary text-[10px] font-medium border border-border-subtle">
-                  ✨ Weekly Projects Included
+                  Weekly Projects Included
                 </span>
               </div>
 
@@ -298,9 +293,7 @@ export default function Tracks({
                 architecture.
               </p>
 
-              {/* Tech Stack Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {/* HTML & CSS */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-border text-center">
                   <div className="w-8 h-8 mx-auto rounded-lg bg-orange-500/10 text-orange-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     H5
@@ -310,7 +303,6 @@ export default function Tracks({
                   </span>
                 </div>
 
-                {/* JavaScript */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-border text-center">
                   <div className="w-8 h-8 mx-auto rounded-lg bg-yellow-500/10 text-yellow-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     JS
@@ -320,7 +312,6 @@ export default function Tracks({
                   </span>
                 </div>
 
-                {/* React */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-border text-center">
                   <div className="w-8 h-8 mx-auto rounded-lg bg-sky-500/10 text-sky-500 font-bold text-xs flex items-center justify-center mb-1.5">
                     Re
@@ -330,7 +321,6 @@ export default function Tracks({
                   </span>
                 </div>
 
-                {/* Node.js */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-border text-center">
                   <div className="w-8 h-8 mx-auto rounded-lg bg-emerald-500/10 text-emerald-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     No
@@ -340,7 +330,6 @@ export default function Tracks({
                   </span>
                 </div>
 
-                {/* Express.js */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-border text-center">
                   <div className="w-8 h-8 mx-auto rounded-lg bg-surface-muted text-text-primary font-bold text-xs flex items-center justify-center mb-1.5">
                     Ex
@@ -350,7 +339,6 @@ export default function Tracks({
                   </span>
                 </div>
 
-                {/* MongoDB */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-border text-center">
                   <div className="w-8 h-8 mx-auto rounded-lg bg-green-500/10 text-green-600 font-bold text-xs flex items-center justify-center mb-1.5">
                     Mo
@@ -360,7 +348,6 @@ export default function Tracks({
                   </span>
                 </div>
 
-                {/* Git / GitHub */}
                 <div className="p-3 rounded-xl bg-surface-subtle border border-border text-center col-span-2">
                   <div className="w-8 h-8 mx-auto rounded-lg bg-secondary text-primary font-bold text-xs flex items-center justify-center mb-1.5">
                     Git
@@ -372,17 +359,16 @@ export default function Tracks({
               </div>
             </div>
           </div>
-
           {/* ---------------- MILESTONE BANNER ---------------- */}
           <div className="relative">
             {/* Solid Red Node Dot */}
-            <div className="absolute -left-[20px] sm:-left-[32.5px] top-6 w-3.5 h-3.5 rounded-full bg-primary border-2 border-background shadow-xs z-10" />
+            <div className="absolute -left-5 sm:left-[-32.5px] top-6 w-3.5 h-3.5 rounded-full bg-primary border-2 border-background shadow-xs z-10" />
 
-            <div className="p-7 sm:p-9 rounded-2xl bg-surface-muted text-text-primary border border-border text-center shadow-md transition-colors">
-              <h3 className="text-lg sm:text-xl font-bold tracking-tight mb-1">
+            <div className="p-7 sm:p-9 rounded-2xl bg-[#151718] border border-[#2d3033] text-center shadow-xl">
+              <h3 className="text-lg sm:text-xl font-bold tracking-tight mb-1 text-[#f5f5f5]">
                 Become a Full-Stack Web Developer.
               </h3>
-              <p className="text-xs text-text-muted">
+              <p className="text-xs text-[#a3a3a3]">
                 Ready to build the future.
               </p>
             </div>
@@ -443,7 +429,7 @@ export default function Tracks({
                 </div>
 
                 {/* Connecting Line */}
-                <div className="w-10 sm:w-12 h-[2px] bg-primary/30" />
+                <div className="w-10 sm:w-12 h-0.5 bg-primary/30" />
 
                 {/* Mentor Node */}
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-md flex items-center justify-center">

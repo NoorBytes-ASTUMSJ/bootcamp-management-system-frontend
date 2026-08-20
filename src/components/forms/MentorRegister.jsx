@@ -1,11 +1,11 @@
 import { useState } from "react";
-import FormCard from "../ui/FormCard";
-import Stepper from "../ui/Stepper";
-import InputField from "../ui/InputField";
-import SelectField from "../ui/SelectField";
-import RadioGroup from "../ui/RadioGroup";
-import TextareaField from "../ui/TextareaField";
-import Button from "../ui/Button";
+import FormCard from "../common/FormCard";
+import Stepper from "../common/Stepper";
+import InputField from "./InputField";
+import SelectField from "./SelectField";
+import { RadioGroup } from "./RadioGroup";
+import TextareaField from "./TextareaField";
+import Button from "../common/Button";
 
 export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
   const [step, setStep] = useState(1);

@@ -1,5 +1,5 @@
-import Navbar from "../layout/Navbar";
-import Footer from "../layout/Footer";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
 import { MdHandshake } from "react-icons/md";
 
 export default function Mentors({
@@ -403,25 +403,27 @@ export default function Mentors({
       </section>
 
       {/* ================= 5. ALUMNI INSIGHTS ================= */}
-      <section className="bg-surface-muted border-t border-b border-border py-20 px-4 sm:px-6 lg:px-8 transition-colors">
+      <section className="bg-[#0d0e0f] border-t border-b border-[#2d3033] py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 items-center">
+          {/* Left Column: Text & List */}
           <div className="md:col-span-7 space-y-5">
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-primary leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#f5f5f5] leading-tight">
               Alumni Insights & Experience <br />
               Sharing
             </h2>
 
-            <p className="text-xs sm:text-sm text-text-muted leading-relaxed max-w-lg">
+            <p className="text-xs sm:text-sm text-[#a3a3a3] leading-relaxed max-w-lg">
               Beyond daily mentorship, successful Muslim ASTU graduates
               frequently return to share their professional journeys. These
               sessions offer invaluable real-world perspectives outside the
               bootcamp curriculum.
             </p>
 
-            <div className="space-y-3 pt-2">
-              <div className="flex items-center gap-3 text-xs text-text-secondary">
+            <div className="space-y-4 pt-4">
+              {/* List Item 1 */}
+              <div className="flex items-center gap-3 text-xs text-[#d4d4d4]">
                 <svg
-                  className="w-4 h-4 text-text-muted shrink-0"
+                  className="w-4 h-4 text-[#a3a3a3] shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -436,9 +438,10 @@ export default function Mentors({
                 <span>Personal Journeys & Career Paths</span>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-text-secondary">
+              {/* List Item 2 */}
+              <div className="flex items-center gap-3 text-xs text-[#d4d4d4]">
                 <svg
-                  className="w-4 h-4 text-text-muted shrink-0"
+                  className="w-4 h-4 text-[#a3a3a3] shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -453,9 +456,10 @@ export default function Mentors({
                 <span>Crucial Lessons Learned</span>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-text-secondary">
+              {/* List Item 3 */}
+              <div className="flex items-center gap-3 text-xs text-[#d4d4d4]">
                 <svg
-                  className="w-4 h-4 text-text-muted shrink-0"
+                  className="w-4 h-4 text-[#a3a3a3] shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -470,9 +474,10 @@ export default function Mentors({
                 <span>Real-World Industry Experience</span>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-text-secondary">
+              {/* List Item 4 */}
+              <div className="flex items-center gap-3 text-xs text-[#d4d4d4]">
                 <svg
-                  className="w-4 h-4 text-text-muted shrink-0"
+                  className="w-4 h-4 text-[#a3a3a3] shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -489,31 +494,33 @@ export default function Mentors({
             </div>
           </div>
 
+          {/* Right Column: Quote Card */}
           <div className="md:col-span-5">
-            <div className="p-7 sm:p-8 rounded-2xl bg-surface border border-border shadow-xs">
-              <span className="text-3xl text-text-muted font-serif leading-none block mb-2">
+            {/* This makes the card the exact black color (#151718) from your design */}
+            <div className="p-7 sm:p-8 rounded-2xl bg-[#151718] border border-[#2d3033] shadow-xl">
+              <span className="text-4xl text-[#a3a3a3]/30 font-serif leading-none block mb-2">
                 “
               </span>
-              <p className="text-xs sm:text-sm italic text-text-secondary leading-relaxed mb-6">
+              <p className="text-[13px] sm:text-sm italic text-[#d4d4d4] leading-relaxed mb-6 font-serif">
                 "The transition from academia to industry is challenging. We
                 come back to ensure the next generation understands the
                 practical realities of software engineering, beyond just writing
                 code."
               </p>
 
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-4">
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
                   alt="Tarik Ibrahim"
-                  className="w-10 h-10 rounded-full object-cover border border-border shadow-xs"
+                  className="w-10 h-10 rounded-full object-cover border border-[#2d3033]"
                 />
-                <div>
-                  <h4 className="text-xs font-bold text-text-primary">
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-[#f5f5f5]">
                     Tarik Ibrahim
-                  </h4>
-                  <p className="text-[10px] text-text-muted">
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-[#a3a3a3]">
                     Senior Engineer at TechCorp, Class of '20
-                  </p>
+                  </span>
                 </div>
               </div>
             </div>

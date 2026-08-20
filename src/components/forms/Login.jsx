@@ -1,18 +1,22 @@
 import { useState } from "react";
-import FormCard from "../ui/FormCard";
-import InputField from "../ui/InputField";
-import Button from "../ui/Button";
+import { useNavigate } from "react-router-dom";
+import FormCard from "../common/FormCard";
+import InputField from "../forms/InputField";
+import Button from "../common/Button";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login({
   onNavigateSignUp,
   onBackToPublic,
   onForgotPassword,
-  onSuccessLogin,
 }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,15 +25,35 @@ export default function Login({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login credentials:", formData);
-    if (onSuccessLogin) {
-      onSuccessLogin();
+
+    let userRole = "student";
+
+    if (formData.email.includes("admin")) {
+      userRole = "admin";
+    } else if (formData.email.includes("mentor")) {
+      userRole = "mentor";
+    }
+
+    const mockUser = {
+      firstName: "Nebil",
+      lastName: "User",
+      email: formData.email,
+      role: userRole,
+    };
+
+    login(mockUser);
+
+    if (userRole === "admin") {
+      navigate("/dashboard");
+    } else if (userRole === "mentor") {
+      navigate("/mentor/submissions");
+    } else {
+      navigate("/student/dashboard");
     }
   };
 
   return (
     <FormCard>
-      {/* Top Left: Back to Public / Home Button */}
       <div className="mb-2">
         <button
           type="button"
@@ -54,7 +78,6 @@ export default function Login({
       </div>
 
       <div className="pt-2 pb-1">
-        {/* Header Section */}
         <div className="text-center mb-6">
           <h1 className="font-serif text-3xl font-normal text-text-primary tracking-tight mb-2">
             Welcome back.
@@ -64,7 +87,6 @@ export default function Login({
           </p>
         </div>
 
-        {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <InputField
             label="EMAIL ADDRESS"
@@ -91,7 +113,6 @@ export default function Login({
           </div>
         </form>
 
-        {/* Footer Navigation Links */}
         <div className="mt-8 text-center space-y-3 text-xs">
           <p className="text-text-muted">
             Don't have an account?{" "}

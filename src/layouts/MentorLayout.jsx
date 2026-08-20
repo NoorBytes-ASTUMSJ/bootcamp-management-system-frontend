@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Outlet, NavLink, Link } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiBell, FiUser, FiMoon, FiLogOut } from "react-icons/fi";
-import StudentSidebar from "../components/layout/StudentSidebar";
+import MentorSidebar from "../components/layout/MentorSidebar";
 
-export default function StudentLayout() {
+export default function MentorLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const student = { firstName: "Alex", lastName: "Johnson" };
+  const mentor = { firstName: "John", lastName: "Doe" };
 
   const navLinks = [
-    { name: "Dashboard", path: "/student/dashboard" },
+    { name: "Dashboard", path: "/mentor/submissions" },
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "Tracks", path: "/tracks" },
@@ -18,13 +19,18 @@ export default function StudentLayout() {
     { name: "Contact", path: "/contact" },
   ];
 
+  const handleLogout = () => {
+    setIsProfileOpen(false);
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-background flex overflow-hidden w-full">
-      <StudentSidebar isOpen={isSidebarOpen} />
+      <MentorSidebar isOpen={isSidebarOpen} />
 
       <div
         className={`flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300 ease-in-out w-full ${
-          isSidebarOpen ? "md:pl-62.5" : "pl-0"
+          isSidebarOpen ? "md:pl-64" : "pl-0"
         }`}
       >
         <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border bg-surface px-4 md:px-6 shrink-0">
@@ -75,21 +81,24 @@ export default function StudentLayout() {
               <div className="absolute right-0 top-10 mt-2 w-48 rounded-md bg-surface border border-border shadow-lg py-1 z-50">
                 <div className="px-4 py-2 border-b border-border">
                   <p className="text-sm font-bold text-text-primary truncate">
-                    {student.firstName} {student.lastName}
+                    {mentor.firstName} {mentor.lastName}
                   </p>
-                  <p className="text-xs text-text-muted truncate">Student</p>
+                  <p className="text-xs text-text-muted truncate">Mentor</p>
                 </div>
-                <Link
+                <NavLink
                   onClick={() => setIsProfileOpen(false)}
-                  to="/student/settings"
+                  to="/mentor/settings"
                   className="flex items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary"
                 >
                   <FiUser className="h-4 w-4" /> Profile
-                </Link>
+                </NavLink>
                 <button className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary text-left">
                   <FiMoon className="h-4 w-4" /> Dark Mode
                 </button>
-                <button className="flex w-full items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary-light text-left">
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary-light text-left"
+                >
                   <FiLogOut className="h-4 w-4" /> Log out
                 </button>
               </div>

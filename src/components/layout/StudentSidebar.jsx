@@ -43,12 +43,12 @@ const NAV_CONFIG = [
 export default function StudentSidebar({ isOpen }) {
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[250px] flex-col bg-white border-r border-[#E5E5E5] transition-transform duration-300 ease-in-out ${
+      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-62.5 flex-col bg-surface border-r border-border transition-transform duration-300 ease-in-out ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="flex h-16 shrink-0 items-center px-6 border-b border-[#E5E5E5]">
-        <span className="truncate text-base font-bold text-[#171717] tracking-tight">
+      <div className="flex h-16 shrink-0 items-center px-6 border-b border-border">
+        <span className="truncate text-base font-bold text-text-primary tracking-tight">
           Student Portal
         </span>
       </div>
@@ -57,7 +57,7 @@ export default function StudentSidebar({ isOpen }) {
         <div className="space-y-6">
           {NAV_CONFIG.map((group, index) => (
             <div key={index} className="px-3">
-              <h3 className="mb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#777777]">
+              <h3 className="mb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-text-muted">
                 {group.section}
               </h3>
               <ul className="space-y-1">
@@ -68,17 +68,17 @@ export default function StudentSidebar({ isOpen }) {
                       className={({ isActive }) =>
                         `relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                           isActive
-                            ? "bg-[#B93325]/10 text-[#B93325]"
-                            : "text-[#777777] hover:bg-[#F8F8F6] hover:text-[#171717]"
+                            ? "bg-primary-light text-primary"
+                            : "text-text-muted hover:bg-surface-subtle hover:text-text-primary"
                         }`
                       }
                     >
                       {({ isActive }) => (
                         <>
                           {isActive && (
-                            <span className="absolute -left-3 top-1/2 h-full max-h-[70%] w-1 -translate-y-1/2 rounded-r-md bg-[#B93325]" />
+                            <span className="absolute -left-3 top-1/2 h-full max-h-[70%] w-1 -translate-y-1/2 rounded-r-md bg-primary" />
                           )}
-                          <item.icon className="h-[18px] w-[18px] shrink-0" />
+                          <item.icon className="h-4.5 w-4.5 shrink-0" />
                           <span>{item.name}</span>
                         </>
                       )}

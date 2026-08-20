@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Navbar from "../layout/Navbar";
-import Footer from "../layout/Footer";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
 
 export default function FAQ({
   onNavigatePage,
