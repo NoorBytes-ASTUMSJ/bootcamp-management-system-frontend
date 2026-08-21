@@ -11,7 +11,7 @@ export default function MentorLayout() {
   const mentor = { firstName: "John", lastName: "Doe" };
 
   const navLinks = [
-    { name: "Dashboard", path: "/mentor/submissions" },
+    { name: "Dashboard", path: "/mentor/dashboard" },
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "Tracks", path: "/tracks" },
