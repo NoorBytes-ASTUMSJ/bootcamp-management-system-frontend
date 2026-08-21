@@ -4,6 +4,7 @@ import FormCard from "../common/FormCard";
 import InputField from "../forms/InputField";
 import Button from "../common/Button";
 import { useAuth } from "../../context/AuthContext";
+import API from "../../services/api";
 
 export default function Login({
   onNavigateSignUp,
@@ -14,8 +15,10 @@ export default function Login({
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, getRedirectPath } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,32 +26,27 @@ export default function Login({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    let userRole = "student";
+    try {
+      const response = await API.post("/auth/login", formData);
+      const { user, token } = response.data.data;
 
-    if (formData.email.includes("admin")) {
-      userRole = "admin";
-    } else if (formData.email.includes("mentor")) {
-      userRole = "mentor";
-    }
+      // Save user & token in state and localStorage
+      login(user, token);
 
-    const mockUser = {
-      firstName: "Nebil",
-      lastName: "User",
-      email: formData.email,
-      role: userRole,
-    };
-
-    login(mockUser);
-
-    if (userRole === "admin") {
-      navigate("/dashboard");
-    } else if (userRole === "mentor") {
-      navigate("/mentor/submissions");
-    } else {
-      navigate("/student/dashboard");
+      // Redirect using centralized role routing
+      const targetPath = getRedirectPath(user.role);
+      navigate(targetPath, { replace: true });
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Invalid credentials. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +55,7 @@ export default function Login({
       <div className="mb-2">
         <button
           type="button"
-          onClick={onBackToPublic}
+          onClick={onBackToPublic || (() => navigate("/"))}
           className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
         >
           <svg
@@ -83,9 +81,15 @@ export default function Login({
             Welcome back.
           </h1>
           <p className="text-sm text-text-muted">
-            Log in to your ASTU MSJ account
+            Log in to your account
           </p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 text-xs text-red-600 bg-red-50 rounded border border-red-200 text-center">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <InputField
@@ -109,7 +113,9 @@ export default function Login({
           />
 
           <div className="pt-2">
-            <Button type="submit">Log In</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Logging in..." : "Log In"}
+            </Button>
           </div>
         </form>
 
