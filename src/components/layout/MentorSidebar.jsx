@@ -18,7 +18,7 @@ export default function MentorSidebar({ isOpen }) {
       links: [
         {
           name: "Dashboard",
-          path: "/mentor/Dashboard",
+          path: "/mentor/dashboard",
           icon: <FiHome className="w-4 h-4" />,
         },
       ],
