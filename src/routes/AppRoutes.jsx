@@ -28,6 +28,18 @@ import StudentSubmissions from "../pages/student/StudentSubmissions";
 // Layouts & Mentor Pages
 import MentorLayout from "../layouts/MentorLayout";
 import MentorSubmissions from "../pages/mentor/MentorSubmissions";
+import MentorAttendance from "../pages/mentor/MentorAttendance";
+import MentorAssignments from "../pages/mentor/MentorAssignments";
+
+// Placeholder for remaining under-construction pages
+const PagePlaceholder = ({ title }) => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold text-text-primary">{title}</h1>
+    <p className="text-sm text-text-muted mt-2">
+      This section is under active development.
+    </p>
+  </div>
+);
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -146,7 +158,7 @@ export default function AppRoutes() {
         />
 
         {/* Protected Student Portal */}
-        <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["student", "user"]} />}>
           <Route path="/student" element={<StudentLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<StudentDashboard />} />
@@ -160,8 +172,15 @@ export default function AppRoutes() {
         {/* Protected Mentor Portal */}
         <Route element={<ProtectedRoute allowedRoles={["mentor"]} />}>
           <Route path="/mentor" element={<MentorLayout />}>
-            <Route index element={<Navigate to="submissions" replace />} />
+            <Route index element={<Navigate to="attendance" replace />} />
+            <Route path="attendance" element={<MentorAttendance />} />
+            <Route path="assignments" element={<MentorAssignments />} />
             <Route path="submissions" element={<MentorSubmissions />} />
+            <Route path="dashboard" element={<PagePlaceholder title="Dashboard Overview" />} />
+            <Route path="students" element={<PagePlaceholder title="My Students" />} />
+            <Route path="progress" element={<PagePlaceholder title="Progress Tracking" />} />
+            <Route path="announcements" element={<PagePlaceholder title="Announcements" />} />
+            <Route path="settings" element={<PagePlaceholder title="Settings" />} />
           </Route>
         </Route>
 
