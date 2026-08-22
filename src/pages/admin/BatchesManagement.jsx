@@ -83,9 +83,6 @@ export default function BatchesManagement({
 
   return (
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-     
-
-      {/* ================= MAIN CONTENT ================= */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
      
         {/* Content Body */}
