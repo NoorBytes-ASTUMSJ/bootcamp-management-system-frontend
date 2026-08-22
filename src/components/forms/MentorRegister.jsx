@@ -3,7 +3,7 @@ import FormCard from "../common/FormCard";
 import Stepper from "../common/Stepper";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
-import { RadioGroup } from "./RadioGroup";
+import RadioGroup from "./RadioGroup";
 import TextareaField from "./TextareaField";
 import Button from "../common/Button";
 
@@ -68,12 +68,11 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
   return (
     <FormCard>
       <div>
-        {/* Top Left: Back to selection */}
         <div className="mb-2">
           <button
             type="button"
             onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-inherit transition-colors cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -92,7 +91,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
           </button>
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-text-primary mb-2">
+        <h2 className="text-2xl font-bold text-center text-inherit mb-2">
           Mentor Application
         </h2>
 
@@ -106,7 +105,6 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
           onSubmit={step === totalSteps ? handleSubmit : handleNext}
           className="mt-4"
         >
-          {/* ================= STEP 1: PERSONAL & AUTH ================= */}
           {step === 1 && (
             <div>
               <InputField
@@ -138,7 +136,6 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
                 required
               />
 
-              {/* Password and Confirm Password */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <InputField
                   label="Password"
@@ -165,7 +162,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
                 <Button type="submit">Next</Button>
               </div>
 
-              <p className="text-center text-xs text-text-muted mt-4">
+              <p className="text-center text-xs text-muted mt-4">
                 Already have an account?{" "}
                 <button
                   type="button"
@@ -178,7 +175,6 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
             </div>
           )}
 
-          {/* ================= STEP 2: ACADEMIC DETAILS ================= */}
           {step === 2 && (
             <div>
               <RadioGroup
@@ -217,13 +213,13 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
                   onChange={handleChange}
                   required
                 />
-                <p className="text-[11px] text-text-muted -mt-2 mb-4">
+                <p className="text-[11px] text-muted -mt-2 mb-4">
                   Required for 2nd year and above.
                 </p>
               </div>
 
               <div className="flex items-center gap-4 mt-8">
-                <Button type="button" variant="secondary" onClick={handlePrev}>
+                <Button type="button" variant="outline" onClick={handlePrev}>
                   Previous
                 </Button>
                 <Button type="submit">Next</Button>
@@ -231,7 +227,6 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
             </div>
           )}
 
-          {/* ================= STEP 3: EXPERTISE & BACKGROUND ================= */}
           {step === 3 && (
             <div>
               <SelectField
@@ -241,14 +236,8 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
                 value={formData.mentorshipTrack}
                 onChange={handleChange}
                 options={[
-                  {
-                    value: "dsa",
-                    label: "Data Structures & Algorithms (DSA)",
-                  },
-                  {
-                    value: "dev",
-                    label: "Software Development (Web/Mobile)",
-                  },
+                  { value: "dsa", label: "Data Structures & Algorithms (DSA)" },
+                  { value: "dev", label: "Software Development (Web/Mobile)" },
                 ]}
                 required
               />
@@ -274,7 +263,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
               />
 
               <div className="flex items-center gap-4 mt-6">
-                <Button type="button" variant="secondary" onClick={handlePrev}>
+                <Button type="button" variant="outline" onClick={handlePrev}>
                   Previous
                 </Button>
                 <Button type="submit">Submit Application</Button>
