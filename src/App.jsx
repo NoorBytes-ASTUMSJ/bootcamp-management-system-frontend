@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 
 // Public Marketing Pages
@@ -245,5 +246,19 @@ export default function App() {
         />
       )}
     </main>
+=======
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import AppRoutes from "./routes/AppRoutes";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
   );
 }

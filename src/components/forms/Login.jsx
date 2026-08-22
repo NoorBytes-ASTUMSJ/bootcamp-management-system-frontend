@@ -1,13 +1,25 @@
 import { useState } from "react";
+<<<<<<< HEAD
 import FormCard from "../common/FormCard";
 import InputField from "./InputField";
 import Button from "../common/Button";
+=======
+import { useNavigate } from "react-router-dom";
+import FormCard from "../common/FormCard";
+import InputField from "../forms/InputField";
+import Button from "../common/Button";
+import { useAuth } from "../../context/AuthContext";
+import API from "../../services/api";
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
 
 export default function Login({
   onNavigateSignUp,
   onBackToPublic,
   onForgotPassword,
+<<<<<<< HEAD
   onSuccessLogin,
+=======
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
 }) {
   const [formData, setFormData] = useState({
     email: "",
@@ -16,10 +28,19 @@ export default function Login({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+<<<<<<< HEAD
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError("");
+=======
+  const { login, getRedirectPath } = useAuth();
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
   };
 
   const handleSubmit = async (e) => {
@@ -28,6 +49,7 @@ export default function Login({
     setLoading(true);
 
     try {
+<<<<<<< HEAD
       // 1. Attempt live backend authentication
       const response = await fetch("/api/v1/auth/login", {
         method: "POST",
@@ -83,6 +105,23 @@ export default function Login({
       setError(
         "Invalid email address or password. Please check your credentials.",
       );
+=======
+      const response = await API.post("/auth/login", formData);
+      const { user, token } = response.data.data;
+
+      // Save user & token in state and localStorage
+      login(user, token);
+
+      // Redirect using centralized role routing
+      const targetPath = getRedirectPath(user.role);
+      navigate(targetPath, { replace: true });
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Invalid credentials. Please try again."
+      );
+    } finally {
+      setLoading(false);
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
     }
   };
 
@@ -91,8 +130,13 @@ export default function Login({
       <div className="mb-2">
         <button
           type="button"
+<<<<<<< HEAD
           onClick={onBackToPublic}
           className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-inherit transition-colors cursor-pointer"
+=======
+          onClick={onBackToPublic || (() => navigate("/"))}
+          className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
         >
           <svg
             className="w-4 h-4"
@@ -113,6 +157,7 @@ export default function Login({
 
       <div className="pt-2 pb-1">
         <div className="text-center mb-6">
+<<<<<<< HEAD
           <h1 className="font-serif text-3xl font-normal text-inherit tracking-tight mb-2">
             Welcome back.
           </h1>
@@ -121,6 +166,18 @@ export default function Login({
 
         {error && (
           <div className="mb-4 p-2.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-xs text-[#B91C1C] dark:text-red-300">
+=======
+          <h1 className="font-serif text-3xl font-normal text-text-primary tracking-tight mb-2">
+            Welcome back.
+          </h1>
+          <p className="text-sm text-text-muted">
+            Log in to your account
+          </p>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 text-xs text-red-600 bg-red-50 rounded border border-red-200 text-center">
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
             {error}
           </div>
         )}
@@ -133,7 +190,10 @@ export default function Login({
             placeholder="name@example.com"
             value={formData.email}
             onChange={handleChange}
+<<<<<<< HEAD
             autoComplete="off"
+=======
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
             required
           />
 
@@ -144,19 +204,30 @@ export default function Login({
             placeholder="••••••••"
             value={formData.password}
             onChange={handleChange}
+<<<<<<< HEAD
             autoComplete="new-password"
+=======
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
             required
           />
 
           <div className="pt-2">
             <Button type="submit" disabled={loading}>
+<<<<<<< HEAD
               {loading ? "Signing in..." : "Log In"}
+=======
+              {loading ? "Logging in..." : "Log In"}
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
             </Button>
           </div>
         </form>
 
         <div className="mt-8 text-center space-y-3 text-xs">
+<<<<<<< HEAD
           <p className="text-muted">
+=======
+          <p className="text-text-muted">
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
             Don't have an account?{" "}
             <button
               type="button"
@@ -180,4 +251,8 @@ export default function Login({
       </div>
     </FormCard>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 27d492b4e1fef52818f4ac14ab1ed0e3ead2c914
