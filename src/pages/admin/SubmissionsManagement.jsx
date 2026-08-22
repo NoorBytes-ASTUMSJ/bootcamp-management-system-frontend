@@ -117,81 +117,9 @@ export default function SubmissionsManagement({
 
   return (
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-      <AdminSidebar
-        currentView="dashboard-submissions"
-        onNavigateAdminView={onNavigateAdminView}
-      />
-
+    
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-        {/* Top Header */}
-        <header className="h-14 bg-white dark:bg-[#151921] border-b border-neutral-200/80 dark:border-neutral-800/80 px-8 flex items-center justify-between shrink-0">
-          <div className="text-xs sm:text-sm font-semibold tracking-tight text-neutral-800 dark:text-neutral-200">
-            Submissions
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button className="relative p-1.5 rounded-full text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors cursor-pointer">
-              <Bell size={17} />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#B91C1C] ring-2 ring-white dark:ring-[#151921]" />
-            </button>
-
-            {/* Profile Dropdown */}
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden"
-              >
-                <User size={15} />
-              </button>
-
-              {isProfileOpen && (
-                <div className="absolute right-0 top-10 w-52 rounded-xl bg-white dark:bg-[#1A1F29] border border-neutral-200 dark:border-neutral-800 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-2 py-1.5 border-b border-neutral-100 dark:border-neutral-800 mb-1.5">
-                    <p className="font-semibold text-xs text-neutral-900 dark:text-neutral-100">
-                      Miftahudin Mohammed
-                    </p>
-                    <p className="text-[10px] text-neutral-400">Admin</p>
-                  </div>
-
-                  <div className="space-y-0.5">
-                    <button className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer text-neutral-700 dark:text-neutral-300">
-                      <User size={13} className="text-neutral-400" />
-                      <span>Profile</span>
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        onToggleTheme && onToggleTheme(!isDarkMode)
-                      }
-                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer text-neutral-700 dark:text-neutral-300"
-                    >
-                      <div className="flex items-center gap-2">
-                        {isDarkMode ? (
-                          <Sun size={13} className="text-neutral-400" />
-                        ) : (
-                          <Moon size={13} className="text-neutral-400" />
-                        )}
-                        <span>Dark Mode</span>
-                      </div>
-                      {isDarkMode && (
-                        <Check size={12} className="text-[#B91C1C]" />
-                      )}
-                    </button>
-
-                    <button
-                      onClick={onLogout}
-                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium text-[#B91C1C] hover:bg-red-500/10 transition-colors cursor-pointer"
-                    >
-                      <LogOut size={13} className="text-[#B91C1C]" />
-                      <span>Log out</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
-
+    
         {/* Content Body */}
         <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
           {loading ? (

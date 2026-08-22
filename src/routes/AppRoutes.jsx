@@ -31,6 +31,20 @@ import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
 import MentorAssignments from "../pages/mentor/MentorAssignments";
 
+// Layouts & Admin Pages
+import AdminLayout from "../layouts/AdminLayout";
+import MainDashboard from "../pages/admin/MainDashboard";
+import StudentsDashboard from "../pages/admin/StudentsDashboard";
+import MentorsManagement from "../pages/admin/MentorsManagement";
+import BatchesManagement from "../pages/admin/BatchesManagement";
+import AllUsersManagement from "../pages/admin/AllUsersManagement";
+import AttendanceManagement from "../pages/admin/AttendanceManagement";
+import ProgressManagement from "../pages/admin/ProgressManagement";
+import AssignmentsManagement from "../pages/admin/AssignmentsManagement";
+import SubmissionsManagement from "../pages/admin/SubmissionsManagement";
+import AnnouncementsManagement from "../pages/admin/AnnouncementsManagement";
+import SettingsManagement from "../pages/admin/SettingsManagement";
+
 // Placeholder for remaining under-construction pages
 const PagePlaceholder = ({ title }) => (
   <div className="p-6">
@@ -181,6 +195,34 @@ export default function AppRoutes() {
             <Route path="progress" element={<PagePlaceholder title="Progress Tracking" />} />
             <Route path="announcements" element={<PagePlaceholder title="Announcements" />} />
             <Route path="settings" element={<PagePlaceholder title="Settings" />} />
+          </Route>
+        </Route>
+
+        {/* Protected Admin Portal */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            
+            {/* MAIN */}
+            <Route path="dashboard" element={<MainDashboard />} />
+
+            {/* MANAGEMENT */}
+            <Route path="students" element={<StudentsDashboard />} />
+            <Route path="mentors" element={<MentorsManagement />} />
+            <Route path="batches" element={<BatchesManagement />} />
+            <Route path="users" element={<AllUsersManagement />} />
+
+            {/* ACADEMIC */}
+            <Route path="attendance" element={<AttendanceManagement />} />
+            <Route path="progress" element={<ProgressManagement />} />
+            <Route path="assignments" element={<AssignmentsManagement />} />
+            <Route path="submissions" element={<SubmissionsManagement />} />
+
+            {/* COMMUNICATION */}
+            <Route path="announcements" element={<AnnouncementsManagement />} />
+
+            {/* ACCOUNT */}
+            <Route path="settings" element={<SettingsManagement />} />
           </Route>
         </Route>
 
