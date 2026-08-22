@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FormCard from "../common/FormCard";
-import InputField from "./InputField";
+import InputField from "../forms/InputField";
 import Button from "../common/Button";
+import { useAuth } from "../../context/AuthContext";
+import API from "../../services/api";
 
 export default function Login({
   onNavigateSignUp,
   onBackToPublic,
   onForgotPassword,
-  onSuccessLogin,
 }) {
   const [formData, setFormData] = useState({
     email: "",
@@ -16,10 +18,12 @@ export default function Login({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { login, getRedirectPath } = useAuth();
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
@@ -28,61 +32,21 @@ export default function Login({
     setLoading(true);
 
     try {
-      // 1. Attempt live backend authentication
-      const response = await fetch("/api/v1/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email.trim(),
-          password: formData.password.trim(),
-        }),
-      });
+      const response = await API.post("/auth/login", formData);
+      const { user, token } = response.data.data;
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("authToken", data.token || data.accessToken);
-        localStorage.setItem("currentUser", JSON.stringify(data.user || data));
-        setLoading(false);
-        if (onSuccessLogin) onSuccessLogin();
-        return;
-      }
+      // Save user & token in state and localStorage
+      login(user, token);
+
+      // Redirect using centralized role routing
+      const targetPath = getRedirectPath(user.role);
+      navigate(targetPath, { replace: true });
     } catch (err) {
-      console.info(
-        "Backend login service offline. Evaluating fallback credentials...",
-      );
-    }
-
-    // 2. Fallback partner test credentials
-    const validEmails = ["test.student2@astu.edu.et", "admin@astu.edu.et"];
-    const validPasswords = ["Password123!", "Admin123!", "password123"];
-
-    if (
-      validEmails.includes(formData.email.trim()) &&
-      validPasswords.includes(formData.password.trim())
-    ) {
-      const mockToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhODcxZDczODEyY2I0ZTZlYzIxMmQ1NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzg3MjM5Nzk1LCJleHAiOjE3ODc4NDQ1OTV9.E2rrotktFp3Hx6nu7TRBkYZ6ZwavMTxkXyKmuKtOVkg";
-
-      const mockUser = {
-        fullName: "Amir Test Student",
-        email: formData.email.trim(),
-        phone: "+251911223344",
-        gender: "male",
-        year: "2nd",
-        department: "software",
-        role: "student",
-      };
-
-      localStorage.setItem("authToken", mockToken);
-      localStorage.setItem("currentUser", JSON.stringify(mockUser));
-
-      setLoading(false);
-      if (onSuccessLogin) onSuccessLogin();
-    } else {
-      setLoading(false);
       setError(
-        "Invalid email address or password. Please check your credentials.",
+        err.response?.data?.message || "Invalid credentials. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,8 +55,8 @@ export default function Login({
       <div className="mb-2">
         <button
           type="button"
-          onClick={onBackToPublic}
-          className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-inherit transition-colors cursor-pointer"
+          onClick={onBackToPublic || (() => navigate("/"))}
+          className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
         >
           <svg
             className="w-4 h-4"
@@ -150,13 +114,13 @@ export default function Login({
 
           <div className="pt-2">
             <Button type="submit" disabled={loading}>
-              {loading ? "Signing in..." : "Log In"}
+              {loading ? "Logging in..." : "Log In"}
             </Button>
           </div>
         </form>
 
         <div className="mt-8 text-center space-y-3 text-xs">
-          <p className="text-muted">
+          <p className="text-text-muted">
             Don't have an account?{" "}
             <button
               type="button"

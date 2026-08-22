@@ -35,8 +35,8 @@
 }
 
 .dark {
-  --primary: #e06a5d;
-  --primary-hover: #ed7c70;
+  --primary: #b93325;
+  --primary-hover: #ed6050;
   --primary-light: #2a1715;
   --primary-foreground: #ffffff;
 
@@ -64,7 +64,8 @@
   --info: #60a5fa;
 }
 
-@theme inline {
+/* FIX 1: Removed 'inline' keyword */
+@theme {
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-light: var(--primary-light);

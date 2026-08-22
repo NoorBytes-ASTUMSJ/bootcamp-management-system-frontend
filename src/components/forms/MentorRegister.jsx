@@ -12,14 +12,17 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
   const totalSteps = 3;
 
   const [formData, setFormData] = useState({
+    // Step 1: Personal & Auth
     fullName: "",
     email: "",
     phone: "",
     password: "",
     confirmPassword: "",
+    // Step 2: Academic Details
     gender: "male",
     academicYear: "",
     department: "",
+    // Step 3: Expertise & Background
     mentorshipTrack: "",
     relevantExperience: "",
     motivation: "",
@@ -242,7 +245,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
               <TextareaField
                 label="Relevant Experience"
                 name="relevantExperience"
-                placeholder="Briefly describe your previous projects or internships."
+                placeholder="Briefly describe your previous projects, internships, or teaching experience relevant to your chosen track."
                 value={formData.relevantExperience}
                 onChange={handleChange}
                 rows={3}
@@ -252,7 +255,7 @@ export default function MentorRegister({ onNavigateLogin, onBackToHome }) {
               <TextareaField
                 label="Why do you want to mentor?"
                 name="motivation"
-                placeholder="What motivates you to help junior students?"
+                placeholder="What motivates you to help junior students in this bootcamp?"
                 value={formData.motivation}
                 onChange={handleChange}
                 rows={3}
