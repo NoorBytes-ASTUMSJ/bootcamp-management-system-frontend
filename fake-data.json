@@ -1,0 +1,16 @@
+{
+  "fullName": "Amir Test Student",
+  "email": "test.student2@astu.edu.et",
+  "phone": "+251911223344",
+  "password": "Password123!",
+  "gender": "male",
+  "year": "2nd",
+  "department": "software",
+  "github": "https://github.com/teststudent",
+  "codeforces": "https://codeforces.com/profile/teststudent",
+  "leetcode": "https://leetcode.com/teststudent",
+  "dailyAvailableHours": 4,
+  "availabilityDescription": "Evenings and weekends",
+  "motivation": "To build scalable backend systems and practice competitive programming.",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhODcxZDczODEyY2I0ZTZlYzIxMmQ1NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzg3MjM5Nzk1LCJleHAiOjE3ODc4NDQ1OTV9.E2rrotktFp3Hx6nu7TRBkYZ6ZwavMTxkXyKmuKtOVkg"
+}
