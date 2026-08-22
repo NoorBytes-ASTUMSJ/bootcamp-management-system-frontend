@@ -102,25 +102,25 @@ export default function AssignmentsManagement({
     switch (status) {
       case "Active":
         return (
-          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-[#FEF2F2] dark:bg-red-950/40 text-[#B91C1C] dark:text-red-300 border border-red-200/50 dark:border-red-900/40">
+          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/40">
             Active
           </span>
         );
       case "Closed":
         return (
-          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200/50 dark:border-neutral-700">
+          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40">
             Closed
           </span>
         );
       case "Past Due":
         return (
-          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-rose-50 dark:bg-rose-950/40 text-[#DC2626] dark:text-rose-300 border border-rose-200/50 dark:border-rose-900/40">
+          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-900/40">
             Past Due
           </span>
         );
       default:
         return (
-          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600">
+          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200/50 dark:border-neutral-700">
             {status}
           </span>
         );
@@ -242,10 +242,10 @@ export default function AssignmentsManagement({
                 </div>
 
                 <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block mb-1">
                     ACTIVE
                   </span>
-                  <div className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
+                  <div className="text-2xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
                     {data?.metrics?.active || 8}
                   </div>
                 </div>
@@ -260,10 +260,10 @@ export default function AssignmentsManagement({
                 </div>
 
                 <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 block mb-1">
                     PAST DUE
                   </span>
-                  <div className="text-2xl font-black tracking-tight text-[#B91C1C]">
+                  <div className="text-2xl font-black tracking-tight text-sky-600 dark:text-sky-400">
                     {data?.metrics?.pastDue || 3}
                   </div>
                 </div>
@@ -380,7 +380,7 @@ export default function AssignmentsManagement({
                                 onClick={() => setSelectedAssignment(a)}
                                 className={`hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
                                   selectedAssignment?.id === a.id
-                                    ? "bg-[#FEF2F2]/50 dark:bg-primary/10"
+                                    ? "bg-neutral-100/70 dark:bg-neutral-800/60"
                                     : ""
                                 }`}
                               >
@@ -415,7 +415,7 @@ export default function AssignmentsManagement({
                                         setSelectedAssignment(a);
                                       }}
                                       title="Edit"
-                                      className="p-1 hover:text-primary transition-colors cursor-pointer"
+                                      className="p-1 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer"
                                     >
                                       <Pencil size={13} />
                                     </button>
@@ -426,7 +426,7 @@ export default function AssignmentsManagement({
                                         handleDeleteAssignment(a.id);
                                       }}
                                       title="Delete"
-                                      className="p-1 hover:text-primary transition-colors cursor-pointer"
+                                      className="p-1 hover:text-rose-600 transition-colors cursor-pointer"
                                     >
                                       <Trash2 size={13} />
                                     </button>
@@ -510,13 +510,13 @@ export default function AssignmentsManagement({
                       <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                         RESOURCES
                       </span>
-                      <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#B91C1C] hover:underline cursor-pointer">
+                      <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-sky-600 dark:text-sky-400 hover:underline cursor-pointer">
                         <Paperclip size={13} />
                         <span>{selectedAssignment.resourceName}</span>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-lg border border-red-100 dark:border-red-900/30 bg-[#FEF2F2]/60 dark:bg-red-950/20 flex items-center justify-between text-xs">
+                    <div className="p-3 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-800/30 flex items-center justify-between text-xs">
                       <div>
                         <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-500 block mb-0.5">
                           SUBMISSIONS
@@ -528,10 +528,10 @@ export default function AssignmentsManagement({
                       </div>
 
                       <div className="text-right">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-[#B91C1C] block mb-0.5">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-500 block mb-0.5">
                           PENDING REVIEW
                         </span>
-                        <span className="font-black text-[#B91C1C] text-sm">
+                        <span className="font-black text-neutral-800 dark:text-neutral-200 text-sm">
                           {selectedAssignment.pendingReview}
                         </span>
                       </div>
