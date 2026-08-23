@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Bell, User, Moon, Sun, LogOut, Check } from "lucide-react";
+import { Bell, User, Moon, Sun, LogOut, Check, LayoutDashboard } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
@@ -53,6 +53,20 @@ export default function Navbar() {
         return "/admin/announcements";
       default:
         return "/announcements";
+    }
+  };
+
+  const getDashboardPath = () => {
+    if (!user) return "/";
+    switch (user.role) {
+      case "student":
+        return "/student/dashboard";
+      case "mentor":
+        return "/mentor/dashboard";
+      case "admin":
+        return "/admin/dashboard";
+      default:
+        return "/";
     }
   };
 
@@ -127,6 +141,18 @@ export default function Navbar() {
                     </div>
 
                     <div className="space-y-0.5">
+                      {/* Dashboard Link for Student, Mentor, and Admin */}
+                      {(user.role === "student" || user.role === "mentor" || user.role === "admin") && (
+                        <Link
+                          to={getDashboardPath()}
+                          onClick={() => setIsOpen(false)}
+                          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-xs font-semibold text-primary hover:bg-surface-subtle transition-colors cursor-pointer"
+                        >
+                          <LayoutDashboard size={14} className="text-primary" />
+                          <span>Dashboard</span>
+                        </Link>
+                      )}
+
                       <button
                         onClick={toggleTheme}
                         className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-surface-subtle text-text-primary transition-colors cursor-pointer"
