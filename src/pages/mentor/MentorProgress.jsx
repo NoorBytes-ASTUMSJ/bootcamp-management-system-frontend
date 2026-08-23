@@ -177,7 +177,7 @@ export default function MentorProgress() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-full bg-surface-muted rounded-full h-2 max-w-[120px]">
+                      <div className="w-full bg-surface-muted rounded-full h-2 max-w-30">
                         <div
                           className={`h-2 rounded-full ${
                             student.completionRate < 50
