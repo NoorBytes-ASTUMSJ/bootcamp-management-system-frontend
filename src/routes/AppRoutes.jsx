@@ -26,6 +26,7 @@ import StudentProgress from "../pages/student/StudentProgress";
 import StudentAssignments from "../pages/student/StudentAssignments";
 import StudentSubmissions from "../pages/student/StudentSubmissions";
 import StudentAnnouncements from "../pages/student/AnnouncementsPage";
+import AllMembers from "../pages/student/AllMembers";
 
 // Layouts & Mentor Pages
 import MentorLayout from "../layouts/MentorLayout";
@@ -149,7 +150,7 @@ export default function AppRoutes() {
             <RoleSelect
               onSelectRole={(role) =>
                 navigate(
-                  role === "student" ? "/student-register" : "/mentor-register"
+                  role === "student" ? "/student-register" : "/mentor-register",
                 )
               }
               onNavigateLogin={() => navigate("/login")}
@@ -186,8 +187,8 @@ export default function AppRoutes() {
             <Route path="assignments" element={<StudentAssignments />} />
             <Route path="submissions" element={<StudentSubmissions />} />
             <Route path="announcements" element={<StudentAnnouncements />} />
-             <Route path="settings" element={<SettingsManagement />}/>
-            
+            <Route path="settings" element={<SettingsManagement />} />
+            <Route path="members" element={<AllMembers />} />
           </Route>
         </Route>
 
@@ -209,9 +210,7 @@ export default function AppRoutes() {
               element={<PagePlaceholder title="My Students" />}
             />
             <Route path="settings" element={<SettingsManagement />} />
-          
           </Route>
-          
         </Route>
 
         {/* Protected Admin Portal */}
