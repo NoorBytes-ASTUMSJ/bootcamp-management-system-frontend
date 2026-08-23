@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   FiCalendar,
   FiCheckCircle,
@@ -13,19 +13,7 @@ import {
 } from "react-icons/fi";
 
 export default function StudentSubmissions() {
-  const [submissions, setSubmissions] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeAssignment, setActiveAssignment] = useState(null);
-  const [formData, setFormData] = useState({
-    githubUrl: "",
-    liveDemoUrl: "",
-    notes: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const MOCK_SUBMISSIONS = [
+  const [submissions] = useState([
     {
       id: 4,
       assignmentTitle: "Build a REST API with Node & Express",
@@ -82,24 +70,16 @@ export default function StudentSubmissions() {
       feedback:
         "Awaiting mentor review. You will be notified once feedback is available.",
     },
-  ];
+  ]);
 
-  useEffect(() => {
-    const fetchSubmissions = async () => {
-      try {
-        setLoading(true);
-        setTimeout(() => {
-          setSubmissions(MOCK_SUBMISSIONS);
-          setLoading(false);
-        }, 600);
-      } catch (error) {
-        console.error("Failed to fetch submissions", error);
-        setLoading(false);
-      }
-    };
-
-    fetchSubmissions();
-  }, []);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeAssignment, setActiveAssignment] = useState(null);
+  const [formData, setFormData] = useState({
+    githubUrl: "",
+    liveDemoUrl: "",
+    notes: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -162,26 +142,17 @@ export default function StudentSubmissions() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64 text-text-muted">
-        <div className="animate-pulse flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p>Loading submissions...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
-          Submissions
-        </h1>
-        <p className="text-sm text-text-muted mt-1">
-          View your assignment submissions, grades, and feedback.
-        </p>
+    <div className="mx-auto w-full max-w-300 space-y-8 animate-in fade-in duration-500 pb-10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-[28px] font-bold text-text-primary tracking-tight">
+            Submissions
+          </h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
+            View your assignment submissions, grades, and feedback.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-5">

@@ -30,6 +30,7 @@ import MentorLayout from "../layouts/MentorLayout";
 import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
 import MentorAssignments from "../pages/mentor/MentorAssignments";
+import MentorProgress from "../pages/mentor/MentorProgress";
 
 // Layouts & Admin Pages
 import AdminLayout from "../layouts/AdminLayout";
@@ -44,6 +45,8 @@ import AssignmentsManagement from "../pages/admin/AssignmentsManagement";
 import SubmissionsManagement from "../pages/admin/SubmissionsManagement";
 import AnnouncementsManagement from "../pages/admin/AnnouncementsManagement";
 import SettingsManagement from "../pages/admin/SettingsManagement";
+import AnnouncementsPage from "../pages/AnnouncementsPage";
+import MentorAnnouncements from "@/pages/mentor/MentorAnnouncements";
 
 // Placeholder for remaining under-construction pages
 const PagePlaceholder = ({ title }) => (
@@ -144,7 +147,7 @@ export default function AppRoutes() {
             <RoleSelect
               onSelectRole={(role) =>
                 navigate(
-                  role === "student" ? "/student-register" : "/mentor-register"
+                  role === "student" ? "/student-register" : "/mentor-register",
                 )
               }
               onNavigateLogin={() => navigate("/login")}
@@ -180,6 +183,7 @@ export default function AppRoutes() {
             <Route path="progress" element={<StudentProgress />} />
             <Route path="assignments" element={<StudentAssignments />} />
             <Route path="submissions" element={<StudentSubmissions />} />
+            <Route path="announcements" element={<AnnouncementsPage />} />
           </Route>
         </Route>
 
@@ -190,11 +194,28 @@ export default function AppRoutes() {
             <Route path="attendance" element={<MentorAttendance />} />
             <Route path="assignments" element={<MentorAssignments />} />
             <Route path="submissions" element={<MentorSubmissions />} />
-            <Route path="dashboard" element={<PagePlaceholder title="Dashboard Overview" />} />
-            <Route path="students" element={<PagePlaceholder title="My Students" />} />
-            <Route path="progress" element={<PagePlaceholder title="Progress Tracking" />} />
-            <Route path="announcements" element={<PagePlaceholder title="Announcements" />} />
-            <Route path="settings" element={<PagePlaceholder title="Settings" />} />
+            <Route path="announcements" element={<MentorAnnouncements />} />
+            <Route path="progress" element={<MentorProgress />} />
+            <Route
+              path="dashboard"
+              element={<PagePlaceholder title="Dashboard Overview" />}
+            />
+            <Route
+              path="students"
+              element={<PagePlaceholder title="My Students" />}
+            />
+            <Route
+              path="progress"
+              element={<PagePlaceholder title="Progress Tracking" />}
+            />
+            <Route
+              path="announcements"
+              element={<PagePlaceholder title="Announcements" />}
+            />
+            <Route
+              path="settings"
+              element={<PagePlaceholder title="Settings" />}
+            />
           </Route>
         </Route>
 
@@ -202,7 +223,7 @@ export default function AppRoutes() {
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
-            
+
             {/* MAIN */}
             <Route path="dashboard" element={<MainDashboard />} />
 
@@ -229,7 +250,9 @@ export default function AppRoutes() {
         {/* Fallback Redirection */}
         <Route
           path="*"
-          element={<Navigate to={user ? getRedirectPath(user.role) : "/"} replace />}
+          element={
+            <Navigate to={user ? getRedirectPath(user.role) : "/"} replace />
+          }
         />
       </Routes>
     </main>
