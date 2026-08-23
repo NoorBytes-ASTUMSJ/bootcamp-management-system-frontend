@@ -185,6 +185,8 @@ export default function AppRoutes() {
             <Route path="assignments" element={<StudentAssignments />} />
             <Route path="submissions" element={<StudentSubmissions />} />
             <Route path="announcements" element={<Announcements />} />
+             <Route path="settings" element={<SettingsManagement />}/>
+            
           </Route>
         </Route>
 
@@ -205,11 +207,10 @@ export default function AppRoutes() {
               path="students"
               element={<PagePlaceholder title="My Students" />}
             />
-            <Route
-              path="settings"
-              element={<PagePlaceholder title="Settings" />}
-            />
+            <Route path="settings" element={<SettingsManagement />} />
+          
           </Route>
+          
         </Route>
 
         {/* Protected Admin Portal */}
