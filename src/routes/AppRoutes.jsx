@@ -10,6 +10,7 @@ import Tracks from "../public/Tracks";
 import Mentors from "../public/Mentors";
 import FAQ from "../public/FAQ";
 import Contact from "../public/Contact";
+import Announcements from "../public/Announcements";
 
 // Auth & Registration Forms
 import Login from "../components/forms/Login";
@@ -31,6 +32,7 @@ import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
 import MentorAssignments from "../pages/mentor/MentorAssignments";
 import MentorProgress from "../pages/mentor/MentorProgress";
+import MentorAnnouncements from "@/pages/mentor/MentorAnnouncements";
 
 // Layouts & Admin Pages
 import AdminLayout from "../layouts/AdminLayout";
@@ -45,8 +47,6 @@ import AssignmentsManagement from "../pages/admin/AssignmentsManagement";
 import SubmissionsManagement from "../pages/admin/SubmissionsManagement";
 import AnnouncementsManagement from "../pages/admin/AnnouncementsManagement";
 import SettingsManagement from "../pages/admin/SettingsManagement";
-import AnnouncementsPage from "../pages/AnnouncementsPage";
-import MentorAnnouncements from "@/pages/mentor/MentorAnnouncements";
 
 // Placeholder for remaining under-construction pages
 const PagePlaceholder = ({ title }) => (
@@ -126,6 +126,7 @@ export default function AppRoutes() {
             />
           }
         />
+        <Route path="/announcements" element={<Announcements />} />
 
         {/* Authentication & Role Selection Flow */}
         <Route
@@ -147,7 +148,7 @@ export default function AppRoutes() {
             <RoleSelect
               onSelectRole={(role) =>
                 navigate(
-                  role === "student" ? "/student-register" : "/mentor-register",
+                  role === "student" ? "/student-register" : "/mentor-register"
                 )
               }
               onNavigateLogin={() => navigate("/login")}
@@ -183,7 +184,7 @@ export default function AppRoutes() {
             <Route path="progress" element={<StudentProgress />} />
             <Route path="assignments" element={<StudentAssignments />} />
             <Route path="submissions" element={<StudentSubmissions />} />
-            <Route path="announcements" element={<AnnouncementsPage />} />
+            <Route path="announcements" element={<Announcements />} />
           </Route>
         </Route>
 
@@ -203,14 +204,6 @@ export default function AppRoutes() {
             <Route
               path="students"
               element={<PagePlaceholder title="My Students" />}
-            />
-            <Route
-              path="progress"
-              element={<PagePlaceholder title="Progress Tracking" />}
-            />
-            <Route
-              path="announcements"
-              element={<PagePlaceholder title="Announcements" />}
             />
             <Route
               path="settings"
