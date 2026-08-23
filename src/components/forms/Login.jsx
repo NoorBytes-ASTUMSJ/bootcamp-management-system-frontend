@@ -77,16 +77,14 @@ export default function Login({
 
       <div className="pt-2 pb-1">
         <div className="text-center mb-6">
-          <h1 className="font-serif text-3xl font-normal text-text-primary tracking-tight mb-2">
+          <h1 className="font-serif text-3xl font-normal text-inherit tracking-tight mb-2">
             Welcome back.
           </h1>
-          <p className="text-sm text-text-muted">
-            Log in to your account
-          </p>
+          <p className="text-sm text-muted">Log in to your ASTU MSJ account</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 text-xs text-red-600 bg-red-50 rounded border border-red-200 text-center">
+          <div className="mb-4 p-2.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-xs text-[#B91C1C] dark:text-red-300">
             {error}
           </div>
         )}
@@ -99,6 +97,7 @@ export default function Login({
             placeholder="name@example.com"
             value={formData.email}
             onChange={handleChange}
+            autoComplete="off"
             required
           />
 
@@ -109,6 +108,7 @@ export default function Login({
             placeholder="••••••••"
             value={formData.password}
             onChange={handleChange}
+            autoComplete="new-password"
             required
           />
 

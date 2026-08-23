@@ -154,7 +154,7 @@ export default function SettingsManagement({
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
    
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-        {/* Top Header */}
+        
        
         {/* Content Body */}
         <main className="flex-1 overflow-y-auto px-8 py-6 space-y-6">

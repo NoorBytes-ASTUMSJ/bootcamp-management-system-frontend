@@ -8,12 +8,11 @@ export default function RoleSelect({
   return (
     <FormCard>
       <div>
-        {/* Top Left: Back Button */}
         <div className="mb-2">
           <button
             type="button"
             onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-inherit transition-colors cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -32,19 +31,16 @@ export default function RoleSelect({
           </button>
         </div>
 
-        {/* Header */}
         <div className="text-center mb-8 pt-4">
-          <h2 className="text-2xl font-bold text-text-primary tracking-tight mb-2">
+          <h2 className="text-2xl font-bold text-inherit tracking-tight mb-2">
             Join ASTU MSJ
           </h2>
-          <p className="text-xs text-text-muted">
+          <p className="text-xs text-muted">
             Choose how you want to get started
           </p>
         </div>
 
-        {/* Role Options */}
         <div className="space-y-4">
-          {/* Student Card */}
           <button
             type="button"
             onClick={() => onSelectRole("student")}
@@ -56,22 +52,21 @@ export default function RoleSelect({
                   🎓
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-text-primary group-hover:text-primary transition-colors">
+                  <h3 className="text-sm font-semibold text-inherit group-hover:text-primary transition-colors">
                     Apply as a Student
                   </h3>
-                  <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-muted mt-0.5 leading-relaxed">
                     Participate in bootcamps, solve problems, and access
                     learning tracks.
                   </p>
                 </div>
               </div>
-              <span className="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
+              <span className="text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
                 →
               </span>
             </div>
           </button>
 
-          {/* Mentor Card */}
           <button
             type="button"
             onClick={() => onSelectRole("mentor")}
@@ -83,24 +78,23 @@ export default function RoleSelect({
                   💼
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-text-primary group-hover:text-primary transition-colors">
+                  <h3 className="text-sm font-semibold text-inherit group-hover:text-primary transition-colors">
                     Join as a Mentor
                   </h3>
-                  <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-muted mt-0.5 leading-relaxed">
                     Share your experience, mentor junior students, and lead
                     study tracks.
                   </p>
                 </div>
               </div>
-              <span className="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
+              <span className="text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
                 →
               </span>
             </div>
           </button>
         </div>
 
-        {/* Footer */}
-        <p className="text-center text-xs text-text-muted mt-10">
+        <p className="text-center text-xs text-muted mt-10">
           Already have an account?{" "}
           <button
             type="button"

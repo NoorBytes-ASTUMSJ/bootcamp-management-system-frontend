@@ -241,12 +241,13 @@ export default function StudentRegister({
             </div>
           )}
 
+        
           {step === 2 && (
             <div>
-              <h2 className="text-2xl font-bold text-center text-text-primary mb-1">
+              <h2 className="text-2xl font-bold text-center text-inherit mb-1">
                 Academic & Tech
               </h2>
-              <p className="text-xs text-center text-text-muted mb-5">
+              <p className="text-xs text-center text-muted mb-5">
                 Provide your academic details and technical profiles.
               </p>
 
