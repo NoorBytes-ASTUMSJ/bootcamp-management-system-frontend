@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiBell, FiUser, FiMoon, FiLogOut } from "react-icons/fi";
 import MentorSidebar from "../components/layout/MentorSidebar";
@@ -6,6 +7,7 @@ import MentorSidebar from "../components/layout/MentorSidebar";
 export default function MentorLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { logout } = useAuth(); // Extracted logout from useAuth context
   const navigate = useNavigate();
 
   const mentor = { firstName: "John", lastName: "Doe" };
@@ -21,7 +23,12 @@ export default function MentorLayout() {
 
   const handleLogout = () => {
     setIsProfileOpen(false);
-    navigate("/login");
+    if (logout) {
+      logout();
+    }
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -97,9 +104,10 @@ export default function MentorLayout() {
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary-light text-left"
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#B91C1C] hover:bg-red-500/10 transition-colors cursor-pointer text-left"
                 >
-                  <FiLogOut className="h-4 w-4" /> Log out
+                  <FiLogOut className="h-4 w-4 text-[#B91C1C]" />
+                  <span>Log out</span>
                 </button>
               </div>
             )}

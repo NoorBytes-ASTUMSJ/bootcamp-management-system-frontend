@@ -1,13 +1,20 @@
 import React, { useState } from "react";
-import { Outlet, NavLink, Link } from "react-router-dom";
-import { FiMenu, FiBell, FiUser, FiMoon, FiLogOut } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
+import { FiMenu, FiBell, FiUser, FiMoon, FiSun, FiLogOut } from "react-icons/fi";
 import StudentSidebar from "../components/layout/StudentSidebar";
 
 export default function StudentLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const student = { firstName: "Alex", lastName: "Johnson" };
+  const student = {
+    firstName: user?.firstName || user?.name || "Alex",
+    lastName: user?.lastName || "Johnson",
+  };
 
   const navLinks = [
     { name: "Dashboard", path: "/student/dashboard" },
@@ -17,6 +24,24 @@ export default function StudentLayout() {
     { name: "Mentors", path: "/mentors" },
     { name: "Contact", path: "/contact" },
   ];
+
+  const handleLogout = () => {
+    setIsProfileOpen(false);
+    if (logout) {
+      logout();
+    }
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/login", { replace: true });
+  };
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      document.documentElement.classList.toggle("dark", next);
+      return next;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background flex overflow-hidden w-full">
@@ -31,7 +56,7 @@ export default function StudentLayout() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="flex h-8 w-8 items-center justify-center rounded-md text-text-muted hover:bg-surface-subtle hover:text-primary transition-colors focus:outline-none"
+              className="flex h-8 w-8 items-center justify-center rounded-md text-text-muted hover:bg-surface-subtle hover:text-primary transition-colors focus:outline-none cursor-pointer"
             >
               <FiMenu className="h-5 w-5" />
             </button>
@@ -59,14 +84,14 @@ export default function StudentLayout() {
           </nav>
 
           <div className="flex items-center gap-4 relative">
-            <button className="text-text-muted hover:text-text-primary transition-colors relative">
+            <button className="text-text-muted hover:text-text-primary transition-colors relative cursor-pointer">
               <FiBell className="h-5 w-5" />
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary"></span>
             </button>
 
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-muted hover:text-text-primary hover:bg-surface-subtle transition-colors focus:outline-none"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-muted hover:text-text-primary hover:bg-surface-subtle transition-colors focus:outline-none cursor-pointer"
             >
               <FiUser className="h-4 w-4" />
             </button>
@@ -79,18 +104,36 @@ export default function StudentLayout() {
                   </p>
                   <p className="text-xs text-text-muted truncate">Student</p>
                 </div>
+
                 <Link
                   onClick={() => setIsProfileOpen(false)}
                   to="/student/settings"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary transition-colors"
                 >
                   <FiUser className="h-4 w-4" /> Profile
                 </Link>
-                <button className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary text-left">
-                  <FiMoon className="h-4 w-4" /> Dark Mode
+
+                <button
+                  onClick={toggleDarkMode}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary text-left transition-colors cursor-pointer"
+                >
+                  {isDarkMode ? (
+                    <>
+                      <FiSun className="h-4 w-4 text-amber-500" /> Light Mode
+                    </>
+                  ) : (
+                    <>
+                      <FiMoon className="h-4 w-4" /> Dark Mode
+                    </>
+                  )}
                 </button>
-                <button className="flex w-full items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary-light text-left">
-                  <FiLogOut className="h-4 w-4" /> Log out
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#B91C1C] hover:bg-red-500/10 transition-colors text-left cursor-pointer"
+                >
+                  <FiLogOut className="h-4 w-4 text-[#B91C1C]" />
+                  <span>Log out</span>
                 </button>
               </div>
             )}
