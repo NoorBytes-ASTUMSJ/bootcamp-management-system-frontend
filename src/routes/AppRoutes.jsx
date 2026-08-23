@@ -25,6 +25,7 @@ import StudentAttendance from "../pages/student/StudentAttendance";
 import StudentProgress from "../pages/student/StudentProgress";
 import StudentAssignments from "../pages/student/StudentAssignments";
 import StudentSubmissions from "../pages/student/StudentSubmissions";
+import StudentAnnouncements from "../pages/student/AnnouncementsPage";
 
 // Layouts & Mentor Pages
 import MentorLayout from "../layouts/MentorLayout";
@@ -184,7 +185,7 @@ export default function AppRoutes() {
             <Route path="progress" element={<StudentProgress />} />
             <Route path="assignments" element={<StudentAssignments />} />
             <Route path="submissions" element={<StudentSubmissions />} />
-            <Route path="announcements" element={<Announcements />} />
+            <Route path="announcements" element={<StudentAnnouncements />} />
              <Route path="settings" element={<SettingsManagement />}/>
             
           </Route>
