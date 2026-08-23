@@ -30,6 +30,7 @@ import MentorLayout from "../layouts/MentorLayout";
 import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
 import MentorAssignments from "../pages/mentor/MentorAssignments";
+import MentorProgress from "../pages/mentor/MentorProgress";
 
 // Layouts & Admin Pages
 import AdminLayout from "../layouts/AdminLayout";
@@ -194,6 +195,7 @@ export default function AppRoutes() {
             <Route path="assignments" element={<MentorAssignments />} />
             <Route path="submissions" element={<MentorSubmissions />} />
             <Route path="announcements" element={<MentorAnnouncements />} />
+            <Route path="progress" element={<MentorProgress />} />
             <Route
               path="dashboard"
               element={<PagePlaceholder title="Dashboard Overview" />}
