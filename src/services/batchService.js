@@ -1,58 +1,105 @@
-const INITIAL_BATCHES_DATA = [
-  {
-    id: "1",
-    name: "Batch #25 - Winter 2024",
-    track: "Full-Stack Web Development",
-    status: "Active",
-    currentStudents: 42,
-    capacity: 50,
-    startDate: "Jan 15, 2024",
-    endDate: "Apr 20, 2024",
-    timeline: "Jan 15 - Apr 20, 2024",
-    progress: 72,
-  },
-  {
-    id: "2",
-    name: "Batch #26 - Spring 2024",
-    track: "Full-Stack Web Development",
-    status: "Upcoming",
-    currentStudents: 12,
-    capacity: 50,
-    startDate: "May 01, 2024",
-    endDate: "Aug 10, 2024",
-    timeline: "May 01 - Aug 10, 2024",
-    progress: 0,
-  },
-  {
-    id: "3",
-    name: "Batch #24 - Fall 2023",
-    track: "Full-Stack Web Development",
-    status: "Completed",
-    currentStudents: 48,
-    capacity: 50,
-    startDate: "Sep 10, 2023",
-    endDate: "Dec 15, 2023",
-    timeline: "Sep 10 - Dec 15, 2023",
-    progress: 100,
-  },
-];
+import API from "./api";
+const mapBatchToUI = (batch) => {
+  if (!batch) return null;
+
+  const statusMap = {
+    ongoing: "Active",
+    upcoming: "Upcoming",
+    completed: "Completed",
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const formattedStart = formatDate(batch.startDate);
+  const formattedEnd = formatDate(batch.endDate);
+
+  // Calculate percentage elapsed for progress bar
+  let progress = 0;
+  if (batch.startDate && batch.endDate) {
+    const start = new Date(batch.startDate).getTime();
+    const end = new Date(batch.endDate).getTime();
+    const now = Date.now();
+
+    if (now >= end) {
+      progress = 100;
+    } else if (now > start && end > start) {
+      progress = Math.round(((now - start) / (end - start)) * 100);
+    }
+  }
+
+  const studentCount = batch.studentCount || 0;
+
+  return {
+    ...batch,
+    id: batch._id,
+    status: statusMap[batch.status] || "Upcoming",
+    currentStudents: studentCount,
+    capacity: Math.max(studentCount, 50), // Standard capacity threshold
+    startDate: formattedStart,
+    endDate: formattedEnd,
+    timeline: `${formattedStart} - ${formattedEnd}`,
+    progress,
+    track: batch.description || "Bootcamp Training Program",
+  };
+};
 
 export async function getBatches() {
   try {
-    const response = await fetch("/api/v1/batches");
-    const contentType = response.headers.get("content-type");
-    if (
-      response.ok &&
-      contentType &&
-      contentType.includes("application/json")
-    ) {
-      const data = await response.json();
-      return Array.isArray(data) ? data : data.batches || INITIAL_BATCHES_DATA;
-    }
+    const response = await API.get("/batches");
+    const rawBatches = response.data?.data?.batches || [];
+    return rawBatches.map(mapBatchToUI);
   } catch (err) {
-    console.info(
-      "Backend batch service unreachable. Loaded standard mock records.",
-    );
+    console.error("Failed to fetch batches:", err);
+    return [];
   }
-  return INITIAL_BATCHES_DATA;
+}
+
+export async function getBatchStats() {
+  try {
+    const response = await API.get("/batches/stats");
+    return (
+      response.data?.data?.stats || {
+        totalBatches: 0,
+        activeBatches: 0,
+        totalStudents: 0,
+        totalMentors: 0,
+      }
+    );
+  } catch (err) {
+    console.error("Failed to fetch batch dashboard stats:", err);
+    return {
+      totalBatches: 0,
+      activeBatches: 0,
+      totalStudents: 0,
+      totalMentors: 0,
+    };
+  }
+}
+// Add/Create new batch
+export async function createBatch(batchData) {
+  try {
+    const response = await API.post("/batches", batchData);
+    return response.data?.data?.batch || response.data;
+  } catch (err) {
+    console.error("Failed to create batch:", err);
+    throw err;
+  }
+}
+
+// Update existing batch
+export async function updateBatch(batchId, batchData) {
+  try {
+    const response = await API.patch(`/batches/${batchId}`, batchData);
+    return response.data?.data?.batch || response.data;
+  } catch (err) {
+    console.error("Failed to update batch:", err);
+    throw err;
+  }
 }
