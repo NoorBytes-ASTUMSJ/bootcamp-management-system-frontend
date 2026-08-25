@@ -6,6 +6,10 @@ import {
   changeUserPassword,
 } from "../../services/profileService";
 import {
+  updateRegistrationStatus,
+  subscribeToRegistrationStatus,
+} from "../../services/firebase";
+import {
   Bell,
   User,
   Moon,
@@ -23,6 +27,9 @@ import {
   EyeOff,
   Loader2,
   ChevronDown,
+  Power,
+  GraduationCap,
+  Briefcase,
 } from "lucide-react";
 
 export default function SettingsManagement({
@@ -36,7 +43,38 @@ export default function SettingsManagement({
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState("");
 
-  // Form State for Profile (1)
+  // Firebase Real-time Global Registration State
+  const [isStudentRegOpen, setIsStudentRegOpen] = useState(true);
+  const [isMentorRegOpen, setIsMentorRegOpen] = useState(true);
+  const [regMsg, setRegMsg] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = subscribeToRegistrationStatus((data) => {
+      if (data.isStudentRegOpen !== undefined)
+        setIsStudentRegOpen(data.isStudentRegOpen);
+      if (data.isMentorRegOpen !== undefined)
+        setIsMentorRegOpen(data.isMentorRegOpen);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const toggleStudentReg = async () => {
+    const nextState = !isStudentRegOpen;
+    setIsStudentRegOpen(nextState);
+    await updateRegistrationStatus("isStudentRegOpen", nextState);
+    setRegMsg("Student registration status synced globally!");
+    setTimeout(() => setRegMsg(""), 2500);
+  };
+
+  const toggleMentorReg = async () => {
+    const nextState = !isMentorRegOpen;
+    setIsMentorRegOpen(nextState);
+    await updateRegistrationStatus("isMentorRegOpen", nextState);
+    setRegMsg("Mentor registration status synced globally!");
+    setTimeout(() => setRegMsg(""), 2500);
+  };
+
+  // Form State for Profile
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -47,7 +85,7 @@ export default function SettingsManagement({
     bio: "",
   });
 
-  // Form State for Password Change (3)
+  // Form State for Password Change
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -142,7 +180,6 @@ export default function SettingsManagement({
     setTimeout(() => setPasswordMsg({ type: "", text: "" }), 3000);
   };
 
-  // Password rules validation
   const hasMinLen = passwordData.newPassword.length >= 8;
   const hasCase =
     /[a-z]/.test(passwordData.newPassword) &&
@@ -152,11 +189,7 @@ export default function SettingsManagement({
 
   return (
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-   
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-        
-       
-        {/* Content Body */}
         <main className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-24 gap-2 text-xs text-neutral-500">
@@ -175,11 +208,116 @@ export default function SettingsManagement({
                 </p>
               </div>
 
-              {/* ================= SECTION 1: PROFILE INFORMATION ================= */}
+              {/* ================= SECTION 1: GLOBAL REGISTRATION CONTROLS ================= */}
+              <div className="p-6 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-4 transition-all duration-300 hover:border-[#B91C1C]/40 hover:shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-sm text-neutral-900 dark:text-white flex items-center gap-2">
+                      <Power size={15} className="text-[#B91C1C]" />
+                      <span>1. Registration Window Controls</span>
+                    </h3>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                      Enable or disable cohort intake globally across all
+                      devices.
+                    </p>
+                  </div>
+                  {regMsg && (
+                    <span className="text-xs text-emerald-600 font-semibold animate-in fade-in">
+                      {regMsg}
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  {/* Student Registration Toggle */}
+                  <div className="p-4 rounded-xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-800/20 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                        <GraduationCap size={18} />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-neutral-900 dark:text-white block">
+                          Student Registration
+                        </span>
+                        <span
+                          className={`text-[11px] font-medium ${
+                            isStudentRegOpen
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-[#DC2626]"
+                          }`}
+                        >
+                          {isStudentRegOpen
+                            ? "● Intake Open"
+                            : "○ Intake Closed"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={toggleStudentReg}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
+                        isStudentRegOpen
+                          ? "bg-[#B91C1C]"
+                          : "bg-neutral-300 dark:bg-neutral-700"
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                          isStudentRegOpen ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Mentor Registration Toggle */}
+                  <div className="p-4 rounded-xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-800/20 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                        <Briefcase size={18} />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-neutral-900 dark:text-white block">
+                          Mentor Registration
+                        </span>
+                        <span
+                          className={`text-[11px] font-medium ${
+                            isMentorRegOpen
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-[#DC2626]"
+                          }`}
+                        >
+                          {isMentorRegOpen
+                            ? "● Intake Open"
+                            : "○ Intake Closed"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={toggleMentorReg}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
+                        isMentorRegOpen
+                          ? "bg-[#B91C1C]"
+                          : "bg-neutral-300 dark:bg-neutral-700"
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                          isMentorRegOpen ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ================= SECTION 2: PROFILE INFORMATION ================= */}
               <div className="p-6 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-5 transition-all duration-300 hover:border-[#B91C1C]/40 hover:shadow-sm">
                 <div>
                   <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
-                    1. Profile Information
+                    2. Profile Information
                   </h3>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                     Update your personal information and profile details.
@@ -188,7 +326,6 @@ export default function SettingsManagement({
 
                 <form onSubmit={handleSaveProfile} className="space-y-5">
                   <div className="flex flex-col md:flex-row gap-6 items-start">
-                    {/* Avatar Upload */}
                     <div className="flex flex-col items-center gap-2.5 w-full md:w-44 shrink-0">
                       <div className="relative w-24 h-24 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center overflow-hidden">
                         <User
@@ -227,7 +364,6 @@ export default function SettingsManagement({
                       </button>
                     </div>
 
-                    {/* Inputs Grid */}
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                       <div>
                         <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 block mb-1">
@@ -345,7 +481,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* Bio */}
                   <div>
                     <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 block mb-1">
                       Bio / About You (Optional)
@@ -360,7 +495,6 @@ export default function SettingsManagement({
                     />
                   </div>
 
-                  {/* Submit Row */}
                   <div className="flex items-center justify-between pt-2">
                     {profileMsg && (
                       <span className="text-xs text-emerald-600 font-medium">
@@ -378,11 +512,11 @@ export default function SettingsManagement({
                 </form>
               </div>
 
-              {/* ================= SECTION 2: ACCOUNT INFORMATION ================= */}
+              {/* ================= SECTION 3: ACCOUNT INFORMATION ================= */}
               <div className="p-6 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-4 transition-all duration-300 hover:border-[#B91C1C]/40 hover:shadow-sm">
                 <div>
                   <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
-                    2. Account Information
+                    3. Account Information
                   </h3>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                     View your account details and status.
@@ -390,7 +524,6 @@ export default function SettingsManagement({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
-                  {/* 1. Email Address */}
                   <div className="p-3.5 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-800/20 flex items-center gap-3 transition-all duration-200 hover:border-[#B91C1C]/40 hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40">
                     <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#B91C1C] shrink-0">
                       <Mail size={16} />
@@ -405,7 +538,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* 2. Role */}
                   <div className="p-3.5 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-800/20 flex items-center gap-3 transition-all duration-200 hover:border-[#B91C1C]/40 hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40">
                     <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#B91C1C] shrink-0">
                       <UserCheck size={16} />
@@ -420,7 +552,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* 3. Account Status */}
                   <div className="p-3.5 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-800/20 flex items-center gap-3 transition-all duration-200 hover:border-[#B91C1C]/40 hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40">
                     <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 shrink-0">
                       <CheckCircle2 size={16} />
@@ -435,7 +566,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* 4. Joined Date */}
                   <div className="p-3.5 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-800/20 flex items-center gap-3 transition-all duration-200 hover:border-[#B91C1C]/40 hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40">
                     <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#B91C1C] shrink-0">
                       <Calendar size={16} />
@@ -450,7 +580,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* 5. Last Login */}
                   <div className="p-3.5 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-800/20 flex items-center gap-3 transition-all duration-200 hover:border-[#B91C1C]/40 hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40">
                     <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#B91C1C] shrink-0">
                       <Clock size={16} />
@@ -465,7 +594,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* 6. User ID */}
                   <div className="p-3.5 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/30 dark:bg-neutral-800/20 flex items-center gap-3 transition-all duration-200 hover:border-[#B91C1C]/40 hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40">
                     <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-[#B91C1C] shrink-0">
                       <BadgeCheck size={16} />
@@ -482,11 +610,11 @@ export default function SettingsManagement({
                 </div>
               </div>
 
-              {/* ================= SECTION 3: CHANGE PASSWORD ================= */}
+              {/* ================= SECTION 4: CHANGE PASSWORD ================= */}
               <div className="p-6 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-4 transition-all duration-300 hover:border-[#B91C1C]/40 hover:shadow-sm">
                 <div>
                   <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
-                    3. Change Password
+                    4. Change Password
                   </h3>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                     Update your password to keep your account secure.
@@ -495,7 +623,6 @@ export default function SettingsManagement({
 
                 <form onSubmit={handleSavePassword} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {/* Current Password */}
                     <div>
                       <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 block mb-1">
                         Current Password
@@ -524,7 +651,6 @@ export default function SettingsManagement({
                       </div>
                     </div>
 
-                    {/* New Password */}
                     <div>
                       <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 block mb-1">
                         New Password
@@ -549,7 +675,6 @@ export default function SettingsManagement({
                       </div>
                     </div>
 
-                    {/* Confirm New Password */}
                     <div>
                       <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 block mb-1">
                         Confirm New Password
@@ -579,7 +704,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* Password requirements banner */}
                   <div className="p-3 rounded-lg border border-neutral-200/70 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-800/20 text-xs">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1.5">
                       Password Requirements:
@@ -624,7 +748,6 @@ export default function SettingsManagement({
                     </div>
                   </div>
 
-                  {/* Submit Row */}
                   <div className="flex items-center justify-between pt-1">
                     {passwordMsg.text && (
                       <span
@@ -648,11 +771,11 @@ export default function SettingsManagement({
                 </form>
               </div>
 
-              {/* ================= SECTION 4: LOGOUT ================= */}
+              {/* ================= SECTION 5: LOGOUT ================= */}
               <div className="p-6 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300 hover:border-[#B91C1C]/40 hover:shadow-sm">
                 <div>
                   <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
-                    4. Logout
+                    5. Logout
                   </h3>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                     Sign out of your account on this device.
@@ -669,7 +792,6 @@ export default function SettingsManagement({
                 </button>
               </div>
 
-              {/* Footer text */}
               <div className="text-center py-2 text-[11px] text-neutral-400">
                 © 2026 ASTU MSJ Management Portal. All rights reserved.
               </div>

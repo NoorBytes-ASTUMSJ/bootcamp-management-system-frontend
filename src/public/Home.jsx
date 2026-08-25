@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 
@@ -6,18 +7,40 @@ export default function Home({
   onNavigateLogin,
   onNavigateSignUp,
 }) {
+  // ================= 1. DYNAMIC BATCH & PARTICIPANT CONFIG =================
+  const currentBatchNumber = 3;
+  const baseStudentsPerBatch = 50;
+
+  const dynamicTotalParticipants = useMemo(() => {
+    return (currentBatchNumber - 1) * baseStudentsPerBatch;
+  }, [currentBatchNumber]);
+
+  // Dynamic Stats List
   const stats = [
-    { label: "100+", sub: "Participants (Last 2 Years)" },
-    { label: "3rd", sub: "Batch Coming Next" },
-    { label: "12 Weeks", sub: "Structured Duration" },
-    { label: "100%", sub: "Free" },
+    {
+      label: `${dynamicTotalParticipants}+`,
+      sub: `Participants (Past Cohorts)`,
+    },
+    {
+      label: `Batch ${currentBatchNumber}`,
+      sub: "Active Cohort",
+    },
+    {
+      label: "12 Weeks",
+      sub: "Structured Duration",
+    },
+    {
+      label: "100%",
+      sub: "Practical & Free",
+    },
   ];
 
+  // Dynamic Features List
   const features = [
     {
       icon: (
         <svg
-          className="w-5 h-5 text-primary"
+          className="w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -36,7 +59,7 @@ export default function Home({
     {
       icon: (
         <svg
-          className="w-5 h-5 text-primary"
+          className="w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -55,7 +78,7 @@ export default function Home({
     {
       icon: (
         <svg
-          className="w-5 h-5 text-primary"
+          className="w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -74,7 +97,7 @@ export default function Home({
     {
       icon: (
         <svg
-          className="w-5 h-5 text-primary"
+          className="w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -88,12 +111,12 @@ export default function Home({
         </svg>
       ),
       title: "Full-time Mentorship",
-      desc: "Guidance from ~20 current experienced ASTU student mentors and alumni.",
+      desc: "Guidance from experienced senior student mentors and industry alumni.",
     },
     {
       icon: (
         <svg
-          className="w-5 h-5 text-primary"
+          className="w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -112,7 +135,7 @@ export default function Home({
     {
       icon: (
         <svg
-          className="w-5 h-5 text-primary"
+          className="w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -131,7 +154,7 @@ export default function Home({
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text-primary transition-colors">
+    <div className="min-h-screen bg-background text-text-primary transition-colors selection:bg-primary/20 selection:text-primary">
       <Navbar
         currentView="home"
         onNavigatePage={onNavigatePage}
@@ -142,25 +165,27 @@ export default function Home({
       {/* ================= 1. HERO SECTION ================= */}
       <section
         id="home"
-        className="pt-16 pb-20 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto"
+        className="pt-20 pb-20 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto"
       >
-        {/* Tag Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary border border-border-subtle text-[11px] font-medium text-primary mb-8">
+        {/* Universal Tag Badge */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-secondary border border-border-subtle text-[11px] font-mono font-medium text-primary tracking-wider uppercase mb-8 shadow-2xs hover:border-primary/40 transition-colors">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-          for ASTU Muslim Students
+          For Muslim Students
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-text-primary leading-[1.15] mb-6">
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-text-primary leading-[1.15] mb-6">
           Discipline. Practice. <br />
-          <span className="text-primary">Full-Stack Mentorship.</span>
+          <span className="text-primary bg-gradient-to-r from-primary to-primary/80 bg-clip-text">
+            Full-Stack Mentorship.
+          </span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-sm sm:text-base text-text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
-          A structured, beginner-friendly journey into web development. No
-          previous programming experience required. Replace scattered learning
-          with a clear path.
+          A structured, beginner-friendly journey into web development and
+          problem solving. No previous programming experience required. Replace
+          scattered learning with a clear path.
         </p>
 
         {/* Call to Actions */}
@@ -168,14 +193,14 @@ export default function Home({
           <button
             type="button"
             onClick={onNavigateSignUp}
-            className="px-6 py-3 rounded-lg bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm cursor-pointer"
+            className="px-6 py-3.5 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary-hover shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-200 cursor-pointer"
           >
-            Sign Up for Batch 3
+            Sign Up for Batch {currentBatchNumber}
           </button>
           <button
             type="button"
             onClick={() => onNavigatePage && onNavigatePage("tracks")}
-            className="px-6 py-3 rounded-lg bg-surface hover:bg-surface-subtle text-text-primary text-xs sm:text-sm font-semibold transition-colors border border-border cursor-pointer shadow-xs"
+            className="px-6 py-3.5 rounded-xl bg-surface hover:bg-surface-subtle text-text-primary text-xs sm:text-sm font-semibold border border-border hover:border-primary/50 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer"
           >
             Explore the Bootcamp
           </button>
@@ -183,19 +208,26 @@ export default function Home({
       </section>
 
       {/* ================= 2. STATS SECTION ================= */}
-      <section className="border-y border-border bg-surface-subtle">
+      <section className="border-y border-border bg-surface-subtle/60 backdrop-blur-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x-0 md:divide-x divide-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-border">
             {stats.map((stat, idx) => (
-              <div key={idx} className="px-4">
+              <div
+                key={idx}
+                className="group px-4 py-3 hover:-translate-y-0.5 transition-transform duration-200 cursor-default"
+              >
                 <div
-                  className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-1 ${
-                    idx === 3 ? "text-primary" : "text-text-primary"
+                  className={`text-2xl sm:text-4xl font-extrabold tracking-tight mb-1.5 transition-colors ${
+                    idx === 3
+                      ? "text-primary"
+                      : "text-text-primary group-hover:text-primary"
                   }`}
                 >
                   {stat.label}
                 </div>
-                <div className="text-[11px] text-text-muted">{stat.sub}</div>
+                <div className="text-xs font-medium text-text-muted">
+                  {stat.sub}
+                </div>
               </div>
             ))}
           </div>
@@ -205,10 +237,10 @@ export default function Home({
       {/* ================= 3. FEATURES SECTION ================= */}
       <section
         id="about"
-        className="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto"
+        className="py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto"
       >
         <div className="mb-14">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary mb-3">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-primary mb-3">
             A Structured Journey
           </h2>
           <p className="text-xs sm:text-sm text-text-muted max-w-3xl leading-relaxed">
@@ -220,17 +252,22 @@ export default function Home({
           </p>
         </div>
 
-        {/* 6 Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
+        {/* 6 Features Grid in Modern Hover-Glow Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((item, idx) => (
-            <div key={idx} className="space-y-2.5">
-              <div className="w-9 h-9 rounded-lg bg-secondary border border-border-subtle flex items-center justify-center">
+            <div
+              key={idx}
+              className="group p-7 sm:p-8 rounded-3xl bg-surface border border-border hover:border-primary/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-start cursor-default"
+            >
+              <div className="w-11 h-11 rounded-2xl bg-secondary border border-border-subtle group-hover:border-primary/40 flex items-center justify-center mb-6 transition-colors duration-300 shadow-2xs">
                 {item.icon}
               </div>
-              <h3 className="text-sm sm:text-base font-bold text-text-primary">
+
+              <h3 className="text-base sm:text-lg font-bold text-text-primary group-hover:text-primary transition-colors duration-200 mb-2.5">
                 {item.title}
               </h3>
-              <p className="text-xs text-text-muted leading-relaxed">
+
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
                 {item.desc}
               </p>
             </div>

@@ -1,4 +1,6 @@
 import FormCard from "../common/FormCard";
+import { GraduationCap, Briefcase, ArrowRight, ArrowLeft } from "lucide-react";
+import jemeaLogo from "../../assets/jemea-logo.jpg";
 
 export default function RoleSelect({
   onSelectRole,
@@ -7,99 +9,113 @@ export default function RoleSelect({
 }) {
   return (
     <FormCard>
-      <div>
-        <div className="mb-2">
+      <div className="w-full">
+        {/* Top Navigation */}
+        <div className="flex items-center justify-between mb-2">
           <button
             type="button"
             onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-inherit transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-primary transition-colors cursor-pointer select-none"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to home
+            <ArrowLeft size={14} />
+            <span>Back to home</span>
           </button>
+          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase border border-primary/20">
+            Get Started
+          </span>
         </div>
 
-        <div className="text-center mb-8 pt-4">
-          <h2 className="text-2xl font-bold text-inherit tracking-tight mb-2">
-            Join ASTU MSJ
-          </h2>
-          <p className="text-xs text-muted">
-            Choose how you want to get started
+        {/* Brand Logo & Heading (Navbar Style Match) */}
+        <div className="text-center mb-5 pt-1">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-surface border border-border/80 shadow-xs p-1 mb-2.5 overflow-hidden">
+            <img
+              src={jemeaLogo}
+              alt="ASTU MSJ Logo"
+              className="w-full h-full object-contain rounded-xl"
+            />
+          </div>
+
+          {/* Styled Branding Title */}
+          <div className="flex items-center justify-center gap-2 flex-wrap mb-1">
+            <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
+              Join ASTU <span className="text-primary">MSJ</span>
+            </h2>
+            <span className="text-[10px] font-mono font-black tracking-wider px-2 py-0.5 rounded-md bg-primary/10 text-primary uppercase border border-primary/20">
+              Bootcamp
+            </span>
+          </div>
+
+          <p className="text-xs text-text-muted mt-0.5">
+            Choose your learning or mentoring path to proceed.
           </p>
         </div>
 
-        <div className="space-y-4">
+        {/* Role Cards */}
+        <div className="space-y-3">
+          {/* Student Card */}
           <button
             type="button"
             onClick={() => onSelectRole("student")}
-            className="w-full text-left p-4 rounded-xl border border-border hover:border-primary bg-surface hover:bg-secondary transition-all duration-200 group cursor-pointer shadow-xs"
+            className="w-full text-left p-4 rounded-xl border border-border hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] bg-surface hover:bg-surface-subtle transition-all duration-200 group cursor-pointer shadow-2xs relative overflow-hidden"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-primary font-bold text-lg group-hover:scale-105 transition-transform">
-                  🎓
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200 shrink-0">
+                  <GraduationCap size={20} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-inherit group-hover:text-primary transition-colors">
+                  <h3 className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
                     Apply as a Student
                   </h3>
-                  <p className="text-xs text-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
                     Participate in bootcamps, solve problems, and access
-                    learning tracks.
+                    tailored learning tracks.
                   </p>
                 </div>
               </div>
-              <span className="text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
-                →
-              </span>
+              <ArrowRight
+                size={16}
+                className="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all ml-2 shrink-0"
+              />
             </div>
           </button>
 
+          {/* Mentor Card */}
           <button
             type="button"
             onClick={() => onSelectRole("mentor")}
-            className="w-full text-left p-4 rounded-xl border border-border hover:border-primary bg-surface hover:bg-secondary transition-all duration-200 group cursor-pointer shadow-xs"
+            className="w-full text-left p-4 rounded-xl border border-border hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] bg-surface hover:bg-surface-subtle transition-all duration-200 group cursor-pointer shadow-2xs relative overflow-hidden"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-primary font-bold text-lg group-hover:scale-105 transition-transform">
-                  💼
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200 shrink-0">
+                  <Briefcase size={18} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-inherit group-hover:text-primary transition-colors">
+                  <h3 className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
                     Join as a Mentor
                   </h3>
-                  <p className="text-xs text-muted mt-0.5 leading-relaxed">
-                    Share your experience, mentor junior students, and lead
-                    study tracks.
+                  <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
+                    Share your experience, mentor junior peers, and lead
+                    technical project tracks.
                   </p>
                 </div>
               </div>
-              <span className="text-muted group-hover:text-primary group-hover:translate-x-1 transition-all text-sm ml-2">
-                →
-              </span>
+              <ArrowRight
+                size={16}
+                className="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all ml-2 shrink-0"
+              />
             </div>
           </button>
         </div>
 
-        <p className="text-center text-xs text-muted mt-10">
+        {/* Footer */}
+        <p className="text-center text-xs text-text-muted mt-6">
           Already have an account?{" "}
           <button
             type="button"
             onClick={onNavigateLogin}
-            className="text-primary font-semibold hover:underline cursor-pointer"
+            className="text-primary font-bold hover:underline cursor-pointer"
           >
             Log In
           </button>

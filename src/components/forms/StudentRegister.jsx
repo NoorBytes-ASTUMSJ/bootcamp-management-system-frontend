@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FormCard from "../common/FormCard";
 import Stepper from "../common/Stepper";
-import InputField from "../forms/InputField";
-import SelectField from "../forms/SelectField";
-import Button from "../common/Button";
-import { Link2, Code, Terminal, Clock, Loader2 } from "lucide-react";
+import RegistrationClosedCard from "../common/RegistrationClosedCard";
+import { subscribeToRegistrationStatus } from "../../services/firebase";
+import {
+  ArrowLeft,
+  Link2,
+  Code,
+  Terminal,
+  Clock,
+  Loader2,
+  BookOpen,
+  Phone,
+  IdCard,
+  Building2,
+  Send,
+  User,
+  Mail,
+  Lock,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import API from "../../services/api";
+import { sendConfirmationEmail } from "../../utils/sendRegistrationEmail";
+import jemeaLogo from "../../assets/jemea-logo.jpg";
 
 export default function StudentRegister({
   onNavigateLogin,
@@ -17,8 +33,22 @@ export default function StudentRegister({
   const navigate = useNavigate();
   const { login, getRedirectPath } = useAuth();
 
+  const [isOpen, setIsOpen] = useState(true);
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
+  // Real-time Global Registration Status Listener
+  useEffect(() => {
+    const unsubscribe = subscribeToRegistrationStatus((data) => {
+      if (data.isStudentRegOpen !== undefined) {
+        setIsOpen(data.isStudentRegOpen);
+      }
+      setCheckingStatus(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const [step, setStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,15 +56,19 @@ export default function StudentRegister({
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    phone: "",
     password: "",
     confirmPassword: "",
     gender: "",
     year: "",
     department: "",
+    customDepartment: "",
     github: "",
     codeforces: "",
     leetcode: "",
+    phone: "",
+    studentId: "",
+    universityName: "Adama Science and Technology University",
+    telegramUsername: "",
     dailyAvailableHours: "",
     availabilityDescription: "",
     motivation: "",
@@ -58,6 +92,16 @@ export default function StudentRegister({
       return;
     }
 
+    if (
+      step === 2 &&
+      formData.year !== "1st" &&
+      formData.department === "Other Engineering" &&
+      !formData.customDepartment.trim()
+    ) {
+      setError("Please specify your engineering department.");
+      return;
+    }
+
     if (step < totalSteps) {
       setStep((prev) => prev + 1);
     }
@@ -73,16 +117,24 @@ export default function StudentRegister({
     setError("");
     setLoading(true);
 
+    const finalDepartment =
+      formData.department === "Other Engineering"
+        ? formData.customDepartment.trim()
+        : formData.department;
+
     const payload = {
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
+      studentId: formData.studentId,
+      universityName: formData.universityName,
+      telegramUsername: formData.telegramUsername,
       password: formData.password,
       role: "user",
       applicationType: "student",
       gender: formData.gender,
       year: formData.year,
-      department: formData.department,
+      department: finalDepartment,
       github: formData.github,
       codeforces: formData.codeforces,
       leetcode: formData.leetcode,
@@ -93,6 +145,13 @@ export default function StudentRegister({
 
     try {
       const response = await API.post("/auth/register/student", payload);
+
+      sendConfirmationEmail({
+        recipientName: formData.fullName,
+        recipientEmail: formData.email,
+        role: "Student",
+        track: finalDepartment,
+      });
 
       const responseData = response.data.data || response.data;
       const { user, token } = responseData;
@@ -122,36 +181,63 @@ export default function StudentRegister({
   };
 
   const stepTitles = {
-    1: "Personal Information",
-    2: "Academic & Tech",
-    3: "Commitment",
+    1: "Personal Details",
+    2: "Academic & Profiles",
+    3: "ID & Contact",
+    4: "Commitment",
   };
+
+  const inputStyle =
+    "w-full bg-surface border border-border rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs cursor-text";
+
+  const inputWithIconStyle =
+    "w-full bg-surface border border-border rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs cursor-text";
+
+  const primaryBtnStyle =
+    "w-full py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover active:scale-[0.99] text-primary-foreground text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-primary/20 cursor-pointer disabled:opacity-60 text-center flex items-center justify-center select-none";
+
+  const secondaryBtnStyle =
+    "w-full py-2.5 px-4 rounded-xl bg-surface border border-border hover:bg-surface-subtle hover:border-primary/40 active:scale-[0.99] text-text-primary text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer disabled:opacity-60 text-center flex items-center justify-center select-none";
+
+  // If Closed: Show Friendly Notice Card
+  if (!checkingStatus && !isOpen) {
+    return (
+      <RegistrationClosedCard
+        role="Student"
+        onBack={onBackToHome || (() => navigate("/"))}
+        onNavigateLogin={onNavigateLogin}
+      />
+    );
+  }
 
   return (
     <FormCard>
-      <div>
-        <div className="mb-2">
+      <div className="w-full">
+        {/* Top Header */}
+        <div className="flex items-center justify-between mb-2">
           <button
             type="button"
             onClick={onBackToHome || (() => navigate("/"))}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-primary transition-colors cursor-pointer disabled:opacity-50 select-none"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to selection
+            <ArrowLeft size={14} />
+            <span>Back to selection</span>
           </button>
+          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase border border-primary/20">
+            Student Track
+          </span>
+        </div>
+
+        {/* Brand Logo Header */}
+        <div className="flex justify-center mb-3">
+          <div className="w-12 h-12 rounded-2xl bg-surface border border-border/80 shadow-xs p-1 overflow-hidden">
+            <img
+              src={jemeaLogo}
+              alt="ASTU MSJ Logo"
+              className="w-full h-full object-contain rounded-xl"
+            />
+          </div>
         </div>
 
         <Stepper
@@ -160,80 +246,132 @@ export default function StudentRegister({
           stepTitle={stepTitles[step]}
         />
 
-        <form onSubmit={handleSubmit} className="mt-4">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-4 flex flex-col justify-between"
+        >
           {error && (
-            <div className="mb-4 p-2.5 text-xs font-medium text-red-500 bg-red-500/10 rounded-lg border border-red-500/20">
-              {error}
+            <div className="mb-4 p-3 text-xs font-medium text-red-500 bg-red-500/10 rounded-xl border border-red-500/25 flex items-center gap-2 animate-in fade-in duration-200">
+              <span className="font-bold">✕</span>
+              <span>{error}</span>
             </div>
           )}
 
           {step === 1 && (
-            <div>
-              <h2 className="text-2xl font-bold text-center text-text-primary mb-4">
-                Student Registration
-              </h2>
-
-              <InputField
-                label="Full Name"
-                name="fullName"
-                placeholder="Ahmed Mohammed"
-                value={formData.fullName}
-                onChange={handleChange}
-                required
-              />
-
-              <InputField
-                label="Email Address"
-                type="email"
-                name="email"
-                placeholder="ahmed@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-
-              <InputField
-                label="Phone Number"
-                type="tel"
-                name="phone"
-                placeholder="+251 900 000-000"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
-
-              <InputField
-                label="Password"
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-
-              <InputField
-                label="Confirm Password"
-                type="password"
-                name="confirmPassword"
-                placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-
-              <div className="mt-6">
-                <Button type="button" onClick={handleNext}>
-                  Next
-                </Button>
+            <div className="animate-in fade-in zoom-in-98 duration-200">
+              <div className="text-center mb-4">
+                <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
+                  Personal Information
+                </h2>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Create your login credentials and personal profile.
+                </p>
               </div>
 
-              <p className="text-center text-xs text-text-muted mt-5">
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Full Name <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <User
+                      size={16}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="text"
+                      name="fullName"
+                      required
+                      placeholder="Ahmed Mohammed"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      className={inputWithIconStyle}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Email Address <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Mail
+                      size={16}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      placeholder="ahmed@example.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={inputWithIconStyle}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                      Password <span className="text-primary">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Lock
+                        size={15}
+                        className="absolute left-3.5 text-text-muted pointer-events-none"
+                      />
+                      <input
+                        type="password"
+                        name="password"
+                        required
+                        placeholder="••••••••"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className={inputWithIconStyle}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                      Confirm Password <span className="text-primary">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Lock
+                        size={15}
+                        className="absolute left-3.5 text-text-muted pointer-events-none"
+                      />
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        required
+                        placeholder="••••••••"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className={inputWithIconStyle}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className={primaryBtnStyle}
+                >
+                  Continue
+                </button>
+              </div>
+
+              <p className="text-center text-xs text-text-muted mt-4">
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={onNavigateLogin}
-                  className="text-primary font-medium hover:underline cursor-pointer"
+                  className="text-primary font-bold hover:underline cursor-pointer"
                 >
                   Log In
                 </button>
@@ -241,190 +379,415 @@ export default function StudentRegister({
             </div>
           )}
 
-        
           {step === 2 && (
-            <div>
-              <h2 className="text-2xl font-bold text-center text-inherit mb-1">
-                Academic & Tech
-              </h2>
-              <p className="text-xs text-center text-muted mb-5">
-                Provide your academic details and technical profiles.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <SelectField
-                  label="Gender"
-                  name="gender"
-                  placeholder="Select Gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  options={[
-                    { value: "male", label: "Male" },
-                    { value: "female", label: "Female" },
-                  ]}
-                  required
-                />
-
-                <SelectField
-                  label="Academic Year"
-                  name="year"
-                  placeholder="Select Year"
-                  value={formData.year}
-                  onChange={handleChange}
-                  options={[
-                    { value: "1st", label: "1st Year" },
-                    { value: "2nd", label: "2nd Year" },
-                    { value: "3rd", label: "3rd Year" },
-                    { value: "4th", label: "4th Year" },
-                    { value: "5th", label: "5th Year" },
-                  ]}
-                  required
-                />
+            <div className="animate-in fade-in zoom-in-98 duration-200">
+              <div className="text-center mb-3">
+                <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
+                  Academic & Profiles
+                </h2>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Academic background and technical profile handles.
+                </p>
               </div>
 
-              <SelectField
-                label="Department"
-                name="department"
-                placeholder="Select Department"
-                value={formData.department}
-                onChange={handleChange}
-                options={[
-                  {
-                    value: "Computer Science & Engineering",
-                    label: "Computer Science & Engineering",
-                  },
-                  {
-                    value: "Software Engineering",
-                    label: "Software Engineering",
-                  },
-                  {
-                    value: "Electrical & Computer Engineering",
-                    label: "Electrical & Computer Engineering",
-                  },
-                  { value: "Other Engineering", label: "Other Engineering" },
-                ]}
-                required={formData.year !== "1st"}
-              />
+              <div className="space-y-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                      Gender <span className="text-primary">*</span>
+                    </label>
+                    <select
+                      name="gender"
+                      required
+                      value={formData.gender}
+                      onChange={handleChange}
+                      className={`${inputStyle} cursor-pointer`}
+                    >
+                      <option value="" disabled>
+                        Select Gender
+                      </option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
 
-              <div className="border-t border-border pt-3 mt-2 mb-3">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-text-primary">
-                  <Terminal size={14} className="text-text-muted" />
-                  <span>Technical Profiles</span>
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                      Academic Year <span className="text-primary">*</span>
+                    </label>
+                    <select
+                      name="year"
+                      required
+                      value={formData.year}
+                      onChange={handleChange}
+                      className={`${inputStyle} cursor-pointer`}
+                    >
+                      <option value="" disabled>
+                        Select Year
+                      </option>
+                      <option value="1st">1st Year</option>
+                      <option value="2nd">2nd Year</option>
+                      <option value="3rd">3rd Year</option>
+                      <option value="4th">4th Year</option>
+                      <option value="5th">5th Year</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Department{" "}
+                    {formData.year !== "1st" && (
+                      <span className="text-primary">*</span>
+                    )}
+                  </label>
+                  <select
+                    name="department"
+                    required={formData.year !== "1st"}
+                    value={formData.department}
+                    onChange={handleChange}
+                    className={`${inputStyle} cursor-pointer`}
+                  >
+                    <option value="" disabled>
+                      Select Department
+                    </option>
+                    <option value="Computer Science & Engineering">
+                      Computer Science & Engineering
+                    </option>
+                    <option value="Software Engineering">
+                      Software Engineering
+                    </option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Power & Control Engineering">
+                      Power & Control Engineering
+                    </option>
+                    <option value="Electronics & Communication Engineering">
+                      Electronics & Communication Engineering
+                    </option>
+                    <option value="Other Engineering">
+                      Other Engineering (Specify below)
+                    </option>
+                  </select>
+                </div>
+
+                {formData.department === "Other Engineering" && (
+                  <div className="animate-in fade-in duration-200">
+                    <label className="block text-[10px] font-mono font-bold tracking-wider text-primary uppercase mb-1">
+                      Specify Department Name{" "}
+                      <span className="text-primary">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <BookOpen
+                        size={15}
+                        className="absolute left-3.5 text-primary pointer-events-none"
+                      />
+                      <input
+                        type="text"
+                        name="customDepartment"
+                        required
+                        placeholder="e.g. Mechanical Engineering..."
+                        value={formData.customDepartment}
+                        onChange={handleChange}
+                        className={inputWithIconStyle}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    GitHub URL <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Link2
+                      size={15}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="url"
+                      name="github"
+                      required
+                      placeholder="https://github.com/username"
+                      value={formData.github}
+                      onChange={handleChange}
+                      className={inputWithIconStyle}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                      Codeforces URL <span className="text-primary">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Code
+                        size={15}
+                        className="absolute left-3.5 text-text-muted pointer-events-none"
+                      />
+                      <input
+                        type="url"
+                        name="codeforces"
+                        required
+                        placeholder="https://codeforces.com/profile/user"
+                        value={formData.codeforces}
+                        onChange={handleChange}
+                        className={inputWithIconStyle}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                      LeetCode URL <span className="text-primary">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Terminal
+                        size={15}
+                        className="absolute left-3.5 text-text-muted pointer-events-none"
+                      />
+                      <input
+                        type="url"
+                        name="leetcode"
+                        required
+                        placeholder="https://leetcode.com/u/user"
+                        value={formData.leetcode}
+                        onChange={handleChange}
+                        className={inputWithIconStyle}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <InputField
-                label="GitHub URL"
-                name="github"
-                placeholder="https://github.com/username"
-                value={formData.github}
-                onChange={handleChange}
-                icon={Link2}
-                required
-              />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <InputField
-                  label="Codeforces URL"
-                  name="codeforces"
-                  placeholder="https://codeforces.com/profile/username"
-                  value={formData.codeforces}
-                  onChange={handleChange}
-                  icon={Code}
-                  required
-                />
-
-                <InputField
-                  label="LeetCode URL"
-                  name="leetcode"
-                  placeholder="https://leetcode.com/u/username"
-                  value={formData.leetcode}
-                  onChange={handleChange}
-                  icon={Terminal}
-                  required
-                />
-              </div>
-
-              <div className="flex items-center gap-4 mt-6">
-                <Button type="button" variant="secondary" onClick={handlePrev}>
+              <div className="flex items-center gap-3 mt-5">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className={secondaryBtnStyle}
+                >
                   Previous
-                </Button>
-                <Button type="button" onClick={handleNext}>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className={primaryBtnStyle}
+                >
                   Next
-                </Button>
+                </button>
               </div>
             </div>
           )}
 
           {step === 3 && (
-            <div>
-              <h2 className="text-2xl font-bold text-center text-text-primary mb-1">
-                Final Commitment Details
-              </h2>
-              <p className="text-xs text-center text-text-muted mb-5">
-                Please provide your availability and motivation for joining.
-              </p>
-
-              <InputField
-                label="Daily Available Hours"
-                name="dailyAvailableHours"
-                type="number"
-                placeholder="e.g., 4"
-                value={formData.dailyAvailableHours}
-                onChange={handleChange}
-                icon={Clock}
-                required
-              />
-
-              <div className="w-full mb-3">
-                <label className="block text-[10px] font-bold tracking-wider text-text-muted uppercase mb-1">
-                  Availability Description
-                </label>
-                <textarea
-                  name="availabilityDescription"
-                  rows={3}
-                  value={formData.availabilityDescription}
-                  onChange={handleChange}
-                  placeholder="Describe your general availability (e.g., evenings, weekends)."
-                  className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none shadow-2xs"
-                  required
-                />
+            <div className="animate-in fade-in zoom-in-98 duration-200">
+              <div className="text-center mb-3">
+                <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
+                  ID & Contact
+                </h2>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Official university identification and direct communication
+                  channels.
+                </p>
               </div>
 
-              <div className="w-full mb-3">
-                <label className="block text-[10px] font-bold tracking-wider text-text-muted uppercase mb-1">
-                  Motivation
-                </label>
-                <textarea
-                  name="motivation"
-                  rows={3}
-                  value={formData.motivation}
-                  onChange={handleChange}
-                  placeholder="Why do you want to join the bootcamp?"
-                  className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none shadow-2xs"
-                  required
-                />
+              <div className="space-y-2.5">
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Phone Number <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Phone
+                      size={15}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      placeholder="+251 900 000-000"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className={inputWithIconStyle}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Student ID <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <IdCard
+                      size={15}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="text"
+                      name="studentId"
+                      required
+                      placeholder="e.g. UGR/35958/16"
+                      value={formData.studentId}
+                      onChange={handleChange}
+                      className={`${inputWithIconStyle} font-mono`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    University Name <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Building2
+                      size={15}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="text"
+                      name="universityName"
+                      required
+                      placeholder="Adama Science and Technology University"
+                      value={formData.universityName}
+                      onChange={handleChange}
+                      className={inputWithIconStyle}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Telegram Username <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Send
+                      size={15}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="text"
+                      name="telegramUsername"
+                      required
+                      placeholder="@username"
+                      value={formData.telegramUsername}
+                      onChange={handleChange}
+                      className={inputWithIconStyle}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-4 mt-6">
-                <Button
+              <div className="flex items-center gap-3 mt-5">
+                <button
                   type="button"
-                  variant="secondary"
                   onClick={handlePrev}
-                  disabled={loading}
+                  className={secondaryBtnStyle}
                 >
                   Previous
-                </Button>
-                <Button type="submit" disabled={loading}>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className={primaryBtnStyle}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="animate-in fade-in zoom-in-98 duration-200">
+              <div className="text-center mb-3">
+                <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
+                  Commitment & Goal
+                </h2>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Confirm your availability and motivation for the bootcamp
+                  track.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Daily Available Hours{" "}
+                    <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Clock
+                      size={15}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="number"
+                      name="dailyAvailableHours"
+                      min="1"
+                      max="18"
+                      required
+                      placeholder="e.g. 4"
+                      value={formData.dailyAvailableHours}
+                      onChange={handleChange}
+                      className={`${inputWithIconStyle} font-mono`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Availability Description{" "}
+                    <span className="text-primary">*</span>
+                  </label>
+                  <textarea
+                    name="availabilityDescription"
+                    rows={2}
+                    required
+                    value={formData.availabilityDescription}
+                    onChange={handleChange}
+                    placeholder="Describe your preferred hours (e.g. evenings, weekends)."
+                    className={`${inputStyle} resize-none`}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    Motivation Statement <span className="text-primary">*</span>
+                  </label>
+                  <textarea
+                    name="motivation"
+                    rows={2}
+                    required
+                    value={formData.motivation}
+                    onChange={handleChange}
+                    placeholder="Why do you want to join and what are your core targets?"
+                    className={`${inputStyle} resize-none`}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 mt-5">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  disabled={loading}
+                  className={secondaryBtnStyle}
+                >
+                  Previous
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={primaryBtnStyle}
+                >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <Loader2 className="animate-spin" size={16} />{" "}
-                      Submitting...
+                      <Loader2 className="animate-spin" size={16} />
+                      <span>Submitting...</span>
                     </span>
                   ) : (
-                    "Submit Application"
+                    <span>Submit Application</span>
                   )}
-                </Button>
+                </button>
               </div>
             </div>
           )}
