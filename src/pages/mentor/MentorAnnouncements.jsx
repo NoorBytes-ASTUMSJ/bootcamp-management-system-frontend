@@ -1,77 +1,186 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { FiBell, FiPlus, FiX } from "react-icons/fi";
+import {
+  getDashboardAnnouncements,
+  createAnnouncement,
+  deleteAnnouncement,
+} from "../../services/announcementService";
+import { FiBell, FiPlus, FiX, FiTrash2, FiLoader, FiAlertTriangle, FiEye } from "react-icons/fi";
+
+// Pulls the mentor's own batch id from whatever shape the auth `user`
+// object happens to have. Add/reorder fields here if your API uses a
+// different field name — this is the single place that needs to change.
+function resolveMentorBatchId(user) {
+  return (
+    user?.batch?._id ||
+    user?.batch ||
+    user?.assignedBatch?._id ||
+    user?.assignedBatch ||
+    user?.batchId ||
+    user?.mentorBatch?._id ||
+    user?.mentorBatch ||
+    null
+  );
+}
+
+function resolveMentorBatchName(user) {
+  return user?.batch?.name || user?.assignedBatch?.name || user?.mentorBatch?.name || null;
+}
 
 export default function MentorAnnouncements() {
   const { user } = useAuth();
 
-  const [announcements, setAnnouncements] = useState([
-    {
-      id: 1,
-      title: "Batch 3 React Lab Session Rescheduled",
-      author: user?.name || "Mentor",
-      date: "August 21, 2026",
-      content:
-        "Please note that tomorrow's interactive React hooks lab has been pushed back by one hour to accommodate the mentor sync meeting.",
-    },
-    {
-      id: 2,
-      title: "Reviewing Final Project SRS Guidelines",
-      author: user?.name || "Mentor",
-      date: "August 18, 2026",
-      content:
-        "Ensure your team repositories have the base folder structure ready before our Friday code review walkthrough.",
-    },
-  ]);
+  const mentorBatchId = resolveMentorBatchId(user);
+  const mentorBatchName = resolveMentorBatchName(user);
 
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+
+  // Form fields (targetAudience removed since it's handled automatically for students)
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [priority, setPriority] = useState("normal");
 
-  const handlePostSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Detail Modal State
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+  // Delete Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [announcementToDelete, setAnnouncementToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const loadAnnouncements = async () => {
+    try {
+      setLoading(true);
+      const data = await getDashboardAnnouncements();
+      // This mentor-facing list only ever shows published announcements —
+      // drafts (including a mentor's own unpublished ones) stay hidden here.
+      const publishedOnly = (data || []).filter(
+        (a) => (a.status || "").toLowerCase() === "published"
+      );
+      setAnnouncements(publishedOnly);
+    } catch (err) {
+      console.error("Failed to fetch mentor announcements:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAnnouncements();
+  }, []);
+
+  const handlePostSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
 
-    const newAnnouncement = {
-      id: Date.now(),
-      title,
-      author: user?.name || "Mentor",
-      date: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
-      content,
-    };
+    // Guard: without a batch, this would post as "mentor group, no batch"
+    // again — refuse instead of silently creating an unscoped announcement.
+    if (!mentorBatchId) {
+      setErrorMsg(
+        "We couldn't find a batch assigned to your mentor account, so this announcement can't be scoped correctly. Please contact an admin to confirm your batch assignment."
+      );
+      return;
+    }
 
-    setAnnouncements([newAnnouncement, ...announcements]);
-    setTitle("");
-    setContent("");
-    setShowForm(false);
+    try {
+      setSubmitting(true);
+      setErrorMsg("");
+
+      const payload = {
+        title,
+        content,
+        targetAudience: "mentor_group",
+        priority,
+        status: "published",
+        batch: mentorBatchId,
+      };
+
+      const created = await createAnnouncement(payload);
+      setAnnouncements((prev) => [created, ...prev]);
+      setTitle("");
+      setContent("");
+      setPriority("normal");
+      setShowForm(false);
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || err.message || "Failed to publish announcement.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleOpenDelete = (id, e) => {
+    if (e) e.stopPropagation();
+    setAnnouncementToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!announcementToDelete) return;
+    try {
+      setDeleting(true);
+      await deleteAnnouncement(announcementToDelete);
+      setAnnouncements((prev) => prev.filter((a) => (a._id || a.id) !== announcementToDelete));
+      setIsDeleteModalOpen(false);
+      setAnnouncementToDelete(null);
+    } catch (err) {
+      alert(err.message || "Failed to delete announcement.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleRowClick = (item) => {
+    setSelectedAnnouncement(item);
+    setIsDetailModalOpen(true);
+  };
+
+  const getPriorityBadge = (prio) => {
+    switch (prio?.toLowerCase()) {
+      case "urgent":
+      case "high":
+        return (
+          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-300 border border-red-200/50 dark:border-red-900/40">
+            {prio}
+          </span>
+        );
+      case "normal":
+        return (
+          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/40">
+            Normal
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-surface-subtle text-text-muted border border-border">
+            {prio || "Normal"}
+          </span>
+        );
+    }
   };
 
   return (
-    <div className="mx-auto w-full max-w-300 space-y-8 animate-in fade-in duration-500 pb-10">
+    <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6 animate-in fade-in duration-500 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-[28px] font-bold text-text-primary tracking-tight">
-            Mentor Announcements
+          <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">
+            Announcements & Notices
           </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Broadcast updates, lab schedules, and notices to your assigned
-            students.
+          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
+            Broadcast updates, lab schedules, and notices directly to your assigned students.
           </p>
         </div>
 
         <button
           onClick={() => setShowForm(!showForm)}
-          className="inline-flex justify-center items-center gap-2 bg-primary text-primary-foreground font-bold px-4 py-2.5 rounded-lg hover:opacity-90 transition text-xs sm:text-sm shadow-sm whitespace-nowrap"
+          className="inline-flex justify-center items-center gap-2 bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition text-xs sm:text-sm shadow-2xs whitespace-nowrap cursor-pointer"
         >
-          {showForm ? (
-            <FiX className="h-4 w-4" />
-          ) : (
-            <FiPlus className="h-4 w-4" />
-          )}
+          {showForm ? <FiX className="h-4 w-4" /> : <FiPlus className="h-4 w-4" />}
           {showForm ? "Cancel" : "Post Announcement"}
         </button>
       </div>
@@ -79,13 +188,31 @@ export default function MentorAnnouncements() {
       {showForm && (
         <form
           onSubmit={handlePostSubmit}
-          className="bg-surface border border-border rounded-xl p-6 sm:p-7 space-y-5 shadow-md animate-in zoom-in-95 duration-200"
+          className="bg-surface border border-border rounded-xl p-5 sm:p-6 space-y-4 shadow-md animate-in zoom-in-95 duration-200"
         >
-          <h2 className="text-base font-bold text-text-primary">
-            Create New Batch Announcement
-          </h2>
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <h2 className="text-sm font-bold text-text-primary">
+              Create New Announcement
+            </h2>
+            <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">
+              Target: {mentorBatchName ? `Mentor Group — ${mentorBatchName}` : "Assigned Mentees"}
+            </span>
+          </div>
+
+          {!mentorBatchId && (
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-amber-700 dark:text-amber-300 rounded-lg text-xs">
+              No batch is linked to your mentor account yet, so you won't be able to publish until an admin assigns one.
+            </div>
+          )}
+
+          {errorMsg && (
+            <div className="p-3 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 rounded-lg text-xs">
+              {errorMsg}
+            </div>
+          )}
+
           <div>
-            <label className="block text-xs font-bold text-text-primary uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-text-primary mb-1">
               Title <span className="text-error">*</span>
             </label>
             <input
@@ -93,12 +220,29 @@ export default function MentorAnnouncements() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Lab Schedule Update"
-              className="w-full bg-surface-subtle border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-primary transition-shadow"
+              className="w-full bg-surface-subtle border border-border rounded-lg px-3 py-2 text-xs sm:text-sm text-text-primary focus:outline-none focus:border-primary transition"
               required
             />
           </div>
+
           <div>
-            <label className="block text-xs font-bold text-text-primary uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-text-primary mb-1">
+              Priority Level
+            </label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full bg-surface-subtle border border-border rounded-lg px-3 py-2 text-xs sm:text-sm text-text-primary focus:outline-none focus:border-primary transition cursor-pointer"
+            >
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-text-primary mb-1">
               Content <span className="text-error">*</span>
             </label>
             <textarea
@@ -106,64 +250,216 @@ export default function MentorAnnouncements() {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your notice details here..."
               rows="4"
-              className="w-full p-3 bg-surface-subtle border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary transition-shadow resize-none"
+              className="w-full p-3 bg-surface-subtle border border-border rounded-lg text-xs sm:text-sm text-text-primary focus:outline-none focus:border-primary transition resize-none"
               required
             />
           </div>
-          <div className="flex justify-end gap-3 pt-2 border-t border-border">
+
+          <div className="flex justify-end gap-2.5 pt-2 border-t border-border">
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-4 py-2 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-bold text-xs sm:text-sm rounded-lg transition-colors"
+              className="px-4 py-2 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-semibold text-xs rounded-lg transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-primary text-primary-foreground font-bold text-xs sm:text-sm rounded-lg hover:opacity-90 transition-colors shadow-sm"
+              disabled={submitting || !mentorBatchId}
+              className="px-4 py-2 bg-primary text-primary-foreground font-semibold text-xs rounded-lg hover:opacity-90 transition shadow-2xs flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
             >
-              Publish Announcement
+              {submitting && <FiLoader className="animate-spin h-3.5 w-3.5" />}
+              <span>Publish Notice</span>
             </button>
           </div>
         </form>
       )}
 
-      {announcements.length > 0 ? (
-        <div className="space-y-5">
-          {announcements.map((item) => (
-            <div
-              key={item.id}
-              className="bg-surface border border-border rounded-xl p-6 sm:p-7 shadow-sm transition hover:border-primary/50 flex flex-col gap-4"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <h2 className="text-lg sm:text-xl font-bold text-text-primary">
-                  {item.title}
-                </h2>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">
-                    {item.author}
-                  </span>
-                  <span className="text-xs text-text-muted">{item.date}</span>
+      {loading ? (
+        <div className="flex items-center justify-center py-20 text-xs text-text-muted gap-2">
+          <FiLoader className="animate-spin h-4 w-4 text-primary" />
+          <span>Loading announcements...</span>
+        </div>
+      ) : announcements.length > 0 ? (
+        <div className="space-y-3">
+          {announcements.map((item) => {
+            const itemId = item._id || item.id;
+            const authorName = item.createdBy?.fullName || "System Admin";
+            const isOwner = item.createdBy?._id === user?._id || item.createdBy === user?._id;
+            const dateStr = item.publishDate
+              ? new Date(item.publishDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "Recent";
+
+            return (
+              <div
+                key={itemId}
+                onClick={() => handleRowClick(item)}
+                className="bg-surface border border-border rounded-xl p-4 sm:p-5 shadow-2xs transition hover:border-primary/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group"
+              >
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-sm sm:text-base font-bold text-text-primary truncate group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h2>
+                    {getPriorityBadge(item.priority)}
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold uppercase tracking-wide">
+                      {item.targetAudience}
+                    </span>
+                  </div>
+
+                  <p className="text-text-muted text-xs line-clamp-1">
+                    {item.content}
+                  </p>
+
+                  <div className="flex items-center gap-3 text-[11px] text-text-muted pt-1">
+                    <span>By <strong className="text-text-primary font-medium">{authorName}</strong></span>
+                    <span>•</span>
+                    <span>{dateStr}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRowClick(item);
+                    }}
+                    title="View details"
+                    className="p-2 rounded-lg bg-surface-subtle text-text-muted hover:text-text-primary hover:bg-border/50 transition cursor-pointer"
+                  >
+                    <FiEye className="h-4 w-4" />
+                  </button>
+
+                  {isOwner && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleOpenDelete(itemId, e)}
+                      title="Delete announcement"
+                      className="p-2 rounded-lg bg-surface-subtle text-text-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer"
+                    >
+                      <FiTrash2 className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               </div>
-              <p className="text-text-muted text-sm leading-relaxed">
-                {item.content}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 bg-surface border border-border rounded-xl shadow-sm">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 text-primary mb-3 text-xl">
-            <FiBell className="w-6 h-6" />
+        <div className="text-center py-16 px-4 bg-surface border border-border rounded-xl shadow-2xs">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-3">
+            <FiBell className="w-5 h-5" />
           </div>
-          <h3 className="text-base font-bold text-text-primary mb-1">
-            No announcements posted yet
+          <h3 className="text-sm font-bold text-text-primary mb-1">
+            No announcements available
           </h3>
           <p className="text-text-muted max-w-sm mx-auto text-xs">
-            Create your first broadcast using the button above to keep your
-            students updated.
+            There are no notices or updates posted for your account currently.
           </p>
+        </div>
+      )}
+
+      {/* DETAIL MODAL */}
+      {isDetailModalOpen && selectedAnnouncement && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="bg-surface w-full max-w-lg rounded-xl border border-border shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-surface-subtle/50">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-text-primary">
+                  {selectedAnnouncement.title}
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="text-text-muted hover:text-text-primary cursor-pointer p-1"
+              >
+                <FiX className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+              <div className="flex flex-wrap items-center gap-2.5 pb-3 border-b border-border text-text-muted">
+                <div>
+                  <span className="font-semibold text-text-primary">Audience:</span>{" "}
+                  <span className="capitalize px-1.5 py-0.5 bg-surface-subtle rounded border border-border">
+                    {selectedAnnouncement.targetAudience}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-semibold text-text-primary">Priority:</span>{" "}
+                  {getPriorityBadge(selectedAnnouncement.priority)}
+                </div>
+                <div>
+                  <span className="font-semibold text-text-primary">Author:</span>{" "}
+                  <span>{selectedAnnouncement.createdBy?.fullName || "System Admin"}</span>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-text-primary mb-1.5 uppercase tracking-wider text-[10px]">
+                  Notice Content
+                </h4>
+                <div className="bg-surface-subtle p-3.5 rounded-lg border border-border text-text-primary whitespace-pre-wrap leading-relaxed">
+                  {selectedAnnouncement.content}
+                </div>
+              </div>
+
+              <div className="text-[11px] text-text-muted pt-2">
+                Published on: {selectedAnnouncement.publishDate ? new Date(selectedAnnouncement.publishDate).toLocaleString() : "Recently"}
+              </div>
+            </div>
+
+            <div className="px-5 py-3 bg-surface-subtle/50 border-t border-border flex justify-end">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="px-4 py-1.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-semibold rounded-lg text-xs transition cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="bg-surface w-full max-w-sm rounded-xl border border-border shadow-xl overflow-hidden p-5 text-center space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="mx-auto w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center">
+              <FiAlertTriangle className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-text-primary">
+                Delete Announcement?
+              </h3>
+              <p className="text-xs text-text-muted mt-1">
+                This action cannot be undone. This will permanently remove the notice from the system.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 px-4 py-2 rounded-lg border border-border hover:bg-surface-subtle text-text-primary font-semibold text-xs cursor-pointer transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer transition"
+              >
+                {deleting && <FiLoader className="animate-spin h-3.5 w-3.5" />}
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
