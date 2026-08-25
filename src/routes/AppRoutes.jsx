@@ -30,6 +30,7 @@ import AllMembers from "../pages/student/AllMembers";
 
 // Layouts & Mentor Pages
 import MentorLayout from "../layouts/MentorLayout";
+import MentorAllMember from "../pages/mentor/MentorAllMember";
 import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
 import MentorAssignments from "../pages/mentor/MentorAssignments";
@@ -196,6 +197,7 @@ export default function AppRoutes() {
         <Route element={<ProtectedRoute allowedRoles={["mentor"]} />}>
           <Route path="/mentor" element={<MentorLayout />}>
             <Route index element={<Navigate to="attendance" replace />} />
+            <Route path="students" element={<MentorAllMember />} />
             <Route path="attendance" element={<MentorAttendance />} />
             <Route path="assignments" element={<MentorAssignments />} />
             <Route path="submissions" element={<MentorSubmissions />} />

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormCard from "../common/FormCard";
-import InputField from "../forms/InputField";
-import Button from "../common/Button";
+import { Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import API from "../../services/api";
+import jemeaLogo from "../../assets/jemea-logo.jpg";
 
 export default function Login({
   onNavigateSignUp,
@@ -23,6 +23,7 @@ export default function Login({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setError("");
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -33,114 +34,162 @@ export default function Login({
 
     try {
       const response = await API.post("/auth/login", formData);
-      const { user, token } = response.data.data;
+      const responseData = response.data.data || response.data;
+      const { user, token } = responseData;
 
-      // Save user & token in state and localStorage
       login(user, token);
 
-      // Redirect using centralized role routing
-      const targetPath = getRedirectPath(user.role);
+      const targetPath = getRedirectPath
+        ? getRedirectPath(user.role)
+        : "/announcements";
       navigate(targetPath, { replace: true });
     } catch (err) {
       setError(
-        err.response?.data?.message || "Invalid credentials. Please try again."
+        err.response?.data?.message ||
+          err.message ||
+          "Invalid credentials. Please try again.",
       );
     } finally {
       setLoading(false);
     }
   };
 
+  const inputWithIconStyle =
+    "w-full bg-surface border border-border rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs cursor-text";
+
+  const primaryBtnStyle =
+    "w-full py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover active:scale-[0.99] text-primary-foreground text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-primary/20 cursor-pointer disabled:opacity-60 text-center flex items-center justify-center select-none";
+
   return (
     <FormCard>
-      <div className="mb-2">
-        <button
-          type="button"
-          onClick={onBackToPublic || (() => navigate("/"))}
-          className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="w-full">
+        {/* Top Navigation */}
+        <div className="flex items-center justify-between mb-3">
+          <button
+            type="button"
+            onClick={onBackToPublic || (() => navigate("/"))}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-primary transition-colors cursor-pointer disabled:opacity-50 select-none"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to home
-        </button>
-      </div>
-
-      <div className="pt-2 pb-1">
-        <div className="text-center mb-6">
-          <h1 className="font-serif text-3xl font-normal text-inherit tracking-tight mb-2">
-            Welcome back.
-          </h1>
-          <p className="text-sm text-muted">Log in to your ASTU MSJ account</p>
+            <ArrowLeft size={14} />
+            <span>Back to home</span>
+          </button>
+          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase border border-primary/20">
+            Account Portal
+          </span>
         </div>
 
+        {/* Brand Logo & Heading */}
+        <div className="text-center mb-5 pt-1">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-surface border border-border/80 shadow-xs p-1 mb-2.5 overflow-hidden">
+            <img
+              src={jemeaLogo}
+              alt="ASTU MSJ Logo"
+              className="w-full h-full object-contain rounded-xl"
+            />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
+            Welcome Back
+          </h2>
+          <p className="text-xs text-text-muted mt-0.5">
+            Log in to manage your bootcamp registration and tracks.
+          </p>
+        </div>
+
+        {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-2.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-xs text-[#B91C1C] dark:text-red-300">
-            {error}
+          <div className="mb-4 p-3 text-xs font-medium text-red-500 bg-red-500/10 rounded-xl border border-red-500/25 flex items-center gap-2 animate-in fade-in duration-200">
+            <span className="font-bold">✕</span>
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <InputField
-            label="EMAIL ADDRESS"
-            type="email"
-            name="email"
-            placeholder="name@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            autoComplete="off"
-            required
-          />
+        {/* Email & Password Form */}
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          <div>
+            <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+              Email Address <span className="text-primary">*</span>
+            </label>
+            <div className="relative flex items-center">
+              <Mail
+                size={16}
+                className="absolute left-3.5 text-text-muted pointer-events-none"
+              />
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="name@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                autoComplete="email"
+                className={inputWithIconStyle}
+              />
+            </div>
+          </div>
 
-          <InputField
-            label="PASSWORD"
-            type="password"
-            name="password"
-            placeholder="••••••••"
-            value={formData.password}
-            onChange={handleChange}
-            autoComplete="new-password"
-            required
-          />
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase">
+                Password <span className="text-primary">*</span>
+              </label>
+              {onForgotPassword && (
+                <button
+                  type="button"
+                  onClick={onForgotPassword}
+                  className="text-[11px] font-medium text-primary hover:underline cursor-pointer"
+                >
+                  Forgot password?
+                </button>
+              )}
+            </div>
+            <div className="relative flex items-center">
+              <Lock
+                size={15}
+                className="absolute left-3.5 text-text-muted pointer-events-none"
+              />
+              <input
+                type="password"
+                name="password"
+                required
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                className={inputWithIconStyle}
+              />
+            </div>
+          </div>
 
           <div className="pt-2">
-            <Button type="submit" disabled={loading}>
-              {loading ? "Logging in..." : "Log In"}
-            </Button>
+            <button
+              type="submit"
+              disabled={loading}
+              className={primaryBtnStyle}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin" size={16} />
+                  <span>Logging in...</span>
+                </span>
+              ) : (
+                <span>Log In</span>
+              )}
+            </button>
           </div>
         </form>
 
-        <div className="mt-8 text-center space-y-3 text-xs">
-          <p className="text-text-muted">
-            Don't have an account?{" "}
-            <button
-              type="button"
-              onClick={onNavigateSignUp}
-              className="text-primary font-semibold hover:underline cursor-pointer"
-            >
-              Sign up
-            </button>
-          </p>
-
-          <div>
-            <button
-              type="button"
-              onClick={onForgotPassword}
-              className="text-primary font-medium hover:underline transition-colors cursor-pointer"
-            >
-              Forgot password?
-            </button>
-          </div>
-        </div>
+        {/* Footer */}
+        <p className="text-center text-xs text-text-muted mt-5">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={onNavigateSignUp}
+            className="text-primary font-bold hover:underline cursor-pointer"
+          >
+            Sign up
+          </button>
+        </p>
       </div>
     </FormCard>
   );

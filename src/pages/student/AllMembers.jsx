@@ -1,118 +1,112 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FiSearch, FiUsers, FiStar } from "react-icons/fi";
+import { getMyBatchMembers } from "../../services/studentService";
+
+// TODO: Replace this with however your app actually exposes the logged-in
+// user (an AuthContext / useAuth() hook, Redux store, decoded JWT, etc).
+// This reads from localStorage as a reasonable default — adjust the key
+// and shape ("_id" vs "id") to match how you store the user after login.
+function getCurrentUserId() {
+  try {
+    const stored = localStorage.getItem("user");
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored);
+    return parsed?._id || parsed?.id || null;
+  } catch {
+    return null;
+  }
+}
 
 export default function AllMembers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showOnlyMyGroup, setShowOnlyMyGroup] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const MY_GROUP_ID = 1;
+  // No backend filtering exists yet, so we always fetch the full batch
+  // roster once and do "My Group" filtering client-side below.
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-  // Mock data updated to include the new table columns (Attendance, Progress, University)
-  const [members] = useState([
-    {
-      id: 1,
-      name: "Ahmed Mansour",
-      role: "Mentor",
-      group: "All",
-      email: "ahmed.m@astu.edu.et",
-      github: "ahmed-man",
-      attendance: "100%",
-      progress: 100,
-      university: "ASTU",
-    },
-    {
-      id: 2,
-      name: "Bilal Mohammed",
-      role: "Student",
-      group: 1,
-      email: "bilal.m@aau.edu.et",
-      github: "bilal-dev",
-      attendance: "92%",
-      progress: 78,
-      university: "AAU",
-    },
-    {
-      id: 3,
-      name: "Sumaya Ali",
-      role: "Student",
-      group: 1,
-      email: "sumaya.a@astu.edu.et",
-      github: "sumaya-codes",
-      attendance: "96%",
-      progress: 88,
-      university: "ASTU",
-    },
-    {
-      id: 4,
-      name: "Tariq Rahman",
-      role: "Student",
-      group: 2,
-      email: "tariq.r@ju.edu.et",
-      github: "tariq-r",
-      attendance: "82%",
-      progress: 65,
-      university: "JU",
-    },
-    {
-      id: 5,
-      name: "Fatima Zahra",
-      role: "Student",
-      group: 2,
-      email: "fatima.z@hu.edu.et",
-      github: "f-zahra",
-      attendance: "68%",
-      progress: 42,
-      university: "HU",
-    },
-    {
-      id: 6,
-      name: "Yusuf Ibrahim",
-      role: "Student",
-      group: 1,
-      email: "yusuf.i@astu.edu.et",
-      github: "yusuf-ib",
-      attendance: "88%",
-      progress: 70,
-      university: "ASTU",
-    },
-    {
-      id: 7,
-      name: "Zainab Hassan",
-      role: "Student",
-      group: 3,
-      email: "zainab.h@aau.edu.et",
-      github: "zainab-h",
-      attendance: "95%",
-      progress: 91,
-      university: "AAU",
-    },
-    {
-      id: 8,
-      name: "Omar Farooq",
-      role: "Student",
-      group: 3,
-      email: "omar.f@ju.edu.et",
-      github: "omar-f",
-      attendance: "75%",
-      progress: 55,
-      university: "JU",
-    },
-  ]);
+        const data = await getMyBatchMembers();
 
-  // Derived metrics for the top counters
-  const totalStudents = members.filter((m) => m.role === "Student").length;
-  const totalMentors = members.filter((m) => m.role === "Mentor").length;
-  const myGroupSize = members.filter((m) => m.group === MY_GROUP_ID).length;
+        setMembers(data);
+      } catch (err) {
+        console.error("Failed to load batch members:", err);
+        setError("Failed to load batch members.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredMembers = members.filter((member) => {
-    const matchesSearch = member.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesGroup = showOnlyMyGroup
-      ? member.group === MY_GROUP_ID || member.role === "Mentor"
-      : true;
-    return matchesSearch && matchesGroup;
-  });
+    fetchMembers();
+  }, []);
+
+  const currentUserId = useMemo(() => getCurrentUserId(), []);
+
+  // Find "me" in the roster to figure out which mentor I'm assigned to.
+  const myMentorId = useMemo(() => {
+    if (!currentUserId) return null;
+
+    const me = members.find((member) => member.user?._id === currentUserId);
+    return me?.assignedMentor?._id || null;
+  }, [members, currentUserId]);
+
+  // Everyone who shares my assigned mentor.
+  const myGroupMembers = useMemo(() => {
+    if (!myMentorId) return [];
+
+    return members.filter(
+      (member) => member.assignedMentor?._id === myMentorId,
+    );
+  }, [members, myMentorId]);
+
+  // Local search filtering by name/email, applied on top of the
+  // all-batch or my-group base list depending on the toggle.
+  const filteredMembers = useMemo(() => {
+    const search = searchTerm.toLowerCase().trim();
+    const base = showOnlyMyGroup ? myGroupMembers : members;
+
+    if (!search) {
+      return base;
+    }
+
+    return base.filter((member) => {
+      const user = member.user;
+      if (!user) return false;
+
+      const name = user.fullName || "";
+      const email = user.email || "";
+
+      return (
+        name.toLowerCase().includes(search) ||
+        email.toLowerCase().includes(search)
+      );
+    });
+  }, [members, myGroupMembers, showOnlyMyGroup, searchTerm]);
+
+  const totalStudents = members.filter(
+    (member) => member.user?.role?.toLowerCase() === "student",
+  ).length;
+
+  // Members only ever list students directly — mentors show up nested
+  // under assignedMentor, not as their own member entries — so we count
+  // unique assigned mentors instead of filtering by role.
+  const totalMentors = useMemo(() => {
+    const mentorIds = new Set(
+      members
+        .map((member) => member.assignedMentor?._id)
+        .filter(Boolean),
+    );
+    return mentorIds.size;
+  }, [members]);
+
+  const myGroupSize = myGroupMembers.length;
 
   return (
     <div className="mx-auto w-full max-w-300 space-y-8 animate-in fade-in duration-500 pb-10">
@@ -123,11 +117,17 @@ export default function AllMembers() {
             Batch Members
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Connect with your batch peers and coordinate with your project
-            group.
+            Connect with your batch peers and coordinate with your project group.
           </p>
         </div>
       </div>
+
+      {/* Error */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
+          {error}
+        </div>
+      )}
 
       {/* Summary Counters */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -140,7 +140,7 @@ export default function AllMembers() {
               Total Students
             </p>
             <h4 className="text-2xl font-bold text-text-primary leading-none">
-              {totalStudents}
+              {loading ? "..." : totalStudents}
             </h4>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function AllMembers() {
               Batch Mentors
             </p>
             <h4 className="text-2xl font-bold text-text-primary leading-none">
-              {totalMentors}
+              {loading ? "..." : totalMentors}
             </h4>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function AllMembers() {
               My Group Size
             </p>
             <h4 className="text-2xl font-bold text-text-primary leading-none">
-              {myGroupSize}
+              {loading ? "..." : myGroupSize}
             </h4>
           </div>
         </div>
@@ -198,6 +198,7 @@ export default function AllMembers() {
           >
             All Batch
           </button>
+
           <button
             onClick={() => setShowOnlyMyGroup(true)}
             className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors flex items-center gap-1.5 ${
@@ -206,96 +207,108 @@ export default function AllMembers() {
                 : "text-text-muted hover:text-text-primary"
             }`}
           >
-            <FiUsers className="w-3.5 h-3.5" /> My Group
+            <FiUsers className="w-3.5 h-3.5" />
+            My Group
           </button>
         </div>
       </div>
 
-      {/* Table Section */}
+      {/* Single Table */}
       <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-bold bg-surface-subtle">
-                <th className="px-6 py-4 font-bold">Member</th>
-                <th className="px-6 py-4 font-bold">Email</th>
-                <th className="px-6 py-4 font-bold">Attendance</th>
-                <th className="px-6 py-4 font-bold">Progress</th>
-                <th className="px-6 py-4 font-bold">University</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-subtle">
-              {filteredMembers.map((member) => (
-                <tr
-                  key={member.id}
-                  className="hover:bg-surface-subtle transition-colors group"
-                >
-                  {/* Member Column */}
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=F3F4F6&color=374151`}
-                        alt={`${member.name} profile`}
-                        className="w-8 h-8 rounded-full border border-border group-hover:border-primary/50 transition-colors shrink-0 object-cover"
-                      />
-                      <span className="text-sm font-bold text-text-primary">
-                        {member.name}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Email Column */}
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-text-muted">
-                      {member.email}
-                    </span>
-                  </td>
-
-                  {/* Attendance Column */}
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-medium text-text-primary">
-                      {member.attendance}
-                    </span>
-                  </td>
-
-                  {/* Progress Column */}
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-16 h-1.5 bg-surface-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-[#B91C1C] rounded-full"
-                          style={{ width: `${member.progress}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-text-muted font-medium">
-                        {member.progress}%
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* University Badge Column */}
-                  <td className="px-6 py-4">
-                    <span className="px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600">
-                      {member.university}
-                    </span>
-                  </td>
+          {loading ? (
+            <div className="text-center py-12 text-sm text-text-muted">
+              Loading batch members...
+            </div>
+          ) : (
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-bold bg-surface-subtle">
+                  <th className="px-6 py-4 font-bold">Member</th>
+                  <th className="px-6 py-4 font-bold">Email</th>
+                  <th className="px-6 py-4 font-bold">Attendance</th>
+                  <th className="px-6 py-4 font-bold">Progress</th>
+                  <th className="px-6 py-4 font-bold">University</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border-subtle">
+                {filteredMembers.map((member) => {
+                  const user = member.user;
+                  if (!user) return null;
+
+                  const name = user.fullName || "Unknown";
+
+                  return (
+                    <tr
+                      key={member._id}
+                      className="hover:bg-surface-subtle transition-colors group"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              name,
+                            )}&background=F3F4F6&color=374151`}
+                            alt={`${name} profile`}
+                            className="w-8 h-8 rounded-full border border-border group-hover:border-primary/50 transition-colors shrink-0 object-cover"
+                          />
+                          <span className="text-sm font-bold text-text-primary">
+                            {name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-text-muted">
+                          {user.email}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm font-medium text-text-primary">
+                          {member.attendance ?? "0%"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-16 h-1.5 bg-surface-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-[#B91C1C] rounded-full"
+                              style={{
+                                width: `${member.progress ?? 0}%`,
+                              }}
+                            />
+                          </div>
+                          <span className="text-sm text-text-muted font-medium">
+                            {member.progress ?? 0}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600">
+                          {user.university || "N/A"}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
 
           {/* Empty State */}
-          {filteredMembers.length === 0 && (
+          {!loading && filteredMembers.length === 0 && (
             <div className="text-center py-12 px-4">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-muted text-text-muted mb-3 border border-border">
                 <FiSearch className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-text-primary mb-1">
-                No members found
+                {showOnlyMyGroup && !myMentorId
+                  ? "You don't have an assigned mentor yet"
+                  : "No members found"}
               </h3>
               <p className="text-text-muted text-xs">
-                We couldn't find anyone matching your current search in this
-                view.
+                {showOnlyMyGroup && !myMentorId
+                  ? "Once a mentor is assigned to you, your group will show up here."
+                  : "We couldn't find anyone matching your current search in this view."}
               </p>
             </div>
           )}

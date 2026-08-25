@@ -430,7 +430,7 @@ export default function AttendanceManagement() {
             <FiChevronLeft className="w-5 h-5" />
           </button>
 
-          <div className="text-center px-4 min-w-[160px]">
+          <div className="text-center px-4 min-w-40">
             <h1 className="text-sm font-bold text-foreground uppercase tracking-[1px]">
               {isHistoryView
                 ? `Session ${pastSessions.length - currentSessionIndex}`
@@ -540,7 +540,7 @@ export default function AttendanceManagement() {
                 value={sessionTitle}
                 onChange={(e) => setSessionTitle(e.target.value)}
                 placeholder="Overall Bootcamp Assembly..."
-                className="w-full pl-11 pr-4 h-[48px] bg-surface-subtle hover:bg-surface-muted border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                className="w-full pl-11 pr-4 h-12 bg-surface-subtle hover:bg-surface-muted border border-border rounded-xl text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
               />
             </div>
           </div>
@@ -550,7 +550,7 @@ export default function AttendanceManagement() {
               Batch <span className="text-error">*</span>
             </label>
             <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-              <SelectTrigger className="w-full pl-4 h-[48px] bg-surface-subtle hover:bg-surface-muted border-border rounded-xl text-sm focus:ring-primary text-foreground transition-all">
+              <SelectTrigger className="w-full pl-4 h-12 bg-surface-subtle hover:bg-surface-muted border-border rounded-xl text-sm focus:ring-primary text-foreground transition-all">
                 <SelectValue placeholder="Select batch">
                   {batches.find((b) => b.id === selectedBatch)?.name ||
                     "Select batch"}
@@ -578,7 +578,7 @@ export default function AttendanceManagement() {
             </label>
             <Popover>
               <PopoverTrigger>
-                <div className="w-full justify-start text-left font-normal pl-4 h-[48px] bg-surface-subtle border border-border rounded-xl hover:bg-surface-muted text-foreground flex items-center cursor-pointer transition-all">
+                <div className="w-full justify-start text-left font-normal pl-4 h-12 bg-surface-subtle border border-border rounded-xl hover:bg-surface-muted text-foreground flex items-center cursor-pointer transition-all">
                   <FiCalendar className="mr-4 h-4 w-4 text-muted" />
                   {selectedDate ? (
                     format(new Date(selectedDate), "MMM d, yyyy")
@@ -613,7 +613,7 @@ export default function AttendanceManagement() {
                 value={sessionDescription}
                 onChange={(e) => setSessionDescription(e.target.value)}
                 placeholder="Overview of today's topics..."
-                className="w-full pl-11 pr-4 py-3 min-h-[48px] bg-surface-subtle hover:bg-surface-muted border border-border rounded-xl text-sm text-foreground focus:border-primary outline-none transition-all resize-none"
+                className="w-full pl-11 pr-4 py-3 min-h-12 bg-surface-subtle hover:bg-surface-muted border border-border rounded-xl text-sm text-foreground focus:border-primary outline-none transition-all resize-none"
               />
             </div>
           </div>
@@ -623,7 +623,7 @@ export default function AttendanceManagement() {
               Session Type <span className="text-error">*</span>
             </label>
             <Select value={sessionType} onValueChange={setSessionType}>
-              <SelectTrigger className="w-full pl-4 h-[48px] bg-surface-subtle hover:bg-surface-muted border-border rounded-xl text-sm focus:ring-primary text-foreground transition-all">
+              <SelectTrigger className="w-full pl-4 h-12 bg-surface-subtle hover:bg-surface-muted border-border rounded-xl text-sm focus:ring-primary text-foreground transition-all">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent className="z-50 bg-surface border border-border shadow-xl">
@@ -655,7 +655,7 @@ export default function AttendanceManagement() {
           </h3>
           <div className="flex flex-wrap items-center gap-4">
             <Select value={genderFilter} onValueChange={setGenderFilter}>
-              <SelectTrigger className="w-[140px] h-[36px] bg-surface-subtle hover:bg-surface-muted border border-border rounded-lg text-xs font-bold text-foreground focus:ring-primary">
+              <SelectTrigger className="w-35 h-9 bg-surface-subtle hover:bg-surface-muted border border-border rounded-lg text-xs font-bold text-foreground focus:ring-primary">
                 <SelectValue placeholder="Filter Gender" />
               </SelectTrigger>
               <SelectContent className="bg-surface border border-border shadow-xl">
@@ -667,13 +667,13 @@ export default function AttendanceManagement() {
             <div className="flex gap-2">
               <button
                 onClick={() => handleMarkAll("Present")}
-                className="px-3 py-2 h-[36px] text-[10px] font-black uppercase bg-success/10 text-success rounded-lg border border-success/20 hover:bg-success/20 transition-all whitespace-nowrap"
+                className="px-3 py-2 h-9 text-[10px] font-black uppercase bg-success/10 text-success rounded-lg border border-success/20 hover:bg-success/20 transition-all whitespace-nowrap"
               >
                 All Present
               </button>
               <button
                 onClick={() => handleMarkAll("Absent")}
-                className="px-3 py-2 h-[36px] text-[10px] font-black uppercase bg-error/10 text-error rounded-lg border border-error/20 hover:bg-error/20 transition-all whitespace-nowrap"
+                className="px-3 py-2 h-9 text-[10px] font-black uppercase bg-error/10 text-error rounded-lg border border-error/20 hover:bg-error/20 transition-all whitespace-nowrap"
               >
                 All Absent
               </button>
@@ -682,7 +682,7 @@ export default function AttendanceManagement() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[850px]">
+          <table className="w-full text-left min-w-212.5">
             <thead>
               <tr className="bg-surface-subtle/50 text-[10px] font-black text-muted uppercase tracking-widest border-b border-border">
                 <th className="px-3 py-3">Student</th>

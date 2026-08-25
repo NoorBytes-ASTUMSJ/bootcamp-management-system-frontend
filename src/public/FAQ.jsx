@@ -95,7 +95,7 @@ export default function FAQ({
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text-primary transition-colors">
+    <div className="min-h-screen bg-background text-text-primary transition-colors selection:bg-primary/20 selection:text-primary">
       <Navbar
         currentView="faq"
         onNavigatePage={onNavigatePage}
@@ -105,12 +105,18 @@ export default function FAQ({
 
       {/* ================= 1. HERO SECTION ================= */}
       <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-center max-w-3xl mx-auto">
-        <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-text-primary leading-[1.15] mb-4">
-          Frequently <span className="text-primary">Asked</span> <br />
-          <span className="text-primary">Questions</span>
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-text-primary leading-[1.15] mb-4">
+          Frequently{" "}
+          <span className="text-primary bg-gradient-to-r from-primary to-primary/80 bg-clip-text">
+            Asked
+          </span>{" "}
+          <br />
+          <span className="text-primary bg-gradient-to-r from-primary to-primary/80 bg-clip-text">
+            Questions
+          </span>
         </h1>
 
-        <p className="text-xs sm:text-sm text-text-muted max-w-md mx-auto">
+        <p className="text-sm sm:text-base text-text-muted max-w-md mx-auto leading-relaxed">
           Everything you need to know before starting your journey.
         </p>
       </section>
@@ -120,31 +126,37 @@ export default function FAQ({
         {faqData.map((group, groupIdx) => (
           <div key={groupIdx} className="space-y-4">
             {/* Category Header */}
-            <h2 className="text-sm font-bold tracking-tight text-text-primary">
+            <h2 className="text-sm sm:text-base font-bold tracking-tight text-text-primary">
               {group.category}{" "}
               <span className="text-primary">{group.categoryHighlight}</span>
             </h2>
 
             {/* Accordion Item Cards */}
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               {group.items.map((item) => {
                 const isOpen = openIndex === item.id;
                 return (
                   <div
                     key={item.id}
-                    className="bg-surface border border-border rounded-xl transition-all duration-200 shadow-xs overflow-hidden"
+                    className={`bg-surface border rounded-2xl transition-all duration-300 shadow-sm overflow-hidden ${
+                      isOpen
+                        ? "border-primary/60 shadow-md shadow-primary/5"
+                        : "border-border hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5"
+                    }`}
                   >
                     <button
                       type="button"
                       onClick={() => toggleAccordion(item.id)}
-                      className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-subtle transition-colors"
+                      className="w-full px-6 py-4 sm:py-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-subtle/50 transition-colors"
                     >
-                      <span className="text-xs sm:text-[13px] font-semibold text-text-primary">
+                      <span
+                        className={`text-sm sm:text-[15px] font-semibold transition-colors duration-200 ${isOpen ? "text-primary" : "text-text-primary"}`}
+                      >
                         {item.q}
                       </span>
                       <svg
-                        className={`w-4 h-4 text-text-muted shrink-0 transition-transform duration-200 ${
-                          isOpen ? "rotate-180 text-primary" : ""
+                        className={`w-4 h-4 shrink-0 transition-transform duration-300 ${
+                          isOpen ? "rotate-180 text-primary" : "text-text-muted"
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -153,14 +165,14 @@ export default function FAQ({
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth="2"
+                          strokeWidth="2.2"
                           d="M19 9l-7 7-7-7"
                         />
                       </svg>
                     </button>
 
                     {isOpen && (
-                      <div className="px-5 pb-4 pt-1 border-t border-border text-xs text-text-muted leading-relaxed">
+                      <div className="px-6 pb-5 pt-1 border-t border-border/60 text-xs sm:text-sm text-text-muted leading-relaxed">
                         {item.a}
                       </div>
                     )}
@@ -174,16 +186,16 @@ export default function FAQ({
 
       {/* ================= 3. STILL HAVE QUESTIONS CARD ================= */}
       <section className="px-4 sm:px-6 lg:px-8 pb-24 max-w-xl mx-auto">
-        <div className="bg-surface border border-border rounded-2xl p-8 text-center shadow-xs space-y-4">
-          <div className="w-8 h-8 rounded-full bg-secondary border border-border-subtle text-primary mx-auto flex items-center justify-center text-sm font-bold">
+        <div className="group bg-surface border border-border hover:border-primary/50 rounded-3xl p-8 sm:p-10 text-center shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1.5 transition-all duration-300 space-y-4">
+          <div className="w-10 h-10 rounded-2xl bg-secondary border border-border-subtle text-primary mx-auto flex items-center justify-center text-base font-bold shadow-2xs group-hover:scale-110 transition-transform duration-200">
             ?
           </div>
 
-          <h3 className="text-base font-bold text-text-primary">
+          <h3 className="text-lg sm:text-xl font-bold text-text-primary group-hover:text-primary transition-colors duration-200">
             Still have questions?
           </h3>
 
-          <p className="text-xs text-text-muted max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-muted max-w-xs mx-auto leading-relaxed">
             Can't find the answer you're looking for? Reach out to our team
             directly.
           </p>
@@ -192,7 +204,7 @@ export default function FAQ({
             <button
               type="button"
               onClick={() => onNavigatePage && onNavigatePage("contact")}
-              className="inline-block px-5 py-2 rounded-lg border border-border bg-surface hover:bg-surface-subtle text-xs font-semibold text-text-primary transition-colors shadow-xs cursor-pointer"
+              className="inline-block px-6 py-3 rounded-xl border border-border bg-surface hover:bg-surface-subtle hover:border-primary/50 text-xs sm:text-sm font-semibold text-text-primary shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
             >
               Contact Support
             </button>
