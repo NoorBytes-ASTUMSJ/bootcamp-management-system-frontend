@@ -272,7 +272,9 @@ export default function StudentsDashboard() {
   }, [students]);
 
   const availableBatches = useMemo(() => {
-    const batches = students.map((student) => getBatchName(student)).filter(Boolean);
+    const batches = students
+      .map((student) => getBatchName(student))
+      .filter(Boolean);
 
     return Array.from(new Set(batches)).sort();
   }, [students]);
@@ -487,17 +489,13 @@ export default function StudentsDashboard() {
       // -----------------------------
       // ADD / APPROVE STUDENT
       // -----------------------------
-
       else {
-        const response = await API.post(
-          `/members/approve/${formData.user}`,
-          {
-            role: "student",
-            status: formData.status,
-            joinedAt: formData.joinedAt,
-            assignedMentor: formData.assignedMentor,
-          },
-        );
+        const response = await API.post(`/members/approve/${formData.user}`, {
+          role: "student",
+          status: formData.status,
+          joinedAt: formData.joinedAt,
+          assignedMentor: formData.assignedMentor,
+        });
 
         const created =
           response.data?.data?.member ||
@@ -555,7 +553,6 @@ export default function StudentsDashboard() {
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
         <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
-
           {/* HEADER */}
 
           <div className="flex items-center justify-between">
@@ -581,7 +578,6 @@ export default function StudentsDashboard() {
           {/* STATS */}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-
             <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
@@ -642,7 +638,6 @@ export default function StudentsDashboard() {
           {/* MAIN AREA */}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-
             {/* TABLE */}
 
             <div
@@ -650,14 +645,12 @@ export default function StudentsDashboard() {
                 selectedStudent ? "lg:col-span-8" : "lg:col-span-12"
               }`}
             >
-
               {/* FILTERS */}
 
               <div className="flex flex-wrap items-center gap-2.5">
-
                 {/* SEARCH */}
 
-                <div className="flex-1 min-w-[200px] relative">
+                <div className="flex-1 min-w-50 relative">
                   <Search
                     size={13}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
@@ -776,7 +769,6 @@ export default function StudentsDashboard() {
               {/* TABLE */}
 
               <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-2xs">
-
                 {loading ? (
                   <div className="flex items-center justify-center py-16 gap-2 text-xs text-neutral-500">
                     <Loader2
@@ -789,7 +781,6 @@ export default function StudentsDashboard() {
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
-
                       <thead>
                         <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
                           <th className="py-2.5 px-4">STUDENT</th>
@@ -803,7 +794,6 @@ export default function StudentsDashboard() {
                       </thead>
 
                       <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
-
                         {filteredStudents.length === 0 ? (
                           <tr>
                             <td
@@ -836,10 +826,8 @@ export default function StudentsDashboard() {
                                     : ""
                                 }`}
                               >
-
                                 <td className="py-3 px-4">
                                   <div className="flex items-center gap-2.5">
-
                                     <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-neutral-500 dark:text-neutral-400">
                                       {initials}
                                     </div>
@@ -878,7 +866,6 @@ export default function StudentsDashboard() {
 
                                 <td className="py-3 px-4 text-right">
                                   <div className="flex items-center justify-end gap-2 text-neutral-400">
-
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -900,14 +887,12 @@ export default function StudentsDashboard() {
                                     >
                                       <Trash2 size={13} />
                                     </button>
-
                                   </div>
                                 </td>
                               </tr>
                             );
                           })
                         )}
-
                       </tbody>
                     </table>
                   </div>
@@ -928,7 +913,6 @@ export default function StudentsDashboard() {
 
             {selectedStudent && (
               <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-5 shadow-2xs relative space-y-4 animate-in fade-in zoom-in-95 duration-200">
-
                 <button
                   onClick={() => setSelectedStudent(null)}
                   className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer"
@@ -952,7 +936,6 @@ export default function StudentsDashboard() {
                       {/* PROFILE */}
 
                       <div className="flex flex-col items-center text-center space-y-1.5 pt-2">
-
                         <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-500 font-bold">
                           {initials}
                         </div>
@@ -977,7 +960,6 @@ export default function StudentsDashboard() {
                       {/* CONTACT */}
 
                       <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block mb-1">
                           CONTACT INFORMATION
                         </span>
@@ -1004,13 +986,11 @@ export default function StudentsDashboard() {
                       {/* PROFILE DETAILS */}
 
                       <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           PROFILE DETAILS
                         </span>
 
                         <div className="grid grid-cols-2 gap-2">
-
                           <div className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
                             <span className="text-[9px] text-neutral-400 block mb-0.5">
                               University
@@ -1050,24 +1030,18 @@ export default function StudentsDashboard() {
                               {selectedStudent.status || "N/A"}
                             </span>
                           </div>
-
                         </div>
                       </div>
 
                       {/* MEMBERSHIP */}
 
                       <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           MEMBERSHIP
                         </span>
 
                         <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-
-                          <Calendar
-                            size={12}
-                            className="text-neutral-400"
-                          />
+                          <Calendar size={12} className="text-neutral-400" />
 
                           <span>
                             Joined:{" "}
@@ -1083,13 +1057,11 @@ export default function StudentsDashboard() {
                       {/* BATCH */}
 
                       <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           BATCH
                         </span>
 
                         <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-
                           <GraduationCap
                             size={12}
                             className="text-neutral-400"
@@ -1105,17 +1077,12 @@ export default function StudentsDashboard() {
                       {/* MENTOR */}
 
                       <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           ASSIGNED MENTOR
                         </span>
 
                         <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-
-                          <User
-                            size={12}
-                            className="text-neutral-400"
-                          />
+                          <User size={12} className="text-neutral-400" />
 
                           <span>
                             {selectedStudent.assignedMentor
@@ -1132,17 +1099,12 @@ export default function StudentsDashboard() {
                       {/* APPROVED BY */}
 
                       <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           APPROVED BY
                         </span>
 
                         <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-
-                          <ShieldCheck
-                            size={12}
-                            className="text-neutral-400"
-                          />
+                          <ShieldCheck size={12} className="text-neutral-400" />
 
                           <span>
                             {selectedStudent.approvedBy
@@ -1158,7 +1120,6 @@ export default function StudentsDashboard() {
                       {/* ACTIONS */}
 
                       <div className="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-
                         <button
                           onClick={() => openEditForm(selectedStudent)}
                           className="py-1.5 rounded-md border border-neutral-200 dark:border-neutral-700 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
@@ -1172,7 +1133,6 @@ export default function StudentsDashboard() {
                         >
                           Delete
                         </button>
-
                       </div>
                     </>
                   );
@@ -1189,13 +1149,10 @@ export default function StudentsDashboard() {
 
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-
           <div className="w-full max-w-md bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xl">
-
             {/* HEADER */}
 
             <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100 dark:border-neutral-800">
-
               <div>
                 <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
                   {editingStudent ? "Edit Student" : "Add Student"}
@@ -1219,16 +1176,12 @@ export default function StudentsDashboard() {
             {/* FORM */}
 
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
-
               {/* ==================================================
                   USER SEARCH
                   ================================================== */}
 
               {!editingStudent && (
-                <div
-                  className="space-y-1.5 relative"
-                  ref={userDropdownRef}
-                >
+                <div className="space-y-1.5 relative" ref={userDropdownRef}>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                     Student
                   </label>
@@ -1236,7 +1189,6 @@ export default function StudentsDashboard() {
                   {/* SEARCH INPUT */}
 
                   <div className="relative">
-
                     <Search
                       size={13}
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
@@ -1244,11 +1196,7 @@ export default function StudentsDashboard() {
 
                     <input
                       type="text"
-                      value={
-                        selectedUser
-                          ? selectedUser.fullName
-                          : userSearch
-                      }
+                      value={selectedUser ? selectedUser.fullName : userSearch}
                       onChange={(e) => {
                         setUserSearch(e.target.value);
 
@@ -1277,23 +1225,19 @@ export default function StudentsDashboard() {
                         isUserDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
-
                   </div>
 
                   {/* SEARCH DROPDOWN */}
 
                   {isUserDropdownOpen && !userOptionsLoading && (
                     <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 rounded-md shadow-lg overflow-hidden">
-
                       <div className="max-h-52 overflow-y-auto">
-
                         {filteredUserOptions.length === 0 ? (
                           <div className="px-3 py-3 text-center text-[11px] text-neutral-400">
                             No users found.
                           </div>
                         ) : (
                           filteredUserOptions.map((option) => {
-
                             const initials = (option.fullName || "U")
                               .split(" ")
                               .map((word) => word[0])
@@ -1301,8 +1245,7 @@ export default function StudentsDashboard() {
                               .slice(0, 2)
                               .toUpperCase();
 
-                            const isSelected =
-                              formData.user === option._id;
+                            const isSelected = formData.user === option._id;
 
                             return (
                               <button
@@ -1315,7 +1258,6 @@ export default function StudentsDashboard() {
                                     : "hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
                                 }`}
                               >
-
                                 {/* AVATAR */}
 
                                 <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[9px] shrink-0 text-neutral-500 dark:text-neutral-400">
@@ -1325,7 +1267,6 @@ export default function StudentsDashboard() {
                                 {/* USER INFO */}
 
                                 <div className="min-w-0 flex-1">
-
                                   <div className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">
                                     {option.fullName || "Unknown"}
                                   </div>
@@ -1335,7 +1276,6 @@ export default function StudentsDashboard() {
                                       {option.email}
                                     </div>
                                   )}
-
                                 </div>
 
                                 {/* SELECTED INDICATOR */}
@@ -1346,12 +1286,10 @@ export default function StudentsDashboard() {
                                     className="text-[#B91C1C] shrink-0"
                                   />
                                 )}
-
                               </button>
                             );
                           })
                         )}
-
                       </div>
                     </div>
                   )}
@@ -1360,18 +1298,12 @@ export default function StudentsDashboard() {
 
                   {selectedUser && (
                     <div className="flex items-center justify-between mt-1.5 px-2.5 py-1.5 rounded-md bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-
                       <div className="flex items-center gap-2 min-w-0">
-
-                        <User
-                          size={12}
-                          className="text-neutral-400 shrink-0"
-                        />
+                        <User size={12} className="text-neutral-400 shrink-0" />
 
                         <span className="text-[10px] text-neutral-500 dark:text-neutral-300 truncate">
                           Selected: {selectedUser.fullName}
                         </span>
-
                       </div>
 
                       <button
@@ -1390,13 +1322,11 @@ export default function StudentsDashboard() {
                       >
                         <X size={12} />
                       </button>
-
                     </div>
                   )}
 
                   <p className="text-[10px] text-neutral-400">
-                    Search and select the user you want to approve as a
-                    student.
+                    Search and select the user you want to approve as a student.
                   </p>
                 </div>
               )}
@@ -1405,7 +1335,6 @@ export default function StudentsDashboard() {
 
               {editingStudent && (
                 <div className="space-y-1.5">
-
                   <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                     Member ID
                   </label>
@@ -1417,21 +1346,17 @@ export default function StudentsDashboard() {
                     readOnly
                     className="w-full px-3 py-2 rounded-md text-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 text-neutral-500 cursor-not-allowed"
                   />
-
                 </div>
               )}
 
               {/* ASSIGNED MENTOR */}
 
               <div className="space-y-1.5">
-
                 <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                  Assigned Mentor{" "}
-                  <span className="text-[#B91C1C]">*</span>
+                  Assigned Mentor <span className="text-[#B91C1C]">*</span>
                 </label>
 
                 <div className="relative">
-
                   <select
                     value={formData.assignedMentor}
                     onChange={(e) =>
@@ -1455,9 +1380,7 @@ export default function StudentsDashboard() {
                         key={mentor._id}
                         value={mentor.user?._id || mentor._id}
                       >
-                        {mentor.user?.fullName ||
-                          mentor.fullName ||
-                          "Mentor"}
+                        {mentor.user?.fullName || mentor.fullName || "Mentor"}
                       </option>
                     ))}
                   </select>
@@ -1466,14 +1389,12 @@ export default function StudentsDashboard() {
                     size={12}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
-
                 </div>
               </div>
 
               {/* STATUS */}
 
               <div className="space-y-1.5">
-
                 <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   Status
                 </label>
@@ -1489,11 +1410,7 @@ export default function StudentsDashboard() {
                   className="w-full px-3 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 focus:outline-none focus:border-[#B91C1C] capitalize"
                 >
                   {STATUS_OPTIONS.map((status) => (
-                    <option
-                      key={status}
-                      value={status}
-                      className="capitalize"
-                    >
+                    <option key={status} value={status} className="capitalize">
                       {status}
                     </option>
                   ))}
@@ -1503,7 +1420,6 @@ export default function StudentsDashboard() {
               {/* JOINED */}
 
               <div className="space-y-1.5">
-
                 <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   Joined At
                 </label>
@@ -1524,7 +1440,6 @@ export default function StudentsDashboard() {
               {/* BUTTONS */}
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
-
                 <button
                   type="button"
                   onClick={closeForm}
@@ -1544,17 +1459,11 @@ export default function StudentsDashboard() {
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium transition-colors cursor-pointer"
                 >
                   {formLoading && (
-                    <Loader2
-                      size={13}
-                      className="animate-spin"
-                    />
+                    <Loader2 size={13} className="animate-spin" />
                   )}
 
-                  {editingStudent
-                    ? "Update Student"
-                    : "Add Student"}
+                  {editingStudent ? "Update Student" : "Add Student"}
                 </button>
-
               </div>
             </form>
           </div>
@@ -1567,9 +1476,7 @@ export default function StudentsDashboard() {
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-
           <div className="w-full max-w-sm bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xl p-5">
-
             <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
               Delete Student
             </h3>
@@ -1583,7 +1490,6 @@ export default function StudentsDashboard() {
             </p>
 
             <div className="flex justify-end gap-2 mt-5">
-
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteLoading}
@@ -1598,15 +1504,10 @@ export default function StudentsDashboard() {
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] disabled:opacity-50 text-white text-xs font-medium transition-colors cursor-pointer"
               >
                 {deleteLoading && (
-                  <Loader2
-                    size={13}
-                    className="animate-spin"
-                  />
+                  <Loader2 size={13} className="animate-spin" />
                 )}
-
                 Delete
               </button>
-
             </div>
           </div>
         </div>
