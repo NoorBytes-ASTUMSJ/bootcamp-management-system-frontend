@@ -1,22 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FiSearch, FiUsers, FiStar, FiEye, FiX, FiMail, FiPhone, FiBookOpen, FiCalendar } from "react-icons/fi";
+import { FiSearch, FiUsers, FiStar, FiEye, FiX, FiMail, FiPhone, FiBookOpen, FiCalendar, FiLock } from "react-icons/fi";
 import {
-  getMyBatchMembers,
+  getMentorBatchMembers,
   getMyStudentDetail,
 } from "../../services/studentService";
 
-// TODO: Replace this with however your app actually exposes the logged-in
-// user (an AuthContext / useAuth() hook, Redux store, decoded JWT, etc).
-// This reads from localStorage as a reasonable default — adjust the key
-// and shape ("_id" vs "id") to match how you store the user after login.
+// Helper to get the logged-in user ID from localStorage
 function getCurrentUserId() {
   try {
     const stored = localStorage.getItem("user");
     if (!stored) return null;
 
     const parsed = JSON.parse(stored);
-    const id = parsed?._id || parsed?.id || null;
-    return id ? String(id).trim() : null;
+    return parsed?._id || parsed?.id || null;
   } catch {
     return null;
   }
@@ -34,19 +30,17 @@ export default function AllMembers() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
 
-  // No backend filtering exists yet, so we always fetch the full batch
-  // roster once and do "My Group" filtering client-side below.
+  // Fetch mentor batch members on mount
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         setLoading(true);
         setError("");
 
-        const data = await getMyBatchMembers();
-
+        const data = await getMentorBatchMembers();
         setMembers(data);
       } catch (err) {
-        console.error("Failed to load batch members:", err);
+        console.error("Failed to load mentor batch members:", err);
         setError("Failed to load batch members.");
       } finally {
         setLoading(false);
@@ -58,9 +52,7 @@ export default function AllMembers() {
 
   const currentUserId = useMemo(() => getCurrentUserId(), []);
 
-  // A mentor's own group is every member whose assignedMentor is THIS
-  // logged-in mentor — compared directly, not via peer-lookup, since the
-  // mentor themselves usually isn't listed as a "member" row.
+  // Filter members to identify which students belong to the logged-in mentor
   const myGroupMembers = useMemo(() => {
     if (!currentUserId) return [];
 
@@ -69,21 +61,20 @@ export default function AllMembers() {
       if (!mentor) return false;
 
       const mentorId = typeof mentor === "object" ? mentor._id : mentor;
-      if (!mentorId) return false;
-
-      return String(mentorId).trim() === currentUserId;
+      return mentorId === currentUserId;
     });
   }, [members, currentUserId]);
 
-  // Fast lookup of which member ids belong to my group, so the table can
-  // gate the Details button without recomputing the filter per-row.
-  const myGroupMemberIds = useMemo(
-    () => new Set(myGroupMembers.map((member) => member._id)),
-    [myGroupMembers],
-  );
+  // Helper to check if a student belongs to the logged-in mentor
+  const isMyStudent = (member) => {
+    if (!currentUserId) return false;
+    const mentor = member.assignedMentor;
+    if (!mentor) return false;
+    const mentorId = typeof mentor === "object" ? mentor._id : mentor;
+    return mentorId === currentUserId;
+  };
 
-  // Local search filtering by name/email, applied on top of the
-  // all-batch or my-group base list depending on the toggle.
+  // Local search filtering by name/email
   const filteredMembers = useMemo(() => {
     const search = searchTerm.toLowerCase().trim();
     const base = showOnlyMyGroup ? myGroupMembers : members;
@@ -124,10 +115,7 @@ export default function AllMembers() {
 
   const myGroupSize = myGroupMembers.length;
 
-  // Student Details Modal Handler — UI-side gate only. The backend
-  // endpoint for getMyStudentDetail must ALSO verify the requested
-  // student's assignedMentor is this mentor; a UI check alone can be
-  // bypassed by calling the API directly.
+  // Student Details Modal Handler
   const handleViewDetails = async (studentUserId) => {
     try {
       setDetailLoading(true);
@@ -166,12 +154,12 @@ export default function AllMembers() {
             Batch Members
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Manage batch members and review your assigned students.
+            Browse batch peers or review your assigned students in detail.
           </p>
         </div>
       </div>
 
-      {/* Error */}
+      {/* Error Banner */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
           {error}
@@ -223,7 +211,7 @@ export default function AllMembers() {
         </div>
       </div>
 
-      {/* Search & Group Toggle */}
+      {/* Search & Toggle */}
       <div className="flex flex-col sm:flex-row gap-4 bg-surface border border-border p-4 rounded-xl shadow-sm">
         <div className="relative flex-1">
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
@@ -268,7 +256,7 @@ export default function AllMembers() {
         </div>
       </div>
 
-      {/* Single Table */}
+      {/* Members Table */}
       <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           {loading ? (
@@ -293,7 +281,7 @@ export default function AllMembers() {
                   if (!user) return null;
 
                   const name = user.fullName || "Unknown";
-                  const isMyStudent = myGroupMemberIds.has(member._id);
+                  const belongsToMe = isMyStudent(member);
 
                   return (
                     <tr
@@ -314,16 +302,19 @@ export default function AllMembers() {
                           </span>
                         </div>
                       </td>
+
                       <td className="px-6 py-4">
                         <span className="text-sm text-text-muted">
                           {user.email}
                         </span>
                       </td>
+
                       <td className="px-6 py-4">
                         <span className="text-sm font-medium text-text-primary">
                           {member.attendance ?? "0%"}
                         </span>
                       </td>
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-16 h-1.5 bg-surface-muted rounded-full overflow-hidden">
@@ -339,15 +330,16 @@ export default function AllMembers() {
                           </span>
                         </div>
                       </td>
+
                       <td className="px-6 py-4">
                         <span className="px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600">
                           {user.university || "N/A"}
                         </span>
                       </td>
 
-                      {/* Detail Action — only clickable for the mentor's own students */}
+                      {/* Action Cell: Details allowed ONLY if they are your student */}
                       <td className="px-6 py-4">
-                        {isMyStudent ? (
+                        {belongsToMe ? (
                           <button
                             type="button"
                             onClick={() => handleViewDetails(user._id)}
@@ -357,8 +349,8 @@ export default function AllMembers() {
                             Details
                           </button>
                         ) : (
-                          <span className="text-xs text-text-muted italic">
-                            Not your student
+                          <span className="inline-flex items-center gap-1 text-text-muted text-xs italic font-medium">
+                            <FiLock className="w-3 h-3" /> Not Assigned
                           </span>
                         )}
                       </td>
@@ -394,7 +386,7 @@ export default function AllMembers() {
       {(detailLoading || selectedStudent || detailError) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs px-4 animate-in fade-in duration-200">
           <div className="w-full max-w-xl bg-surface rounded-2xl shadow-2xl border border-border overflow-hidden scale-in-center">
-
+            
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-subtle">
               <div>
@@ -427,7 +419,7 @@ export default function AllMembers() {
                 </div>
               ) : selectedStudent ? (
                 <div className="space-y-6">
-
+                  
                   {/* Hero Profile Card */}
                   <div className="flex items-center gap-4 p-4 rounded-xl bg-surface-subtle border border-border">
                     <img

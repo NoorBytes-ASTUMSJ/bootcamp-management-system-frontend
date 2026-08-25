@@ -38,8 +38,12 @@ export async function getAllUsers(filters = {}) {
   }
 }
 
+export async function updateUserApi(userId, updates) {
+  const response = await API.patch(`/users/${userId}`, updates);
+  return response.data;
+}
+
 export async function deleteUserApi(userId) {
   const response = await API.delete(`/users/${userId}`);
   return response.data;
 }
-
