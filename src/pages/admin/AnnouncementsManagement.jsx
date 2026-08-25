@@ -104,12 +104,10 @@ export default function AnnouncementsManagement({
   };
 
   return (
-    <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-
+    <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Content Body */}
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+        <main className="px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-24 gap-2 text-xs text-neutral-500">
               <Loader2 className="animate-spin text-[#B91C1C]" size={18} />
@@ -128,26 +126,26 @@ export default function AnnouncementsManagement({
                   </p>
                 </div>
 
-                <button className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-colors cursor-pointer shadow-2xs">
+                <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5">
                   <Plus size={14} />
                   <span>Create Announcement</span>
                 </button>
               </div>
 
-              {/* Filters Box */}
-              <div className="p-3 bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
-                <div className="flex flex-wrap items-center gap-2.5">
+              {/* Filters Box with Modern Hover Elevation */}
+              <div className="p-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/40">
+                <div className="flex flex-wrap items-center gap-3">
                   <div className="flex-1 min-w-[200px] relative">
                     <Search
                       size={13}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
                     />
                     <input
                       type="text"
                       placeholder="Search announcements..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 rounded-md text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C]"
+                      className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                     />
                   </div>
 
@@ -155,7 +153,7 @@ export default function AnnouncementsManagement({
                     <select
                       value={audienceFilter}
                       onChange={(e) => setAudienceFilter(e.target.value)}
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                     >
                       <option value="ALL">Filter by Audience</option>
                       {availableAudiences.map((aud) => (
@@ -166,7 +164,7 @@ export default function AnnouncementsManagement({
                     </select>
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
@@ -174,7 +172,7 @@ export default function AnnouncementsManagement({
                     <select
                       value={batchFilter}
                       onChange={(e) => setBatchFilter(e.target.value)}
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                     >
                       <option value="ALL">Filter by Batch</option>
                       <option value="ALL">All Batches</option>
@@ -186,24 +184,24 @@ export default function AnnouncementsManagement({
                     </select>
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Announcements Table */}
-              <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-2xs">
+              {/* Announcements Table with Modern Container Polish */}
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
                       <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                        <th className="py-2.5 px-4">TITLE</th>
-                        <th className="py-2.5 px-4">AUDIENCE</th>
-                        <th className="py-2.5 px-4">BATCH</th>
-                        <th className="py-2.5 px-4">PUBLISHED DATE</th>
-                        <th className="py-2.5 px-4">STATUS</th>
-                        <th className="py-2.5 px-4 text-right">ACTION</th>
+                        <th className="py-3.5 px-5">TITLE</th>
+                        <th className="py-3.5 px-5">AUDIENCE</th>
+                        <th className="py-3.5 px-5">BATCH</th>
+                        <th className="py-3.5 px-5">PUBLISHED DATE</th>
+                        <th className="py-3.5 px-5">STATUS</th>
+                        <th className="py-3.5 px-5 text-right">ACTION</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
@@ -211,7 +209,7 @@ export default function AnnouncementsManagement({
                         <tr>
                           <td
                             colSpan={6}
-                            className="text-center py-10 text-neutral-400 text-xs"
+                            className="text-center py-12 text-neutral-400 text-xs"
                           >
                             No announcements found.
                           </td>
@@ -222,44 +220,44 @@ export default function AnnouncementsManagement({
                             key={a.id}
                             className="hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors"
                           >
-                            <td className="py-3 px-4 font-semibold text-neutral-900 dark:text-neutral-100">
+                            <td className="py-4 px-5 font-semibold text-neutral-900 dark:text-neutral-100">
                               {a.title}
                             </td>
 
-                            <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400">
+                            <td className="py-4 px-5 text-neutral-600 dark:text-neutral-400">
                               {a.audience}
                             </td>
 
-                            <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400">
+                            <td className="py-4 px-5 text-neutral-600 dark:text-neutral-400">
                               {a.batch === "ALL"
                                 ? "All Batches"
                                 : `${a.batch} Batch`}
                             </td>
 
-                            <td className="py-3 px-4 text-neutral-500 dark:text-neutral-400 text-xs">
+                            <td className="py-4 px-5 text-neutral-500 dark:text-neutral-400 text-xs">
                               {a.publishedDate}
                             </td>
 
-                            <td className="py-3 px-4">
+                            <td className="py-4 px-5">
                               {getStatusBadge(a.status)}
                             </td>
 
-                            <td className="py-3 px-4 text-right">
+                            <td className="py-4 px-5 text-right">
                               <div className="flex items-center justify-end gap-2 text-neutral-400">
                                 <button
                                   type="button"
                                   title="Edit"
-                                  className="p-1 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg hover:text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-colors cursor-pointer"
                                 >
-                                  <Pencil size={13} />
+                                  <Pencil size={14} />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDelete(a.id)}
                                   title="Delete"
-                                  className="p-1 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-colors cursor-pointer"
                                 >
-                                  <Trash2 size={13} />
+                                  <Trash2 size={14} />
                                 </button>
                               </div>
                             </td>
@@ -270,16 +268,16 @@ export default function AnnouncementsManagement({
                   </table>
                 </div>
 
-                <div className="px-4 py-2.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">
+                <div className="px-5 py-3.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 bg-neutral-50/30 dark:bg-neutral-800/20">
                   <span>
                     Showing {filteredAnnouncements.length} of{" "}
                     {announcements.length} announcements
                   </span>
                   <div className="flex items-center gap-3">
-                    <button className="hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer">
+                    <button className="hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer transition-colors">
                       Previous
                     </button>
-                    <button className="hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
+                    <button className="hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200 transition-colors">
                       Next
                     </button>
                   </div>

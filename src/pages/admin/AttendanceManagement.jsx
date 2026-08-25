@@ -142,13 +142,10 @@ export default function AttendanceManagement({
   };
 
   return (
-    <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-      {/* Sidebar */}
-    
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-      
+    <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Content Body */}
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+        <main className="px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-24 gap-2 text-xs text-neutral-500">
               <Loader2 className="animate-spin text-[#B91C1C]" size={18} />
@@ -159,7 +156,7 @@ export default function AttendanceManagement({
               {/* Header Title + Action Controls */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[#B91C1C] flex items-center justify-center text-white shrink-0 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-[#B91C1C] flex items-center justify-center text-white shrink-0 shadow-sm">
                     <Calendar size={18} />
                   </div>
                   <div>
@@ -174,17 +171,17 @@ export default function AttendanceManagement({
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <button className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-[#151921] hover:bg-neutral-50 dark:hover:bg-neutral-800 text-xs font-medium text-[#B91C1C] transition-colors cursor-pointer">
+                  <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-[#151921] hover:bg-neutral-50 dark:hover:bg-neutral-800 text-xs font-medium text-[#B91C1C] transition-all cursor-pointer shadow-xs hover:border-[#B91C1C]/40">
                     <Download size={13} className="text-[#B91C1C]" />
                     <span>Export Report</span>
                   </button>
                 </div>
               </div>
 
-              {/* 5 Top Metric Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              {/* 5 Top Metric Cards with Modern Hover Effect */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 {/* 1. Overall Attendance */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex items-center justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex items-center justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div>
                     <span className="text-[11px] font-medium text-neutral-500 block mb-1">
                       Overall Attendance
@@ -220,7 +217,7 @@ export default function AttendanceManagement({
                 </div>
 
                 {/* 2. Present */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex items-center justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex items-center justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div>
                     <span className="text-[11px] font-medium text-neutral-500 block mb-1">
                       Present
@@ -238,7 +235,7 @@ export default function AttendanceManagement({
                 </div>
 
                 {/* 3. Absent */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex items-center justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex items-center justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div>
                     <span className="text-[11px] font-medium text-neutral-500 block mb-1">
                       Absent
@@ -256,7 +253,7 @@ export default function AttendanceManagement({
                 </div>
 
                 {/* 4. Late */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex items-center justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex items-center justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div>
                     <span className="text-[11px] font-medium text-neutral-500 block mb-1">
                       Late
@@ -274,7 +271,7 @@ export default function AttendanceManagement({
                 </div>
 
                 {/* 5. Excused */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex items-center justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex items-center justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div>
                     <span className="text-[11px] font-medium text-neutral-500 block mb-1">
                       Excused
@@ -293,7 +290,7 @@ export default function AttendanceManagement({
               </div>
 
               {/* Middle Section: Full-Width Attendance by Status Card */}
-              <div className="p-6 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+              <div className="p-6 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
                 <h3 className="font-bold text-xs text-neutral-900 dark:text-white tracking-tight mb-5">
                   Attendance by Status
                 </h3>
@@ -391,19 +388,19 @@ export default function AttendanceManagement({
               </div>
 
               {/* Search & Filter Bar */}
-              <div className="p-3 bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
-                <div className="flex flex-wrap items-center gap-2.5">
+              <div className="p-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/40">
+                <div className="flex flex-wrap items-center gap-3">
                   <div className="flex-1 min-w-[200px] relative">
                     <Search
                       size={13}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
                     />
                     <input
                       type="text"
                       placeholder="Search by student name or ID..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 rounded-md text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C]"
+                      className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                     />
                   </div>
 
@@ -411,7 +408,7 @@ export default function AttendanceManagement({
                     <select
                       value={batchFilter}
                       onChange={(e) => setBatchFilter(e.target.value)}
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                     >
                       <option value="ALL">All Batches</option>
                       {availableBatches.map((b) => (
@@ -422,7 +419,7 @@ export default function AttendanceManagement({
                     </select>
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
@@ -430,7 +427,7 @@ export default function AttendanceManagement({
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                     >
                       <option value="ALL">All Status</option>
                       {availableStatuses.map((s) => (
@@ -441,7 +438,7 @@ export default function AttendanceManagement({
                     </select>
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
@@ -449,7 +446,7 @@ export default function AttendanceManagement({
                     <select
                       value={sessionFilter}
                       onChange={(e) => setSessionFilter(e.target.value)}
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                     >
                       <option value="ALL">All Sessions</option>
                       {availableSessions.map((s) => (
@@ -460,14 +457,14 @@ export default function AttendanceManagement({
                     </select>
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-[#B91C1C] transition-colors cursor-pointer shadow-xs font-medium"
                   >
                     <RotateCcw size={12} />
                     <span>Reset Filters</span>
@@ -476,20 +473,20 @@ export default function AttendanceManagement({
               </div>
 
               {/* Records Table */}
-              <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-2xs">
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
                       <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                        <th className="py-2.5 px-4 w-10">#</th>
-                        <th className="py-2.5 px-4">STUDENT</th>
-                        <th className="py-2.5 px-4">BATCH</th>
-                        <th className="py-2.5 px-4">DATE</th>
-                        <th className="py-2.5 px-4">SESSION</th>
-                        <th className="py-2.5 px-4">STATUS</th>
-                        <th className="py-2.5 px-4">MARKED BY</th>
-                        <th className="py-2.5 px-4">ATTENDANCE %</th>
-                        <th className="py-2.5 px-4 text-right">ACTION</th>
+                        <th className="py-3.5 px-5 w-10">#</th>
+                        <th className="py-3.5 px-5">STUDENT</th>
+                        <th className="py-3.5 px-5">BATCH</th>
+                        <th className="py-3.5 px-5">DATE</th>
+                        <th className="py-3.5 px-5">SESSION</th>
+                        <th className="py-3.5 px-5">STATUS</th>
+                        <th className="py-3.5 px-5">MARKED BY</th>
+                        <th className="py-3.5 px-5">ATTENDANCE %</th>
+                        <th className="py-3.5 px-5 text-right">ACTION</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
@@ -497,7 +494,7 @@ export default function AttendanceManagement({
                         <tr>
                           <td
                             colSpan={9}
-                            className="text-center py-10 text-neutral-400 text-xs"
+                            className="text-center py-12 text-neutral-400 text-xs"
                           >
                             No attendance records found.
                           </td>
@@ -508,29 +505,29 @@ export default function AttendanceManagement({
                             key={r.id}
                             className="hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors"
                           >
-                            <td className="py-3 px-4 text-neutral-400 font-medium">
+                            <td className="py-4 px-5 text-neutral-400 font-medium">
                               {index + 1}
                             </td>
 
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-neutral-500 dark:text-neutral-400">
+                            <td className="py-4 px-5">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-neutral-500 dark:text-neutral-400">
                                   {r.initials}
                                 </div>
                                 <div>
                                   <span className="font-semibold text-neutral-900 dark:text-neutral-100 block leading-snug">
                                     {r.studentName}
                                   </span>
-                                  <span className="text-[10px] text-neutral-400">
+                                  <span className="text-[10px] text-neutral-400 mt-0.5 block">
                                     {r.studentId}
                                   </span>
                                 </div>
                               </div>
                             </td>
 
-                            <td className="py-3 px-4">
+                            <td className="py-4 px-5">
                               <span
-                                className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium border ${getBatchBadgeColor(
+                                className={`inline-block px-2.5 py-0.5 rounded text-[10px] font-medium border ${getBatchBadgeColor(
                                   r.batch,
                                 )}`}
                               >
@@ -538,27 +535,27 @@ export default function AttendanceManagement({
                               </span>
                             </td>
 
-                            <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400 text-[11px]">
+                            <td className="py-4 px-5 text-neutral-600 dark:text-neutral-400 text-xs">
                               {r.date}
                             </td>
 
-                            <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400 text-[11px]">
+                            <td className="py-4 px-5 text-neutral-600 dark:text-neutral-400 text-xs">
                               {r.session}
                             </td>
 
-                            <td className="py-3 px-4">
+                            <td className="py-4 px-5">
                               {getStatusBadge(r.status)}
                             </td>
 
-                            <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400 text-[11px]">
+                            <td className="py-4 px-5 text-neutral-600 dark:text-neutral-400 text-xs">
                               {r.markedBy}
                             </td>
 
-                            <td className="py-3 px-4 font-semibold text-neutral-700 dark:text-neutral-300 text-[11px]">
+                            <td className="py-4 px-5 font-semibold text-neutral-700 dark:text-neutral-300 text-xs">
                               {r.attendanceRate}
                             </td>
 
-                            <td className="py-3 px-4 text-right">
+                            <td className="py-4 px-5 text-right">
                               <div className="flex items-center justify-end gap-1.5 text-neutral-400">
                                 <button
                                   type="button"
@@ -567,7 +564,7 @@ export default function AttendanceManagement({
                                     onNavigateAdminView &&
                                     onNavigateAdminView("dashboard-students")
                                   }
-                                  className="w-7 h-7 rounded-full border border-neutral-200 dark:border-neutral-700 flex items-center justify-center hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 flex items-center justify-center hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-[#B91C1C] transition-colors cursor-pointer"
                                 >
                                   <Pencil size={12} />
                                 </button>
@@ -575,7 +572,7 @@ export default function AttendanceManagement({
                                   type="button"
                                   title="Delete"
                                   onClick={() => handleDeleteRecord(r.id)}
-                                  className="w-7 h-7 rounded-full border border-neutral-200 dark:border-neutral-700 flex items-center justify-center hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 flex items-center justify-center hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-[#B91C1C] transition-colors cursor-pointer"
                                 >
                                   <Trash2 size={12} />
                                 </button>
@@ -589,29 +586,29 @@ export default function AttendanceManagement({
                 </div>
 
                 {/* Pagination Footer */}
-                <div className="px-4 py-2.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">
+                <div className="px-5 py-3.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 bg-neutral-50/30 dark:bg-neutral-800/20">
                   <span>
                     Showing 1 to {filteredRecords.length} of 124 entries
                   </span>
 
                   <div className="flex items-center gap-1.5">
-                    <button className="w-6 h-6 rounded flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 cursor-pointer">
+                    <button className="w-6 h-6 rounded flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 cursor-pointer transition-colors">
                       <ChevronLeft size={13} />
                     </button>
                     <button className="w-6 h-6 rounded bg-[#B91C1C] text-white font-semibold flex items-center justify-center text-[11px] cursor-pointer shadow-xs">
                       1
                     </button>
-                    <button className="w-6 h-6 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 flex items-center justify-center text-[11px] cursor-pointer">
+                    <button className="w-6 h-6 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 flex items-center justify-center text-[11px] cursor-pointer transition-colors">
                       2
                     </button>
-                    <button className="w-6 h-6 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 flex items-center justify-center text-[11px] cursor-pointer">
+                    <button className="w-6 h-6 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 flex items-center justify-center text-[11px] cursor-pointer transition-colors">
                       3
                     </button>
                     <span className="px-1 text-neutral-400">...</span>
-                    <button className="w-6 h-6 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 flex items-center justify-center text-[11px] cursor-pointer">
+                    <button className="w-6 h-6 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 flex items-center justify-center text-[11px] cursor-pointer transition-colors">
                       13
                     </button>
-                    <button className="w-6 h-6 rounded flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 cursor-pointer">
+                    <button className="w-6 h-6 rounded flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 cursor-pointer transition-colors">
                       <ChevronRight size={13} />
                     </button>
                   </div>

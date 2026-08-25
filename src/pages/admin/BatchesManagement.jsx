@@ -44,7 +44,7 @@ export default function BatchesManagement() {
         activeBatches: 0,
         totalStudents: 0,
         totalMentors: 0,
-      }
+      },
     );
 
     if (fetchedBatches && fetchedBatches.length > 0) {
@@ -154,9 +154,9 @@ export default function BatchesManagement() {
   };
 
   return (
-    <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+    <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
+      <div className="flex-1 flex flex-col min-w-0">
+        <main className="px-8 py-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
@@ -169,16 +169,16 @@ export default function BatchesManagement() {
 
             <button
               onClick={handleOpenCreateModal}
-              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-colors cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5"
             >
-              <Plus size={13} />
+              <Plus size={14} />
               <span>Create Batch</span>
             </button>
           </div>
 
-          {/* Metric Cards */}
+          {/* Metric Cards with Modern Hover Effects */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                 TOTAL BATCHES
               </span>
@@ -187,7 +187,7 @@ export default function BatchesManagement() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                 ACTIVE BATCHES
               </span>
@@ -201,7 +201,7 @@ export default function BatchesManagement() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                 TOTAL STUDENTS
               </span>
@@ -210,7 +210,7 @@ export default function BatchesManagement() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                 TOTAL MENTORS
               </span>
@@ -220,16 +220,19 @@ export default function BatchesManagement() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start transition-all duration-300">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start transition-all duration-300">
             <div
-              className={`space-y-3 transition-all duration-300 ${
+              className={`space-y-4 transition-all duration-300 ${
                 selectedBatch ? "lg:col-span-8" : "lg:col-span-12"
               }`}
             >
-              <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-2xs">
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
                 {loading ? (
                   <div className="flex items-center justify-center py-16 gap-2 text-xs text-neutral-500">
-                    <Loader2 className="animate-spin text-[#B91C1C]" size={16} />
+                    <Loader2
+                      className="animate-spin text-[#B91C1C]"
+                      size={16}
+                    />
                     <span>Loading batches...</span>
                   </div>
                 ) : batches.length === 0 ? (
@@ -241,17 +244,18 @@ export default function BatchesManagement() {
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
                         <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                          <th className="py-3 px-5">BATCH NAME</th>
-                          <th className="py-3 px-4">STATUS</th>
-                          <th className="py-3 px-4">STUDENTS</th>
-                          <th className="py-3 px-5">TIMELINE</th>
-                          <th className="py-3 px-4 text-right">ACTION</th>
+                          <th className="py-3.5 px-5">BATCH NAME</th>
+                          <th className="py-3.5 px-4">STATUS</th>
+                          <th className="py-3.5 px-4">STUDENTS</th>
+                          <th className="py-3.5 px-5">TIMELINE</th>
+                          <th className="py-3.5 px-4 text-right">ACTION</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
                         {batches.map((b) => {
                           const batchId = b._id || b.id;
-                          const selectedId = selectedBatch?._id || selectedBatch?.id;
+                          const selectedId =
+                            selectedBatch?._id || selectedBatch?.id;
                           const isSelected = selectedId === batchId;
 
                           return (
@@ -260,7 +264,7 @@ export default function BatchesManagement() {
                               onClick={() => setSelectedBatch(b)}
                               className={`hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
                                 isSelected
-                                  ? "bg-[#FEF2F2]/50 dark:bg-primary/10"
+                                  ? "bg-neutral-100/70 dark:bg-neutral-800/60"
                                   : ""
                               }`}
                             >
@@ -302,7 +306,7 @@ export default function BatchesManagement() {
 
             {/* Right Drawer Card (Batch Details) */}
             {selectedBatch && (
-              <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-5 shadow-2xs relative space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-6 shadow-md shadow-neutral-200/50 dark:shadow-none relative space-y-4 animate-in fade-in zoom-in-95 duration-200 transition-all">
                 <div className="flex items-start justify-between pb-1">
                   <div>
                     <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
@@ -329,7 +333,9 @@ export default function BatchesManagement() {
                       Start Date
                     </span>
                     <span className="font-medium text-neutral-800 dark:text-neutral-200 text-[11px]">
-                      {selectedBatch.startDate ? new Date(selectedBatch.startDate).toLocaleDateString() : "N/A"}
+                      {selectedBatch.startDate
+                        ? new Date(selectedBatch.startDate).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
                   <div>
@@ -337,7 +343,9 @@ export default function BatchesManagement() {
                       End Date
                     </span>
                     <span className="font-medium text-neutral-800 dark:text-neutral-200 text-[11px]">
-                      {selectedBatch.endDate ? new Date(selectedBatch.endDate).toLocaleDateString() : "N/A"}
+                      {selectedBatch.endDate
+                        ? new Date(selectedBatch.endDate).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
                 </div>
@@ -346,7 +354,7 @@ export default function BatchesManagement() {
                 <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800">
                   <button
                     onClick={() => handleOpenEditModal(selectedBatch)}
-                    className="w-full py-2 px-3 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-colors cursor-pointer text-center shadow-2xs"
+                    className="w-full py-2.5 px-3 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-colors cursor-pointer text-center shadow-xs"
                   >
                     Edit Batch
                   </button>
@@ -360,22 +368,22 @@ export default function BatchesManagement() {
       {/* Create / Edit Batch Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100 dark:border-neutral-800">
+          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
               <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
                 {isEditing ? "Edit Batch" : "Create Batch"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
+                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer p-1"
               >
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
               <div>
-                <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1">
+                <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1.5">
                   Batch Name
                 </label>
                 <input
@@ -386,12 +394,12 @@ export default function BatchesManagement() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1">
+                <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1.5">
                   Description
                 </label>
                 <textarea
@@ -401,13 +409,13 @@ export default function BatchesManagement() {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1">
+                  <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1.5">
                     Start Date
                   </label>
                   <input
@@ -417,11 +425,11 @@ export default function BatchesManagement() {
                     onChange={(e) =>
                       setFormData({ ...formData, startDate: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1">
+                  <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1.5">
                     End Date
                   </label>
                   <input
@@ -431,13 +439,13 @@ export default function BatchesManagement() {
                     onChange={(e) =>
                       setFormData({ ...formData, endDate: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-transparent text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1">
+                <label className="block text-neutral-600 dark:text-neutral-300 font-medium mb-1.5">
                   Status
                 </label>
                 <select
@@ -445,7 +453,7 @@ export default function BatchesManagement() {
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-[#151921] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs cursor-pointer font-medium"
                 >
                   <option value="upcoming">Upcoming</option>
                   <option value="ongoing">Ongoing (Active)</option>
@@ -453,22 +461,20 @@ export default function BatchesManagement() {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-md border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] text-white font-medium transition-colors shadow-2xs disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white font-medium transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
                 >
-                  {submitting && (
-                    <Loader2 className="animate-spin" size={13} />
-                  )}
+                  {submitting && <Loader2 className="animate-spin" size={13} />}
                   <span>{isEditing ? "Save Changes" : "Create Batch"}</span>
                 </button>
               </div>
