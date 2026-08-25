@@ -41,6 +41,7 @@ export default function StudentsDashboard() {
   const [universityFilter, setUniversityFilter] = useState("ALL");
   const [genderFilter, setGenderFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [batchFilter, setBatchFilter] = useState("ALL");
 
   const [selectedStudent, setSelectedStudent] = useState(null);
 
@@ -234,7 +235,24 @@ export default function StudentsDashboard() {
   }, [userOptions, formData.user]);
 
   // ==================================================
-  // UNIQUE UNIVERSITIES / GENDERS
+  // BATCH HELPER
+  // ==================================================
+  // Batch lives on the User document (user.batch), not on the
+  // Member/Student record. GET /members/students populates
+  // student.user.batch as a full { _id, name, ... } object, so we
+  // read from there first and fall back to student.batch just in
+  // case a caller ever passes a differently-shaped record in.
+
+  const getBatchName = (student) => {
+    const batch = student?.user?.batch ?? student?.batch;
+
+    if (!batch) return null;
+
+    return typeof batch === "object" ? batch.name : null;
+  };
+
+  // ==================================================
+  // UNIQUE UNIVERSITIES / GENDERS / BATCHES
   // ==================================================
 
   const availableUniversities = useMemo(() => {
@@ -253,17 +271,11 @@ export default function StudentsDashboard() {
     return Array.from(new Set(genders)).sort();
   }, [students]);
 
-  // ==================================================
-  // HELPERS
-  // ==================================================
+  const availableBatches = useMemo(() => {
+    const batches = students.map((student) => getBatchName(student)).filter(Boolean);
 
-  const getBatchName = (student) => {
-    const batch = student?.batch;
-
-    if (!batch) return null;
-
-    return typeof batch === "object" ? batch.name : null;
-  };
+    return Array.from(new Set(batches)).sort();
+  }, [students]);
 
   // ==================================================
   // FILTER STUDENTS
@@ -280,6 +292,7 @@ export default function StudentsDashboard() {
       const phone = (user.phone || "").toLowerCase();
       const university = (user.university || "").toLowerCase();
       const memberId = (student.memberId || "").toLowerCase();
+      const batchName = (getBatchName(student) || "").toLowerCase();
 
       const matchesSearch =
         !search ||
@@ -302,11 +315,15 @@ export default function StudentsDashboard() {
         statusFilter === "ALL" ||
         (student.status || "").toLowerCase() === statusFilter.toLowerCase();
 
+      const matchesBatch =
+        batchFilter === "ALL" || batchName === batchFilter.toLowerCase();
+
       return (
         matchesSearch &&
         matchesUniversity &&
         matchesGender &&
-        matchesStatus
+        matchesStatus &&
+        matchesBatch
       );
     });
   }, [
@@ -315,6 +332,7 @@ export default function StudentsDashboard() {
     universityFilter,
     genderFilter,
     statusFilter,
+    batchFilter,
   ]);
 
   // ==================================================
@@ -694,6 +712,29 @@ export default function StudentsDashboard() {
                         className="capitalize"
                       >
                         {gender}
+                      </option>
+                    ))}
+                  </select>
+
+                  <ChevronDown
+                    size={12}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                  />
+                </div>
+
+                {/* BATCH */}
+
+                <div className="relative">
+                  <select
+                    value={batchFilter}
+                    onChange={(e) => setBatchFilter(e.target.value)}
+                    className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                  >
+                    <option value="ALL">Filter by Batch</option>
+
+                    {availableBatches.map((batch) => (
+                      <option key={batch} value={batch}>
+                        {batch}
                       </option>
                     ))}
                   </select>
@@ -1573,4 +1614,3 @@ export default function StudentsDashboard() {
     </div>
   );
 }
-
