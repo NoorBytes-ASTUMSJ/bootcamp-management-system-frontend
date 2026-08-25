@@ -26,9 +26,11 @@ import StudentProgress from "../pages/student/StudentProgress";
 import StudentAssignments from "../pages/student/StudentAssignments";
 import StudentSubmissions from "../pages/student/StudentSubmissions";
 import StudentAnnouncements from "../pages/student/AnnouncementsPage";
+import AllMembers from "../pages/student/AllMembers";
 
 // Layouts & Mentor Pages
 import MentorLayout from "../layouts/MentorLayout";
+import MentorAllMember from "../pages/mentor/MentorAllMember";
 import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
 import MentorAssignments from "../pages/mentor/MentorAssignments";
@@ -149,7 +151,7 @@ export default function AppRoutes() {
             <RoleSelect
               onSelectRole={(role) =>
                 navigate(
-                  role === "student" ? "/student-register" : "/mentor-register"
+                  role === "student" ? "/student-register" : "/mentor-register",
                 )
               }
               onNavigateLogin={() => navigate("/login")}
@@ -186,8 +188,8 @@ export default function AppRoutes() {
             <Route path="assignments" element={<StudentAssignments />} />
             <Route path="submissions" element={<StudentSubmissions />} />
             <Route path="announcements" element={<StudentAnnouncements />} />
-             <Route path="settings" element={<SettingsManagement />}/>
-            
+            <Route path="settings" element={<SettingsManagement />} />
+            <Route path="members" element={<AllMembers />} />
           </Route>
         </Route>
 
@@ -195,6 +197,7 @@ export default function AppRoutes() {
         <Route element={<ProtectedRoute allowedRoles={["mentor"]} />}>
           <Route path="/mentor" element={<MentorLayout />}>
             <Route index element={<Navigate to="attendance" replace />} />
+            <Route path="students" element={<MentorAllMember />} />
             <Route path="attendance" element={<MentorAttendance />} />
             <Route path="assignments" element={<MentorAssignments />} />
             <Route path="submissions" element={<MentorSubmissions />} />
@@ -209,9 +212,7 @@ export default function AppRoutes() {
               element={<PagePlaceholder title="My Students" />}
             />
             <Route path="settings" element={<SettingsManagement />} />
-          
           </Route>
-          
         </Route>
 
         {/* Protected Admin Portal */}
