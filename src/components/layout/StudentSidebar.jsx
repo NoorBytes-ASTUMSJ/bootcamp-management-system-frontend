@@ -40,55 +40,58 @@ const NAV_CONFIG = [
   },
 ];
 
-export default function StudentSidebar({ isOpen }) {
+export default function StudentSidebar() {
   return (
-    <aside
-      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-62.5 flex-col bg-surface border-r border-border transition-transform duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
-    >
-      <div className="flex h-16 shrink-0 items-center px-6 border-b border-border">
-        <span className="truncate text-base font-bold text-text-primary tracking-tight">
+    <aside className="w-56 bg-white dark:bg-[#151921] border-r border-neutral-200/80 dark:border-neutral-800/80 flex flex-col shrink-0 select-none z-10 fixed inset-y-0 left-0 h-screen">
+      <div className="pt-6 pb-4 px-6">
+        <h1 className="text-base font-black tracking-tight text-[#B91C1C]">
+          ASTU MSJ
+        </h1>
+        <p className="text-[10px] text-neutral-400 font-normal mt-0.5">
           Student Portal
-        </span>
+        </p>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-5 custom-scrollbar">
-        <div className="space-y-6">
-          {NAV_CONFIG.map((group, index) => (
-            <div key={index} className="px-3">
-              <h3 className="mb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-text-muted">
-                {group.section}
-              </h3>
-              <ul className="space-y-1">
-                {group.items.map((item) => (
-                  <li key={item.name}>
-                    <NavLink
-                      to={item.path}
-                      className={({ isActive }) =>
-                        `relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                          isActive
-                            ? "bg-primary-light text-primary"
-                            : "text-text-muted hover:bg-surface-subtle hover:text-text-primary"
-                        }`
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          {isActive && (
-                            <span className="absolute -left-3 top-1/2 h-full max-h-[70%] w-1 -translate-y-1/2 rounded-r-md bg-primary" />
-                          )}
-                          <item.icon className="h-4.5 w-4.5 shrink-0" />
-                          <span>{item.name}</span>
-                        </>
-                      )}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
+      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4 custom-scrollbar">
+        {NAV_CONFIG.map((group, index) => (
+          <div key={index} className="space-y-1">
+            <div className="px-3 text-[10px] font-bold tracking-wider text-neutral-400 dark:text-neutral-500 uppercase mb-1">
+              {group.section}
             </div>
-          ))}
-        </div>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink
+                    key={item.name}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${
+                        isActive
+                          ? "bg-[#FEF2F2] text-[#B91C1C] font-semibold dark:bg-red-500/10"
+                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/40"
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <Icon
+                          size={15}
+                          className={
+                            isActive.toString().includes("true") // simple check for active icon color
+                              ? "text-[#B91C1C]"
+                              : "text-neutral-400 dark:text-neutral-500"
+                          }
+                        />
+                        <span>{item.name}</span>
+                      </>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
     </aside>
   );

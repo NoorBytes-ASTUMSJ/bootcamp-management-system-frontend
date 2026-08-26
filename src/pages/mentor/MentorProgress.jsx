@@ -65,111 +65,123 @@ export default function MentorProgress() {
     student.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64 text-text-muted">
         <div className="animate-pulse flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p>Loading student progress...</p>
+          <p className="text-xs font-medium">Loading student progress...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-300 space-y-8 animate-in fade-in duration-500 pb-10">
+    <div className="mx-auto w-full max-w-7xl space-y-8 animate-in fade-in duration-500 pb-12 px-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-[28px] font-bold text-text-primary tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
             My Students Progress
           </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-1">
+          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
             Monitor the performance and completion rates of your specific
             mentees.
           </p>
         </div>
 
         <div className="relative w-full sm:w-64">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
           <input
             type="text"
             placeholder="Search my students..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary transition-shadow"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10 text-success">
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
             <FiAward className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
               Excelling
             </p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {students.filter((s) => s.status === "Excelling").length}
             </h4>
           </div>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0">
             <FiTrendingUp className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1">On Track</p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
+              On Track
+            </p>
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {students.filter((s) => s.status === "On Track").length}
             </h4>
           </div>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-warning/10 text-warning">
+
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0">
             <FiAlertCircle className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1">At Risk</p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
+              At Risk
+            </p>
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {students.filter((s) => s.status === "At Risk").length}
             </h4>
           </div>
         </div>
       </div>
 
-      <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
-        <div className="px-6 py-4 border-b border-border font-bold text-sm text-text-primary flex justify-between items-center">
-          <span>Mentee Performance Metrics</span>
+      <div className={`${cardStyle} overflow-hidden p-0!`}>
+        <div className="px-6 py-4 border-b border-border font-bold text-xs sm:text-sm text-text-primary flex justify-between items-center bg-surface-subtle/50 font-mono">
+          <span className="uppercase tracking-wider">
+            Mentee Performance Metrics
+          </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-bold bg-surface-subtle">
-                <th className="px-6 py-3.5 w-[30%]">Student Name</th>
-                <th className="px-6 py-3.5 w-[20%]">Status</th>
-                <th className="px-6 py-3.5 w-[30%]">Completion Rate</th>
-                <th className="px-6 py-3.5 w-[20%] text-right">Avg Score</th>
+              <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-mono font-bold bg-surface-subtle">
+                <th className="px-6 py-4 w-[30%]">Student Name</th>
+                <th className="px-6 py-4 w-[20%]">Status</th>
+                <th className="px-6 py-4 w-[30%]">Completion Rate</th>
+                <th className="px-6 py-4 w-[20%] text-right">Avg Score</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle">
+            <tbody className="divide-y divide-border/60">
               {filteredStudents.map((student) => (
                 <tr
                   key={student.id}
-                  className="hover:bg-surface-subtle transition-colors"
+                  className="hover:bg-surface-subtle/50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-bold text-sm text-text-primary">
+                  <td className="px-6 py-4 font-bold text-xs sm:text-sm text-text-primary">
                     {student.name}
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
                         student.status === "Excelling"
-                          ? "bg-success/10 text-success"
+                          ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                           : student.status === "At Risk"
-                            ? "bg-warning/10 text-warning"
-                            : "bg-primary/10 text-primary"
+                            ? "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                            : "bg-primary/10 text-primary border border-primary/20"
                       }`}
                     >
                       {student.status}
@@ -177,22 +189,22 @@ export default function MentorProgress() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-full bg-surface-muted rounded-full h-2 max-w-30">
+                      <div className="w-full bg-surface-subtle rounded-full h-2 max-w-30 overflow-hidden border border-border/60">
                         <div
                           className={`h-2 rounded-full ${
                             student.completionRate < 50
-                              ? "bg-warning"
+                              ? "bg-amber-500"
                               : "bg-primary"
                           }`}
                           style={{ width: `${student.completionRate}%` }}
                         ></div>
                       </div>
-                      <span className="text-xs font-bold text-text-muted">
+                      <span className="text-xs font-bold text-text-muted font-mono">
                         {student.completionRate}%
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right font-mono">
                     <span className="text-sm font-black text-text-primary">
                       {student.averageScore}
                     </span>
@@ -205,7 +217,7 @@ export default function MentorProgress() {
             </tbody>
           </table>
           {filteredStudents.length === 0 && (
-            <div className="text-center py-8 text-sm text-text-muted">
+            <div className="text-center py-12 text-xs text-text-muted">
               No assigned students found matching your search.
             </div>
           )}

@@ -1,5 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FiSearch, FiUsers, FiStar, FiEye, FiX, FiMail, FiPhone, FiBookOpen, FiCalendar, FiLock } from "react-icons/fi";
+import {
+  FiSearch,
+  FiUsers,
+  FiStar,
+  FiEye,
+  FiX,
+  FiMail,
+  FiPhone,
+  FiBookOpen,
+  FiCalendar,
+  FiLock,
+} from "react-icons/fi";
 import {
   getMentorBatchMembers,
   getMyStudentDetail,
@@ -16,6 +27,22 @@ function getCurrentUserId() {
   } catch {
     return null;
   }
+}
+
+// Helper to convert long university names to clean acronyms
+function getUniversityAcronym(uniName) {
+  if (!uniName) return "N/A";
+  const upper = uniName.toUpperCase();
+  if (upper.includes("ADAMA")) return "ASTU";
+  if (upper.includes("ADDIS ABABA")) return "AAU";
+  if (upper.includes("JIMMA")) return "JU";
+  if (upper.includes("BAHIRDAR") || upper.includes("BAHIR DAR")) return "BDU";
+  if (upper.includes("HAWASSA")) return "HU";
+  if (upper.includes("HARAMAYA")) return "HRU";
+  if (upper.includes("ARBA MINCH")) return "AMU";
+  return uniName.length > 10
+    ? uniName.substring(0, 8).toUpperCase() + "..."
+    : uniName;
 }
 
 export default function AllMembers() {
@@ -145,6 +172,10 @@ export default function AllMembers() {
     setDetailError("");
   };
 
+  // Shared card style with modern shadow, hover movement and border highlight
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   return (
     <div className="mx-auto w-full max-w-300 space-y-8 animate-in fade-in duration-500 pb-10">
       {/* Page Header */}
@@ -161,50 +192,50 @@ export default function AllMembers() {
 
       {/* Error Banner */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
+        <div className="bg-red-500/10 border border-red-500/25 text-red-500 rounded-xl px-4 py-3 text-sm font-medium">
           {error}
         </div>
       )}
 
       {/* Summary Counters */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0">
             <FiUsers className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1 uppercase tracking-wider">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
               Total Students
             </p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {loading ? "..." : totalStudents}
             </h4>
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10 text-success">
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
             <FiStar className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1 uppercase tracking-wider">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
               Batch Mentors
             </p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {loading ? "..." : totalMentors}
             </h4>
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-warning/10 text-warning">
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0">
             <FiUsers className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1 uppercase tracking-wider">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
               My Students Size
             </p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {loading ? "..." : myGroupSize}
             </h4>
           </div>
@@ -212,7 +243,7 @@ export default function AllMembers() {
       </div>
 
       {/* Search & Toggle */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-surface border border-border p-4 rounded-xl shadow-sm">
+      <div className={`${cardStyle} flex flex-col sm:flex-row gap-4 p-4`}>
         <div className="relative flex-1">
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
           <input
@@ -224,17 +255,17 @@ export default function AllMembers() {
             }
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-surface-subtle border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary transition-shadow"
+            className="w-full pl-9 pr-4 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
           />
         </div>
 
-        <div className="flex bg-surface-subtle border border-border rounded-lg p-1 shrink-0">
+        <div className="flex bg-surface-subtle border border-border rounded-xl p-1 shrink-0">
           <button
             type="button"
             onClick={() => setShowOnlyMyGroup(false)}
-            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${
+            className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
               !showOnlyMyGroup
-                ? "bg-surface border border-border shadow-sm text-text-primary"
+                ? "bg-surface border border-border shadow-xs text-text-primary"
                 : "text-text-muted hover:text-text-primary"
             }`}
           >
@@ -244,9 +275,9 @@ export default function AllMembers() {
           <button
             type="button"
             onClick={() => setShowOnlyMyGroup(true)}
-            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors flex items-center gap-1.5 ${
+            className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               showOnlyMyGroup
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-text-muted hover:text-text-primary"
             }`}
           >
@@ -257,7 +288,7 @@ export default function AllMembers() {
       </div>
 
       {/* Members Table */}
-      <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
+      <div className={`${cardStyle} overflow-hidden p-0!`}>
         <div className="overflow-x-auto">
           {loading ? (
             <div className="text-center py-12 text-sm text-text-muted">
@@ -266,84 +297,88 @@ export default function AllMembers() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-bold bg-surface-subtle">
-                  <th className="px-6 py-4 font-bold">Member</th>
-                  <th className="px-6 py-4 font-bold">Email</th>
-                  <th className="px-6 py-4 font-bold">Attendance</th>
-                  <th className="px-6 py-4 font-bold">Progress</th>
-                  <th className="px-6 py-4 font-bold">University</th>
-                  <th className="px-6 py-4 font-bold">Action</th>
+                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-mono font-bold bg-surface-subtle">
+                  <th className="px-4 py-3">Member</th>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Attendance</th>
+                  <th className="px-4 py-3">Progress</th>
+                  <th className="px-4 py-3">University</th>
+                  <th className="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody className="divide-y divide-border/60 text-xs sm:text-sm">
                 {filteredMembers.map((member) => {
                   const user = member.user;
                   if (!user) return null;
 
                   const name = user.fullName || "Unknown";
                   const belongsToMe = isMyStudent(member);
+                  const uniAcronym = getUniversityAcronym(user.university);
 
                   return (
                     <tr
                       key={member._id}
-                      className="hover:bg-surface-subtle transition-colors group"
+                      className="hover:bg-surface-subtle/50 transition-colors group"
                     >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
                           <img
                             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
                               name,
                             )}&background=F3F4F6&color=374151`}
                             alt={`${name} profile`}
-                            className="w-8 h-8 rounded-full border border-border group-hover:border-primary/50 transition-colors shrink-0 object-cover"
+                            className="w-8 h-8 rounded-xl border border-border group-hover:border-primary/50 transition-colors shrink-0 object-cover shadow-2xs"
                           />
-                          <span className="text-sm font-bold text-text-primary">
+                          <span className="text-xs sm:text-sm font-bold text-text-primary truncate max-w-37">
                             {name}
                           </span>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-text-muted">
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-text-muted truncate max-w-45 block">
                           {user.email}
                         </span>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-medium text-text-primary">
+                      <td className="px-4 py-3">
+                        <span className="text-xs sm:text-sm font-semibold text-text-primary font-mono">
                           {member.attendance ?? "0%"}
                         </span>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-16 h-1.5 bg-surface-muted rounded-full overflow-hidden">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-16 h-2 bg-surface-subtle rounded-full overflow-hidden border border-border/60">
                             <div
-                              className="h-full bg-[#B91C1C] rounded-full"
+                              className="h-full bg-primary rounded-full transition-all duration-500"
                               style={{
                                 width: `${member.progress ?? 0}%`,
                               }}
                             />
                           </div>
-                          <span className="text-sm text-text-muted font-medium">
+                          <span className="text-xs text-text-muted font-mono font-semibold">
                             {member.progress ?? 0}%
                           </span>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <span className="px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600">
-                          {user.university || "N/A"}
+                      <td className="px-4 py-3">
+                        <span
+                          className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                          title={user.university}
+                        >
+                          {uniAcronym}
                         </span>
                       </td>
 
                       {/* Action Cell: Details allowed ONLY if they are your student */}
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3 text-right">
                         {belongsToMe ? (
                           <button
                             type="button"
                             onClick={() => handleViewDetails(user._id)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 border border-primary/20 transition-all cursor-pointer"
                           >
                             <FiEye className="w-3.5 h-3.5" />
                             Details
@@ -364,7 +399,7 @@ export default function AllMembers() {
           {/* Empty State */}
           {!loading && filteredMembers.length === 0 && (
             <div className="text-center py-12 px-4">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-muted text-text-muted mb-3 border border-border">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-surface-subtle text-text-muted mb-3 border border-border shadow-2xs">
                 <FiSearch className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-text-primary mb-1">
@@ -386,7 +421,6 @@ export default function AllMembers() {
       {(detailLoading || selectedStudent || detailError) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs px-4 animate-in fade-in duration-200">
           <div className="w-full max-w-xl bg-surface rounded-2xl shadow-2xl border border-border overflow-hidden scale-in-center">
-            
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-subtle">
               <div>
@@ -400,7 +434,7 @@ export default function AllMembers() {
               <button
                 type="button"
                 onClick={closeDetails}
-                className="p-2 rounded-lg text-text-muted hover:bg-surface hover:text-text-primary transition-colors"
+                className="p-2 rounded-xl text-text-muted hover:bg-surface hover:text-text-primary transition-colors cursor-pointer border border-transparent hover:border-border"
               >
                 <FiX className="w-5 h-5" />
               </button>
@@ -414,14 +448,13 @@ export default function AllMembers() {
                   Loading student details...
                 </div>
               ) : detailError ? (
-                <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
+                <div className="bg-red-500/10 border border-red-500/25 text-red-500 rounded-xl px-4 py-3 text-sm font-medium">
                   {detailError}
                 </div>
               ) : selectedStudent ? (
                 <div className="space-y-6">
-                  
                   {/* Hero Profile Card */}
-                  <div className="flex items-center gap-4 p-4 rounded-xl bg-surface-subtle border border-border">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-surface-subtle border border-border shadow-2xs">
                     <img
                       src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
                         selectedStudent.user?.fullName ||
@@ -429,7 +462,7 @@ export default function AllMembers() {
                           "Student",
                       )}&background=3B82F6&color=FFFFFF`}
                       alt="Student profile"
-                      className="w-14 h-14 rounded-full border-2 border-primary/20 object-cover shadow-xs"
+                      className="w-14 h-14 rounded-2xl border-2 border-primary/20 object-cover shadow-xs"
                     />
                     <div className="space-y-1">
                       <h3 className="text-base font-bold text-text-primary">
@@ -438,13 +471,17 @@ export default function AllMembers() {
                           "Unknown"}
                       </h3>
                       <div className="flex flex-wrap items-center gap-3 text-xs text-text-muted">
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 font-mono">
                           <FiMail className="w-3.5 h-3.5 text-primary" />
-                          {selectedStudent.user?.email || selectedStudent.email || "N/A"}
+                          {selectedStudent.user?.email ||
+                            selectedStudent.email ||
+                            "N/A"}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <FiPhone className="w-3.5 h-3.5 text-success" />
-                          {selectedStudent.user?.phone || selectedStudent.phone || "N/A"}
+                        <span className="flex items-center gap-1 font-mono">
+                          <FiPhone className="w-3.5 h-3.5 text-emerald-500" />
+                          {selectedStudent.user?.phone ||
+                            selectedStudent.phone ||
+                            "N/A"}
                         </span>
                       </div>
                     </div>
@@ -452,54 +489,62 @@ export default function AllMembers() {
 
                   {/* Information Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted mb-1">
+                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors shadow-2xs">
+                      <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted mb-1">
                         Member ID
                       </p>
-                      <p className="text-sm font-semibold text-text-primary">
+                      <p className="text-sm font-bold text-text-primary font-mono">
                         {selectedStudent.memberId || "N/A"}
                       </p>
                     </div>
 
-                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted mb-1">
+                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors shadow-2xs">
+                      <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted mb-1">
                         Gender
                       </p>
-                      <p className="text-sm font-semibold text-text-primary capitalize">
-                        {selectedStudent.user?.gender || selectedStudent.gender || "N/A"}
+                      <p className="text-sm font-bold text-text-primary capitalize">
+                        {selectedStudent.user?.gender ||
+                          selectedStudent.gender ||
+                          "N/A"}
                       </p>
                     </div>
 
-                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted mb-1">
+                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors shadow-2xs">
+                      <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted mb-1">
                         University
                       </p>
-                      <p className="text-sm font-semibold text-text-primary">
-                        {selectedStudent.user?.university || selectedStudent.university || "N/A"}
+                      <p className="text-sm font-bold text-text-primary">
+                        {selectedStudent.user?.university ||
+                          selectedStudent.university ||
+                          "N/A"}
                       </p>
                     </div>
 
-                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted mb-1">
+                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors shadow-2xs">
+                      <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted mb-1">
                         Department
                       </p>
-                      <p className="text-sm font-semibold text-text-primary flex items-center gap-1.5">
-                        <FiBookOpen className="w-4 h-4 text-warning" />
-                        {selectedStudent.user?.department || selectedStudent.department || "N/A"}
+                      <p className="text-sm font-bold text-text-primary flex items-center gap-1.5">
+                        <FiBookOpen className="w-4 h-4 text-primary" />
+                        {selectedStudent.user?.department ||
+                          selectedStudent.department ||
+                          "N/A"}
                       </p>
                     </div>
 
-                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors sm:col-span-2">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted mb-1">
+                    <div className="p-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors shadow-2xs sm:col-span-2">
+                      <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted mb-1">
                         Academic Year
                       </p>
-                      <p className="text-sm font-semibold text-text-primary flex items-center gap-1.5">
+                      <p className="text-sm font-bold text-text-primary flex items-center gap-1.5">
                         <FiCalendar className="w-4 h-4 text-emerald-500" />
-                        Year {selectedStudent.user?.year || selectedStudent.year || "N/A"}
+                        Year{" "}
+                        {selectedStudent.user?.year ||
+                          selectedStudent.year ||
+                          "N/A"}
                       </p>
                     </div>
                   </div>
-
                 </div>
               ) : null}
             </div>
@@ -509,12 +554,11 @@ export default function AllMembers() {
               <button
                 type="button"
                 onClick={closeDetails}
-                className="px-4 py-2 rounded-lg bg-surface border border-border text-xs font-bold text-text-primary hover:bg-surface-subtle transition-colors shadow-xs"
+                className="px-4 py-2 rounded-xl bg-surface border border-border text-xs font-bold text-text-primary hover:bg-surface-subtle transition-colors shadow-xs cursor-pointer"
               >
                 Close
               </button>
             </div>
-
           </div>
         </div>
       )}

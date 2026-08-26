@@ -46,19 +46,19 @@ export default function StudentAnnouncements() {
       case "urgent":
       case "high":
         return (
-          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-300 border border-red-200/50 dark:border-red-900/40">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-rose-500/10 text-rose-500 border border-rose-500/20">
             {prio}
           </span>
         );
       case "normal":
         return (
-          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/40">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-500/10 text-blue-500 border border-blue-500/20">
             Normal
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-surface-subtle text-text-muted border border-border">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-surface-subtle text-text-muted border border-border">
             {prio || "Normal"}
           </span>
         );
@@ -73,10 +73,14 @@ export default function StudentAnnouncements() {
     return item.targetAudience;
   };
 
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group";
+
   return (
-    <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="w-full max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 pb-12 px-4">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
           Announcements & Notices
         </h1>
         <p className="text-xs sm:text-sm text-text-muted mt-0.5">
@@ -106,7 +110,7 @@ export default function StudentAnnouncements() {
               <div
                 key={itemId}
                 onClick={() => handleRowClick(item)}
-                className="bg-surface border border-border rounded-xl p-4 sm:p-5 shadow-2xs transition hover:border-primary/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group"
+                className={cardStyle}
               >
                 <div className="space-y-1.5 min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -114,11 +118,11 @@ export default function StudentAnnouncements() {
                       {item.title}
                     </h2>
                     {getPriorityBadge(item.priority)}
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold uppercase tracking-wide">
+                    <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold uppercase tracking-wide border border-primary/20">
                       {getAudienceLabel(item)}
                     </span>
                     {item.isPinned && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-bold uppercase tracking-wide border border-amber-500/20">
                         Pinned
                       </span>
                     )}
@@ -128,8 +132,13 @@ export default function StudentAnnouncements() {
                     {item.content}
                   </p>
 
-                  <div className="flex items-center gap-3 text-[11px] text-text-muted pt-1">
-                    <span>By <strong className="text-text-primary font-medium">{authorName}</strong></span>
+                  <div className="flex items-center gap-3 text-[11px] text-text-muted pt-1 font-mono">
+                    <span>
+                      By{" "}
+                      <strong className="text-text-primary font-medium">
+                        {authorName}
+                      </strong>
+                    </span>
                     <span>•</span>
                     <span>{dateStr}</span>
                   </div>
@@ -143,7 +152,7 @@ export default function StudentAnnouncements() {
                       handleRowClick(item);
                     }}
                     title="View details"
-                    className="p-2 rounded-lg bg-surface-subtle text-text-muted hover:text-text-primary hover:bg-border/50 transition cursor-pointer"
+                    className="p-2 rounded-xl bg-surface-subtle text-text-muted hover:text-text-primary hover:bg-border/50 transition cursor-pointer border border-border"
                   >
                     <FiEye className="h-4 w-4" />
                   </button>
@@ -153,8 +162,8 @@ export default function StudentAnnouncements() {
           })}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 bg-surface border border-border rounded-xl shadow-2xs">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-3">
+        <div className="text-center py-16 px-4 bg-surface border border-border rounded-2xl shadow-sm">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary mb-3 border border-primary/20 shadow-2xs">
             <FiBell className="w-5 h-5" />
           </div>
           <h3 className="text-sm font-bold text-text-primary mb-1">
@@ -168,58 +177,67 @@ export default function StudentAnnouncements() {
 
       {/* DETAIL MODAL */}
       {isDetailModalOpen && selectedAnnouncement && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-surface w-full max-w-lg rounded-xl border border-border shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-surface-subtle/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-surface w-full max-w-lg rounded-2xl border border-border shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-subtle">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-text-primary">
+                <h3 className="text-sm sm:text-base font-bold text-text-primary">
                   {selectedAnnouncement.title}
                 </h3>
               </div>
               <button
                 onClick={() => setIsDetailModalOpen(false)}
-                className="text-text-muted hover:text-text-primary cursor-pointer p-1"
+                className="text-text-muted hover:text-text-primary cursor-pointer p-2 rounded-xl hover:bg-surface border border-transparent hover:border-border transition-colors"
               >
                 <FiX className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
-              <div className="flex flex-wrap items-center gap-2.5 pb-3 border-b border-border text-text-muted">
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+              <div className="flex flex-wrap items-center gap-3 pb-3 border-b border-border text-text-muted font-mono">
                 <div>
                   <span className="font-semibold text-text-primary">From:</span>{" "}
-                  <span className="px-1.5 py-0.5 bg-surface-subtle rounded border border-border">
+                  <span className="capitalize px-2.5 py-0.5 bg-surface-subtle rounded-md border border-border">
                     {getAudienceLabel(selectedAnnouncement)}
                   </span>
                 </div>
                 <div>
-                  <span className="font-semibold text-text-primary">Priority:</span>{" "}
+                  <span className="font-semibold text-text-primary">
+                    Priority:
+                  </span>{" "}
                   {getPriorityBadge(selectedAnnouncement.priority)}
                 </div>
                 <div>
-                  <span className="font-semibold text-text-primary">Author:</span>{" "}
-                  <span>{selectedAnnouncement.createdBy?.fullName || "System Admin"}</span>
+                  <span className="font-semibold text-text-primary">
+                    Author:
+                  </span>{" "}
+                  <span>
+                    {selectedAnnouncement.createdBy?.fullName || "System Admin"}
+                  </span>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-text-primary mb-1.5 uppercase tracking-wider text-[10px]">
+                <h4 className="font-mono font-bold text-text-muted uppercase tracking-wider text-[10px] mb-2">
                   Notice Content
                 </h4>
-                <div className="bg-surface-subtle p-3.5 rounded-lg border border-border text-text-primary whitespace-pre-wrap leading-relaxed">
+                <div className="bg-surface-subtle p-4 rounded-xl border border-border text-text-primary whitespace-pre-wrap leading-relaxed">
                   {selectedAnnouncement.content}
                 </div>
               </div>
 
-              <div className="text-[11px] text-text-muted pt-2">
-                Published on: {selectedAnnouncement.publishDate ? new Date(selectedAnnouncement.publishDate).toLocaleString() : "Recently"}
+              <div className="text-[11px] text-text-muted pt-2 font-mono">
+                Published on:{" "}
+                {selectedAnnouncement.publishDate
+                  ? new Date(selectedAnnouncement.publishDate).toLocaleString()
+                  : "Recently"}
               </div>
             </div>
 
-            <div className="px-5 py-3 bg-surface-subtle/50 border-t border-border flex justify-end">
+            <div className="px-6 py-3 bg-surface-subtle border-t border-border flex justify-end">
               <button
                 onClick={() => setIsDetailModalOpen(false)}
-                className="px-4 py-1.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-semibold rounded-lg text-xs transition cursor-pointer"
+                className="px-4 py-2 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-bold rounded-xl text-xs transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
