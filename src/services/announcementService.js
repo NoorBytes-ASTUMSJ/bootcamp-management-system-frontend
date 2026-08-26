@@ -1,66 +1,71 @@
-const INITIAL_ANNOUNCEMENTS_DATA = [
-  {
-    id: "1",
-    title: "Registration Deadline",
-    audience: "Everyone",
-    batch: "ALL",
-    batchName: "All Batches",
-    publishedDate: "Oct 12, 2026",
-    status: "Published",
-    content:
-      "Final reminder: All applicant profiles must be completed before the system deadline.",
-  },
-  {
-    id: "2",
-    title: "Interview Schedule",
-    audience: "Students",
-    batch: "1st",
-    batchName: "1st Batch",
-    publishedDate: "Oct 15, 2026",
-    status: "Published",
-    content:
-      "Technical interview timeslots have been distributed to all candidates via email.",
-  },
-  {
-    id: "3",
-    title: "First Qualification Results",
-    audience: "Students",
-    batch: "1st",
-    batchName: "1st Batch",
-    publishedDate: "Oct 20, 2026",
-    status: "Draft",
-    content:
-      "Draft results for the round 1 algorithmic evaluation. Review pending mentor sign-off.",
-  },
-  {
-    id: "4",
-    title: "Final Selection Results",
-    audience: "Everyone",
-    batch: "ALL",
-    batchName: "All Batches",
-    publishedDate: "Oct 25, 2026",
-    status: "Published",
-    content:
-      "Congratulations to all accepted candidates across ASTU and partner institutions.",
-  },
-];
+import API from "./api";
 
-export async function getAnnouncements() {
+// Calls GET /api/announcements (or GET /api/announcements/dashboard)
+export async function getDashboardAnnouncements() {
   try {
-    const response = await fetch("/api/v1/communication/announcements");
-    const contentType = response.headers.get("content-type");
-    if (
-      response.ok &&
-      contentType &&
-      contentType.includes("application/json")
-    ) {
-      const data = await response.json();
-      return Array.isArray(data)
-        ? data
-        : data.announcements || INITIAL_ANNOUNCEMENTS_DATA;
-    }
+    const response = await API.get("/announcements"); // Now matches router.get("/")
+    const resData = response.data;
+    return resData.data?.announcements || resData.announcements || resData || [];
   } catch (err) {
-    console.info("Announcements API offline. Loaded standard mock dataset.");
+    console.error("Error fetching announcements:", err);
+    throw err;
   }
-  return INITIAL_ANNOUNCEMENTS_DATA;
+}
+
+// Calls GET /api/announcements/feed (student / logged-in read-only feed)
+export async function getUserFeedAnnouncements() {
+  try {
+    const response = await API.get("/announcements/feed");
+    const resData = response.data;
+    return resData.data?.announcements || resData.announcements || resData || [];
+  } catch (err) {
+    console.error("Error fetching announcement feed:", err);
+    throw err;
+  }
+}
+
+// Calls GET /api/announcements/public (no login required, public audience only)
+export async function getPublicAnnouncements() {
+  try {
+    const response = await API.get("/announcements/public");
+    const resData = response.data;
+    return resData.data?.announcements || resData.announcements || resData || [];
+  } catch (err) {
+    console.error("Error fetching public announcements:", err);
+    throw err;
+  }
+}
+
+// Calls POST /api/announcements
+export async function createAnnouncement(announcementData) {
+  try {
+    const response = await API.post("/announcements", announcementData);
+    const resData = response.data;
+    return resData.data?.announcement || resData.announcement || resData;
+  } catch (err) {
+    console.error("Error creating announcement:", err);
+    throw err;
+  }
+}
+
+export async function updateAnnouncement(id, announcementData) {
+  try {
+    // Note: Your backend uses router.patch, make sure your service uses API.patch or API.put if you changed it
+    const response = await API.patch(`/announcements/${id}`, announcementData);
+    const resData = response.data;
+    return resData.data?.announcement || resData.announcement || resData;
+  } catch (err) {
+    console.error("Error updating announcement:", err);
+    throw err;
+  }
+}
+
+export async function deleteAnnouncement(id) {
+  try {
+    const response = await API.delete(`/announcements/${id}`);
+    return response.data;
+  } catch (err) {
+    console.error("Error deleting announcement:", err);
+    throw err;
+  }
 }

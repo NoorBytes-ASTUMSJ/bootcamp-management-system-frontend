@@ -1,19 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
-import AdminSidebar from "../../components/layout/AdminSidebar";
-import { getAnnouncements } from "../../services/announcementService";
+import React, { useState, useEffect } from "react";
+import {
+  getDashboardAnnouncements,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement,
+} from "../../services/announcementService";
+import API from "../../services/api";
 import {
   Search,
   ChevronDown,
-  Bell,
-  User,
-  Moon,
-  Sun,
-  LogOut,
-  Check,
   Plus,
   Loader2,
   Pencil,
   Trash2,
+  X,
+  AlertCircle,
+  AlertTriangle,
+  Pin,
+  Megaphone,
 } from "lucide-react";
 
 export default function AnnouncementsManagement({
@@ -23,46 +27,163 @@ export default function AnnouncementsManagement({
   onLogout,
 }) {
   const [announcements, setAnnouncements] = useState([]);
+  const [batches, setBatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [audienceFilter, setAudienceFilter] = useState("ALL");
   const [batchFilter, setBatchFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const profileRef = useRef(null);
+  // Detail Modal State
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // Create / Edit Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAnnouncement, setEditingAnnouncement] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    content: "",
+    status: "draft",
+    targetAudience: "public",
+    batch: "",
+    priority: "normal",
+    isPinned: false,
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  useEffect(() => {
-    async function loadData() {
+  // Delete Confirmation Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [announcementToDelete, setAnnouncementToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const loadData = async () => {
+    try {
       setLoading(true);
-      const data = await getAnnouncements();
-      setAnnouncements(data);
+      const [annData, batchRes] = await Promise.all([
+        getDashboardAnnouncements(),
+        API.get("/batches").catch(() => ({ data: { data: { batches: [] } } })),
+      ]);
+
+      setAnnouncements(annData);
+
+      const batchList =
+        batchRes.data?.data?.batches ||
+        batchRes.data?.batches ||
+        batchRes.data ||
+        [];
+      setBatches(batchList);
+    } catch (err) {
+      console.error("Failed to fetch dashboard data:", err);
+    } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadData();
   }, []);
 
-  const handleDelete = (id) => {
-    setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+  const handleOpenDelete = (id, e) => {
+    if (e) e.stopPropagation();
+    setAnnouncementToDelete(id);
+    setIsDeleteModalOpen(true);
   };
 
-  const availableAudiences = [
-    ...new Set(announcements.map((a) => a.audience).filter(Boolean)),
-  ];
-  const availableBatches = [
-    ...new Set(
-      announcements.map((a) => a.batch).filter((b) => b && b !== "ALL"),
-    ),
-  ];
+  const confirmDelete = async () => {
+    if (!announcementToDelete) return;
+    try {
+      setDeleting(true);
+      await deleteAnnouncement(announcementToDelete);
+      setAnnouncements((prev) =>
+        prev.filter((a) => (a._id || a.id) !== announcementToDelete),
+      );
+      setIsDeleteModalOpen(false);
+      setAnnouncementToDelete(null);
+    } catch (err) {
+      alert(err.message || "Failed to delete announcement.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleRowClick = (announcement) => {
+    setSelectedAnnouncement(announcement);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleOpenCreate = () => {
+    setEditingAnnouncement(null);
+    setFormData({
+      title: "",
+      content: "",
+      status: "draft",
+      targetAudience: "public",
+      batch: "",
+      priority: "normal",
+      isPinned: false,
+    });
+    setErrorMsg("");
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (announcement, e) => {
+    if (e) e.stopPropagation();
+    setEditingAnnouncement(announcement);
+    setFormData({
+      title: announcement.title || "",
+      content: announcement.content || "",
+      status: announcement.status || "draft",
+      targetAudience: announcement.targetAudience || "public",
+      batch: announcement.batch?._id || announcement.batch || "",
+      priority: announcement.priority || "normal",
+      isPinned: announcement.isPinned || false,
+    });
+    setErrorMsg("");
+    setIsModalOpen(true);
+  };
+
+  const handleSubmitForm = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setSubmitting(true);
+
+    try {
+      const needsBatchScope = [
+        "student",
+        "mentor",
+        "admin",
+        "member",
+        "mentor-group",
+      ].includes(formData.targetAudience);
+
+      const payload = {
+        ...formData,
+        status: formData.status,
+        batch: needsBatchScope && formData.batch !== "" ? formData.batch : null,
+      };
+
+      if (editingAnnouncement) {
+        const id = editingAnnouncement._id || editingAnnouncement.id;
+        const updated = await updateAnnouncement(id, payload);
+        setAnnouncements((prev) =>
+          prev.map((a) => (a._id === id || a.id === id ? updated : a)),
+        );
+      } else {
+        const created = await createAnnouncement(payload);
+        setAnnouncements((prev) => [created, ...prev]);
+      }
+      setIsModalOpen(false);
+      loadData();
+    } catch (err) {
+      setErrorMsg(
+        err.response?.data?.message || err.message || "Operation failed.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const filteredAnnouncements = announcements.filter((a) => {
     const query = searchTerm.toLowerCase().trim();
@@ -70,223 +191,635 @@ export default function AnnouncementsManagement({
       !query ||
       (a.title || "").toLowerCase().includes(query) ||
       (a.content || "").toLowerCase().includes(query);
+
+    const audienceStr = (a.targetAudience || "").toLowerCase().trim();
     const matchesAudience =
       audienceFilter === "ALL" ||
-      (a.audience || "").toLowerCase() === audienceFilter.toLowerCase();
-    const matchesBatch =
-      batchFilter === "ALL" ||
-      (a.batch || "").toLowerCase() === batchFilter.toLowerCase();
+      audienceStr === audienceFilter.toLowerCase().trim() ||
+      (audienceFilter.toLowerCase().trim() === "mentor-group" &&
+        (audienceStr === "mentor_group" || audienceStr === "mentorgroup"));
 
-    return matchesSearch && matchesAudience && matchesBatch;
+    const itemBatchId = a.batch?._id || a.batch || "";
+    const matchesBatch = batchFilter === "ALL" || itemBatchId === batchFilter;
+
+    const matchesStatus =
+      statusFilter === "ALL" ||
+      (a.status || "").toLowerCase() === statusFilter.toLowerCase();
+
+    return matchesSearch && matchesAudience && matchesBatch && matchesStatus;
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "Published":
+    switch (status?.toLowerCase()) {
+      case "published":
         return (
-          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/40">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             Published
           </span>
         );
-      case "Draft":
+      case "draft":
         return (
-          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200/50 dark:border-neutral-700">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/40">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
             Draft
           </span>
         );
       default:
         return (
-          <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
             {status}
           </span>
         );
     }
   };
 
+  const getScopeText = (a) => {
+    const audience = (a.targetAudience || "").toLowerCase().trim();
+    const batchScopedAudiences = [
+      "student",
+      "mentor",
+      "admin",
+      "member",
+      "mentor-group",
+      "mentor_group",
+      "mentorgroup",
+    ];
+
+    if (!batchScopedAudiences.includes(audience)) return "—";
+
+    const batchName = a.batch?.name;
+
+    if (
+      audience === "mentor-group" ||
+      audience === "mentor_group" ||
+      audience === "mentorgroup"
+    ) {
+      return batchName
+        ? `Mentor Group — ${batchName}`
+        : "Mentor Group — No Batch Assigned";
+    }
+
+    if (audience === "mentor") {
+      return batchName ? batchName : "All Mentors";
+    }
+
+    return batchName || `All ${a.targetAudience}s`;
+  };
+
   return (
     <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Content Body */}
         <main className="px-8 py-6 space-y-6">
-          {loading ? (
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-200/60 dark:border-neutral-800/80">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 text-[#B91C1C] border border-red-100 dark:border-red-900/30">
+                <Megaphone size={22} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                  Announcements Management
+                </h2>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                  Manage public, member, student, mentor, and mentor group
+                  posts.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleOpenCreate}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-semibold transition-all shadow-md shadow-red-500/10 cursor-pointer"
+            >
+              <Plus size={15} />
+              <span>Create Announcement</span>
+            </button>
+          </div>
+
+          {/* Filters Bar */}
+          <div className="p-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex-1 min-w-[240px] relative">
+                <Search
+                  size={14}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Search announcements by title or content..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-neutral-50/70 dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
+                />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={audienceFilter}
+                  onChange={(e) => setAudienceFilter(e.target.value)}
+                  className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
+                >
+                  <option value="ALL">All Audiences</option>
+                  <option value="public">Public</option>
+                  <option value="member">Member</option>
+                  <option value="student">Student</option>
+                  <option value="mentor">Mentor</option>
+                  <option value="mentor-group">Mentor Group</option>
+                  <option value="admin">Admin</option>
+                </select>
+                <ChevronDown
+                  size={13}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={batchFilter}
+                  onChange={(e) => setBatchFilter(e.target.value)}
+                  className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
+                >
+                  <option value="ALL">All Batches</option>
+                  {batches.map((b) => {
+                    const batchId = b._id || b.id;
+                    const batchName = b.name || `Batch (${batchId.slice(-6)})`;
+                    return (
+                      <option key={batchId} value={batchId}>
+                        {batchName}
+                      </option>
+                    );
+                  })}
+                </select>
+                <ChevronDown
+                  size={13}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
+                <ChevronDown
+                  size={13}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Table Card */}
+          {loading && announcements.length === 0 ? (
             <div className="flex items-center justify-center py-24 gap-2 text-xs text-neutral-500">
-              <Loader2 className="animate-spin text-[#B91C1C]" size={18} />
+              <Loader2 className="animate-spin text-[#B91C1C]" size={20} />
               <span>Loading announcements...</span>
             </div>
           ) : (
-            <>
-              {/* Header Title + Create Action Button */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
-                    Announcements
-                  </h2>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                    Publish and manage important information for the community.
-                  </p>
-                </div>
-
-                <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5">
-                  <Plus size={14} />
-                  <span>Create Announcement</span>
-                </button>
-              </div>
-
-              {/* Filters Box with Modern Hover Elevation */}
-              <div className="p-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/40">
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex-1 min-w-[200px] relative">
-                    <Search
-                      size={13}
-                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Search announcements..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
-                    />
-                  </div>
-
-                  <div className="relative">
-                    <select
-                      value={audienceFilter}
-                      onChange={(e) => setAudienceFilter(e.target.value)}
-                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
-                    >
-                      <option value="ALL">Filter by Audience</option>
-                      {availableAudiences.map((aud) => (
-                        <option key={aud} value={aud}>
-                          {aud}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={12}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-                    />
-                  </div>
-
-                  <div className="relative">
-                    <select
-                      value={batchFilter}
-                      onChange={(e) => setBatchFilter(e.target.value)}
-                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
-                    >
-                      <option value="ALL">Filter by Batch</option>
-                      <option value="ALL">All Batches</option>
-                      {availableBatches.map((b) => (
-                        <option key={b} value={b}>
-                          {b} Batch
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={12}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Announcements Table with Modern Container Polish */}
-              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse text-xs">
-                    <thead>
-                      <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                        <th className="py-3.5 px-5">TITLE</th>
-                        <th className="py-3.5 px-5">AUDIENCE</th>
-                        <th className="py-3.5 px-5">BATCH</th>
-                        <th className="py-3.5 px-5">PUBLISHED DATE</th>
-                        <th className="py-3.5 px-5">STATUS</th>
-                        <th className="py-3.5 px-5 text-right">ACTION</th>
+            <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-neutral-200/60 dark:border-neutral-800 bg-neutral-50/80 dark:bg-neutral-800/40 text-[11px] font-bold text-neutral-500 uppercase tracking-wider">
+                      <th className="py-3.5 px-5">Title</th>
+                      <th className="py-3.5 px-4">Audience</th>
+                      <th className="py-3.5 px-4">Scope / Batch</th>
+                      <th className="py-3.5 px-4">Date</th>
+                      <th className="py-3.5 px-4">Status</th>
+                      <th className="py-3.5 px-5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/70">
+                    {filteredAnnouncements.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="text-center py-12 text-neutral-400 text-xs"
+                        >
+                          No announcements match your filter criteria.
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
-                      {filteredAnnouncements.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={6}
-                            className="text-center py-12 text-neutral-400 text-xs"
-                          >
-                            No announcements found.
-                          </td>
-                        </tr>
-                      ) : (
-                        filteredAnnouncements.map((a) => (
+                    ) : (
+                      filteredAnnouncements.map((a) => {
+                        const rowId = a._id || a.id;
+                        return (
                           <tr
-                            key={a.id}
-                            className="hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors"
+                            key={rowId}
+                            onClick={() => handleRowClick(a)}
+                            className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer group"
                           >
                             <td className="py-4 px-5 font-semibold text-neutral-900 dark:text-neutral-100">
-                              {a.title}
+                              <div className="flex items-center gap-2">
+                                <span className="group-hover:text-[#B91C1C] transition-colors">
+                                  {a.title}
+                                </span>
+                                {a.isPinned && (
+                                  <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 bg-red-50 dark:bg-red-950/60 text-[#B91C1C] border border-red-200/60 dark:border-red-900/40 rounded-md font-medium">
+                                    <Pin size={10} /> Pinned
+                                  </span>
+                                )}
+                              </div>
                             </td>
 
-                            <td className="py-4 px-5 text-neutral-600 dark:text-neutral-400">
-                              {a.audience}
+                            <td className="py-4 px-4 text-neutral-600 dark:text-neutral-400 capitalize">
+                              {a.targetAudience}
                             </td>
 
-                            <td className="py-4 px-5 text-neutral-600 dark:text-neutral-400">
-                              {a.batch === "ALL"
-                                ? "All Batches"
-                                : `${a.batch} Batch`}
+                            <td className="py-4 px-4 text-neutral-600 dark:text-neutral-400">
+                              {getScopeText(a)}
                             </td>
 
-                            <td className="py-4 px-5 text-neutral-500 dark:text-neutral-400 text-xs">
-                              {a.publishedDate}
+                            <td className="py-4 px-4 text-neutral-500 dark:text-neutral-400 text-xs">
+                              {a.publishDate
+                                ? new Date(a.publishDate).toLocaleDateString()
+                                : "N/A"}
                             </td>
 
-                            <td className="py-4 px-5">
+                            <td className="py-4 px-4">
                               {getStatusBadge(a.status)}
                             </td>
 
                             <td className="py-4 px-5 text-right">
-                              <div className="flex items-center justify-end gap-2 text-neutral-400">
+                              <div className="flex items-center justify-end gap-1.5 text-neutral-400">
                                 <button
                                   type="button"
+                                  onClick={(e) => handleOpenEdit(a, e)}
                                   title="Edit"
-                                  className="p-1.5 rounded-lg hover:text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-[#B91C1C] transition-colors cursor-pointer"
                                 >
                                   <Pencil size={14} />
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => handleDelete(a.id)}
+                                  onClick={(e) => handleOpenDelete(rowId, e)}
                                   title="Delete"
-                                  className="p-1.5 rounded-lg hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/50 hover:text-red-600 transition-colors cursor-pointer"
                                 >
                                   <Trash2 size={14} />
                                 </button>
                               </div>
                             </td>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="px-5 py-3.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 bg-neutral-50/30 dark:bg-neutral-800/20">
-                  <span>
-                    Showing {filteredAnnouncements.length} of{" "}
-                    {announcements.length} announcements
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <button className="hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer transition-colors">
-                      Previous
-                    </button>
-                    <button className="hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200 transition-colors">
-                      Next
-                    </button>
-                  </div>
-                </div>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
               </div>
-            </>
+
+              <div className="px-5 py-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs text-neutral-500 bg-neutral-50/30 dark:bg-neutral-800/20">
+                <span>
+                  Showing{" "}
+                  <strong className="text-neutral-700 dark:text-neutral-300">
+                    {filteredAnnouncements.length}
+                  </strong>{" "}
+                  of{" "}
+                  <strong className="text-neutral-700 dark:text-neutral-300">
+                    {announcements.length}
+                  </strong>{" "}
+                  announcements
+                </span>
+              </div>
+            </div>
           )}
         </main>
       </div>
+
+      {/* DETAIL MODAL */}
+      {isDetailModalOpen && selectedAnnouncement && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#151921] w-full max-w-lg rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
+              <div className="flex items-center gap-2.5">
+                <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+                  {selectedAnnouncement.title}
+                </h3>
+                {selectedAnnouncement.isPinned && (
+                  <span className="text-[10px] px-2 py-0.5 bg-red-50 dark:bg-red-950/50 text-[#B91C1C] rounded-md font-medium">
+                    Pinned
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-lg cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200/60 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400">
+                <div>
+                  <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                    Audience:
+                  </span>{" "}
+                  <span className="capitalize">
+                    {selectedAnnouncement.targetAudience}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                    Scope / Batch:
+                  </span>{" "}
+                  <span>{getScopeText(selectedAnnouncement)}</span>
+                </div>
+                <div>
+                  <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                    Priority:
+                  </span>{" "}
+                  <span className="capitalize">
+                    {selectedAnnouncement.priority}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                    Status:
+                  </span>{" "}
+                  <span className="capitalize">
+                    {selectedAnnouncement.status}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                    Published:
+                  </span>{" "}
+                  <span>
+                    {selectedAnnouncement.publishDate
+                      ? new Date(
+                          selectedAnnouncement.publishDate,
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Content
+                </h4>
+                <p className="text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap leading-relaxed bg-neutral-50 dark:bg-[#0E1117] p-4 rounded-xl border border-neutral-200/60 dark:border-neutral-800">
+                  {selectedAnnouncement.content}
+                </p>
+              </div>
+            </div>
+
+            <div className="px-6 py-3.5 bg-neutral-50 dark:bg-neutral-900/50 border-t border-neutral-100 dark:border-neutral-800 flex justify-end">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="px-4 py-2 rounded-xl bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold cursor-pointer text-xs transition-colors shadow-xs"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE / EDIT MODAL */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#151921] w-full max-w-lg rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
+              <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+                {editingAnnouncement
+                  ? "Edit Announcement"
+                  : "Create New Announcement"}
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-lg cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <form
+              onSubmit={handleSubmitForm}
+              className="p-6 space-y-4 max-h-[80vh] overflow-y-auto text-xs"
+            >
+              {errorMsg && (
+                <div className="p-3 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 rounded-xl flex items-center gap-2">
+                  <AlertCircle size={14} />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
+
+              <div>
+                <label className="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  maxLength={150}
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  placeholder="Enter announcement title..."
+                  className="w-full px-3.5 py-2 rounded-xl bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#B91C1C] shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Content *
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={formData.content}
+                  onChange={(e) =>
+                    setFormData({ ...formData, content: e.target.value })
+                  }
+                  placeholder="Write the announcement details here..."
+                  className="w-full px-3.5 py-2 rounded-xl bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#B91C1C] shadow-xs resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    Target Audience *
+                  </label>
+                  <select
+                    value={formData.targetAudience}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        targetAudience: e.target.value,
+                        batch: "",
+                      })
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
+                  >
+                    <option value="public">Public</option>
+                    <option value="member">Member</option>
+                    <option value="student">Student</option>
+                    <option value="mentor">Mentor</option>
+                    {formData.targetAudience === "mentor-group" && (
+                      <option value="mentor-group">Mentor Group</option>
+                    )}
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    Status *
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) =>
+                      setFormData({ ...formData, status: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                  </select>
+                </div>
+              </div>
+
+              {[
+                "student",
+                "mentor",
+                "admin",
+                "member",
+                "mentor-group",
+              ].includes(formData.targetAudience) && (
+                <div>
+                  <label className="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    Batch / Group Scope
+                  </label>
+                  <select
+                    value={formData.batch}
+                    onChange={(e) =>
+                      setFormData({ ...formData, batch: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
+                  >
+                    <option value="">
+                      All {formData.targetAudience}s (Across all batches)
+                    </option>
+                    {batches.map((b) => {
+                      const batchId = b._id || b.id;
+                      const batchName =
+                        b.name || `Batch (${batchId.slice(-6)})`;
+                      return (
+                        <option key={batchId} value={batchId}>
+                          {batchName}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    Priority
+                  </label>
+                  <select
+                    value={formData.priority}
+                    onChange={(e) =>
+                      setFormData({ ...formData, priority: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
+                  >
+                    <option value="low">Low</option>
+                    <option value="normal">Normal</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center pt-5">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isPinned}
+                      onChange={(e) =>
+                        setFormData({ ...formData, isPinned: e.target.checked })
+                      }
+                      className="rounded border-neutral-300 text-[#B91C1C] focus:ring-[#B91C1C] cursor-pointer w-4 h-4"
+                    />
+                    <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                      Pin Announcement
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-semibold cursor-pointer text-xs shadow-xs transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white font-semibold cursor-pointer text-xs flex items-center gap-1.5 disabled:opacity-50 transition-all shadow-xs"
+                >
+                  {submitting && <Loader2 size={14} className="animate-spin" />}
+                  <span>
+                    {editingAnnouncement ? "Save Changes" : "Save Announcement"}
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#151921] w-full max-w-sm rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-hidden p-6 text-center space-y-4">
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/60 text-[#B91C1C] flex items-center justify-center border border-red-100 dark:border-red-900/30">
+              <AlertTriangle size={22} />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+                Delete Announcement?
+              </h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                This action cannot be undone. This will permanently remove the
+                announcement from the system.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-semibold cursor-pointer text-xs shadow-xs transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white font-semibold cursor-pointer text-xs flex items-center justify-center gap-1.5 disabled:opacity-50 transition-all shadow-xs"
+              >
+                {deleting && <Loader2 size={13} className="animate-spin" />}
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

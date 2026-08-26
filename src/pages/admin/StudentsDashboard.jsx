@@ -235,11 +235,6 @@ export default function StudentsDashboard() {
   // ==================================================
   // BATCH HELPER
   // ==================================================
-  // Batch lives on the User document (user.batch), not on the
-  // Member/Student record. GET /members/students populates
-  // student.user.batch as a full { _id, name, ... } object, so we
-  // read from there first and fall back to student.batch just in
-  // case a caller ever passes a differently-shaped record in.
 
   const getBatchName = (student) => {
     const batch = student?.user?.batch ?? student?.batch;
@@ -448,10 +443,6 @@ export default function StudentsDashboard() {
     try {
       setFormLoading(true);
 
-      // -----------------------------
-      // EDIT STUDENT
-      // -----------------------------
-
       if (editingStudent) {
         const payload = {
           status: formData.status,
@@ -482,12 +473,7 @@ export default function StudentsDashboard() {
         } else {
           await loadStudents();
         }
-      }
-
-      // -----------------------------
-      // ADD / APPROVE STUDENT
-      // -----------------------------
-      else {
+      } else {
         const response = await API.post(`/members/approve/${formData.user}`, {
           role: "student",
           status: formData.status,
