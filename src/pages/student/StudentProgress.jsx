@@ -22,7 +22,7 @@ const progressOverview = [
     subtext: "+8% from last week",
     icon: FiTrendingUp,
     color: "text-primary",
-    bg: "bg-primary-light",
+    bg: "bg-primary/10 border border-primary/20",
   },
   {
     id: 2,
@@ -30,8 +30,8 @@ const progressOverview = [
     value: "16",
     subtext: "16 / 24 total",
     icon: FiBookOpen,
-    color: "text-info",
-    bg: "bg-info/10",
+    color: "text-blue-500",
+    bg: "bg-blue-500/10 border border-blue-500/20",
   },
   {
     id: 3,
@@ -39,8 +39,8 @@ const progressOverview = [
     value: "12",
     subtext: "80% average score",
     icon: FiCheckCircle,
-    color: "text-success",
-    bg: "bg-success/10",
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10 border border-emerald-500/20",
   },
   {
     id: 4,
@@ -48,8 +48,8 @@ const progressOverview = [
     value: "42h 30m",
     subtext: "+5h from last week",
     icon: FiClock,
-    color: "text-warning",
-    bg: "bg-warning/10",
+    color: "text-amber-500",
+    bg: "bg-amber-500/10 border border-amber-500/20",
   },
   {
     id: 5,
@@ -57,8 +57,8 @@ const progressOverview = [
     value: "7 days",
     subtext: "Keep it up! 🔥",
     icon: FiAward,
-    color: "text-secondary-foreground",
-    bg: "bg-secondary",
+    color: "text-purple-500",
+    bg: "bg-purple-500/10 border border-purple-500/20",
   },
 ];
 
@@ -70,8 +70,8 @@ const topicProgressData = [
     status: "Completed",
     date: "Jun 5, 2025",
     icon: FaHtml5,
-    iconColor: "text-warning",
-    iconBg: "bg-warning/10",
+    iconColor: "text-amber-500",
+    iconBg: "bg-amber-500/10 border border-amber-500/20",
   },
   {
     id: 2,
@@ -80,8 +80,8 @@ const topicProgressData = [
     status: "In Progress",
     date: "Jun 4, 2025",
     icon: IoLogoJavascript,
-    iconColor: "text-info",
-    iconBg: "bg-info/10",
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-500/10 border border-blue-500/20",
   },
   {
     id: 3,
@@ -90,8 +90,8 @@ const topicProgressData = [
     status: "Needs Improvement",
     date: "Jun 3, 2025",
     icon: FaReact,
-    iconColor: "text-info",
-    iconBg: "bg-info/10",
+    iconColor: "text-cyan-500",
+    iconBg: "bg-cyan-500/10 border border-cyan-500/20",
   },
   {
     id: 4,
@@ -100,8 +100,8 @@ const topicProgressData = [
     status: "In Progress",
     date: "Jun 2, 2025",
     icon: FaNodeJs,
-    iconColor: "text-success",
-    iconBg: "bg-success/10",
+    iconColor: "text-emerald-500",
+    iconBg: "bg-emerald-500/10 border border-emerald-500/20",
   },
   {
     id: 5,
@@ -110,38 +110,42 @@ const topicProgressData = [
     status: "In Progress",
     date: "May 30, 2025",
     icon: SiMongodb,
-    iconColor: "text-success",
-    iconBg: "bg-success/10",
+    iconColor: "text-emerald-500",
+    iconBg: "bg-emerald-500/10 border border-emerald-500/20",
   },
 ];
 
 const getStatusBadgeStyles = (status) => {
   switch (status) {
     case "Completed":
-      return "bg-success/10 text-success border border-success/20";
+      return "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
     case "In Progress":
-      return "bg-info/10 text-info border border-info/20";
+      return "bg-blue-500/10 text-blue-500 border border-blue-500/20";
     case "Needs Improvement":
-      return "bg-warning/10 text-warning border border-warning/20";
+      return "bg-amber-500/10 text-amber-500 border border-amber-500/20";
     default:
-      return "bg-surface-muted text-text-muted border border-border";
+      return "bg-surface-subtle text-text-muted border border-border";
   }
 };
 
 const StudentProgress = () => {
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   return (
-    <div className="mx-auto w-full max-w-300">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="mx-auto w-full max-w-7xl px-4 pb-12 space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-[28px] font-bold text-text-primary tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
             Progress Overview
           </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-1">
+          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
             Track your learning progress across all topics and skills.
           </p>
         </div>
         <div className="relative">
-          <button className="flex justify-center items-center gap-2 px-4 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary shadow-sm hover:bg-surface-subtle transition-colors whitespace-nowrap">
+          <button className="flex justify-center items-center gap-2 px-4 py-2.5 bg-surface border border-border rounded-xl text-xs sm:text-sm font-semibold text-text-primary shadow-2xs hover:bg-surface-subtle hover:border-primary/40 transition-colors whitespace-nowrap cursor-pointer">
             <FiCalendar className="w-4 h-4 text-text-muted" />
             This Week
             <svg
@@ -153,6 +157,7 @@ const StudentProgress = () => {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                strokeLinejoin="round"
                 strokeWidth="2"
                 d="M19 9l-7 7-7-7"
               ></path>
@@ -161,26 +166,26 @@ const StudentProgress = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {progressOverview.map((stat) => (
           <div
             key={stat.id}
-            className="bg-surface p-5 rounded-xl border border-border shadow-sm flex flex-col"
+            className={`${cardStyle} p-5 flex flex-col justify-between`}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2 rounded-lg ${stat.bg}`}>
+              <div className={`p-2.5 rounded-xl ${stat.bg} shadow-2xs`}>
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
-              <span className="text-xs font-medium text-text-muted">
+              <span className="text-xs font-bold text-text-muted uppercase tracking-wider">
                 {stat.label}
               </span>
             </div>
             <div className="mt-auto">
-              <h3 className="text-2xl font-bold text-text-primary">
+              <h3 className="text-2xl font-black text-text-primary tracking-tight font-mono">
                 {stat.value}
               </h3>
               <p
-                className={`text-xs mt-1 font-medium ${stat.subtext.includes("+") ? "text-success" : "text-text-muted"}`}
+                className={`text-[11px] mt-1 font-mono font-semibold ${stat.subtext.includes("+") ? "text-emerald-500" : "text-text-muted"}`}
               >
                 {stat.subtext}
               </p>
@@ -189,34 +194,34 @@ const StudentProgress = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="bg-surface p-6 rounded-xl border border-border shadow-sm lg:col-span-2 flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={`${cardStyle} lg:col-span-2 flex flex-col`}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-base font-bold text-text-primary">
+            <h2 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
               Progress Over Time
             </h2>
             <Link
               to="#"
-              className="text-sm font-medium text-primary hover:text-primary-hover flex items-center gap-1"
+              className="text-xs sm:text-sm font-bold text-primary hover:underline flex items-center gap-1"
             >
               View Full Report <FiArrowRight className="w-4 h-4" />
             </Link>
           </div>
           <div className="flex-1 relative w-full min-h-50 mt-4">
-            <div className="absolute inset-0 flex flex-col justify-between text-xs text-text-disabled pb-6">
-              <div className="border-b border-border w-full flex items-end pb-1">
+            <div className="absolute inset-0 flex flex-col justify-between text-[11px] font-mono text-text-muted/50 pb-6">
+              <div className="border-b border-border/60 w-full flex items-end pb-1">
                 100%
               </div>
-              <div className="border-b border-border w-full flex items-end pb-1">
+              <div className="border-b border-border/60 w-full flex items-end pb-1">
                 75%
               </div>
-              <div className="border-b border-border w-full flex items-end pb-1">
+              <div className="border-b border-border/60 w-full flex items-end pb-1">
                 50%
               </div>
-              <div className="border-b border-border w-full flex items-end pb-1">
+              <div className="border-b border-border/60 w-full flex items-end pb-1">
                 25%
               </div>
-              <div className="border-b border-border w-full flex items-end pb-1">
+              <div className="border-b border-border/60 w-full flex items-end pb-1">
                 0%
               </div>
             </div>
@@ -236,7 +241,7 @@ const StudentProgress = () => {
                   <stop
                     offset="0%"
                     stopColor="var(--primary)"
-                    stopOpacity="0.2"
+                    stopOpacity="0.25"
                   />
                   <stop
                     offset="100%"
@@ -253,16 +258,16 @@ const StudentProgress = () => {
                 d="M0,70 L20,60 L40,55 L60,45 L80,47 L100,35"
                 fill="none"
                 stroke="var(--primary)"
-                strokeWidth="1.5"
+                strokeWidth="2.5"
               />
-              <circle cx="0" cy="70" r="1.5" fill="var(--primary)" />
-              <circle cx="20" cy="60" r="1.5" fill="var(--primary)" />
-              <circle cx="40" cy="55" r="1.5" fill="var(--primary)" />
-              <circle cx="60" cy="45" r="1.5" fill="var(--primary)" />
-              <circle cx="80" cy="47" r="1.5" fill="var(--primary)" />
-              <circle cx="100" cy="35" r="1.5" fill="var(--primary)" />
+              <circle cx="0" cy="70" r="2" fill="var(--primary)" />
+              <circle cx="20" cy="60" r="2" fill="var(--primary)" />
+              <circle cx="40" cy="55" r="2" fill="var(--primary)" />
+              <circle cx="60" cy="45" r="2" fill="var(--primary)" />
+              <circle cx="80" cy="47" r="2" fill="var(--primary)" />
+              <circle cx="100" cy="35" r="2" fill="var(--primary)" />
             </svg>
-            <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs text-text-disabled px-1">
+            <div className="absolute bottom-0 left-0 w-full flex justify-between text-[11px] font-mono text-text-muted px-1">
               <span>May 7</span>
               <span>May 14</span>
               <span>May 21</span>
@@ -273,14 +278,14 @@ const StudentProgress = () => {
           </div>
         </div>
 
-        <div className="bg-surface p-6 rounded-xl border border-border shadow-sm">
+        <div className={cardStyle}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-base font-bold text-text-primary">
+            <h2 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
               Skills Breakdown
             </h2>
             <Link
               to="#"
-              className="text-sm font-medium text-primary hover:text-primary-hover flex items-center gap-1"
+              className="text-xs sm:text-sm font-bold text-primary hover:underline flex items-center gap-1"
             >
               View Skills <FiArrowRight className="w-4 h-4" />
             </Link>
@@ -296,8 +301,8 @@ const StudentProgress = () => {
                   cy="18"
                   r="15.915"
                   fill="transparent"
-                  stroke="var(--surface-muted)"
-                  strokeWidth="4"
+                  stroke="var(--surface-subtle)"
+                  strokeWidth="3.5"
                 ></circle>
                 <circle
                   cx="18"
@@ -305,7 +310,7 @@ const StudentProgress = () => {
                   r="15.915"
                   fill="transparent"
                   stroke="var(--primary)"
-                  strokeWidth="4"
+                  strokeWidth="3.5"
                   strokeDasharray="30 70"
                   strokeDashoffset="0"
                 ></circle>
@@ -315,7 +320,7 @@ const StudentProgress = () => {
                   r="15.915"
                   fill="transparent"
                   stroke="var(--info)"
-                  strokeWidth="4"
+                  strokeWidth="3.5"
                   strokeDasharray="20 80"
                   strokeDashoffset="-30"
                 ></circle>
@@ -325,7 +330,7 @@ const StudentProgress = () => {
                   r="15.915"
                   fill="transparent"
                   stroke="var(--success)"
-                  strokeWidth="4"
+                  strokeWidth="3.5"
                   strokeDasharray="15 85"
                   strokeDashoffset="-50"
                 ></circle>
@@ -335,7 +340,7 @@ const StudentProgress = () => {
                   r="15.915"
                   fill="transparent"
                   stroke="var(--warning)"
-                  strokeWidth="4"
+                  strokeWidth="3.5"
                   strokeDasharray="15 85"
                   strokeDashoffset="-65"
                 ></circle>
@@ -345,28 +350,30 @@ const StudentProgress = () => {
                   r="15.915"
                   fill="transparent"
                   stroke="var(--secondary-foreground)"
-                  strokeWidth="4"
+                  strokeWidth="3.5"
                   strokeDasharray="20 80"
                   strokeDashoffset="-80"
                 ></circle>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold text-text-primary">
+                <span className="text-2xl font-black text-text-primary font-mono">
                   68%
                 </span>
-                <span className="text-xs text-text-muted">Overall</span>
+                <span className="text-[10px] font-mono font-bold text-text-muted uppercase">
+                  Overall
+                </span>
               </div>
             </div>
 
             <div className="w-full space-y-3">
               {[
                 { label: "HTML / CSS", bgClass: "bg-primary", val: "100%" },
-                { label: "JavaScript", bgClass: "bg-info", val: "72%" },
-                { label: "React", bgClass: "bg-success", val: "45%" },
-                { label: "Node.js", bgClass: "bg-warning", val: "60%" },
+                { label: "JavaScript", bgClass: "bg-blue-500", val: "72%" },
+                { label: "React", bgClass: "bg-emerald-500", val: "45%" },
+                { label: "Node.js", bgClass: "bg-amber-500", val: "60%" },
                 {
                   label: "MongoDB",
-                  bgClass: "bg-secondary-foreground",
+                  bgClass: "bg-purple-500",
                   val: "50%",
                 },
               ].map((item, idx) => (
@@ -378,17 +385,17 @@ const StudentProgress = () => {
                     <div
                       className={`w-2 h-2 rounded-full ${item.bgClass}`}
                     ></div>
-                    <span className="text-text-primary font-medium">
+                    <span className="text-text-primary font-semibold">
                       {item.label}
                     </span>
                   </div>
-                  <div className="flex-1 mx-3 h-1.5 bg-surface-muted rounded-full overflow-hidden">
+                  <div className="flex-1 mx-3 h-2 bg-surface-subtle rounded-full overflow-hidden border border-border/60">
                     <div
-                      className={`h-full ${item.bgClass}`}
+                      className={`h-full ${item.bgClass} rounded-full`}
                       style={{ width: item.val }}
                     ></div>
                   </div>
-                  <span className="text-text-primary font-bold w-10 text-right">
+                  <span className="text-text-primary font-bold w-10 text-right font-mono">
                     {item.val}
                   </span>
                 </div>
@@ -398,14 +405,14 @@ const StudentProgress = () => {
         </div>
       </div>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm flex flex-col mb-10 w-full overflow-hidden">
-        <div className="p-6 border-b border-border flex justify-between items-center">
-          <h2 className="text-base font-bold text-text-primary">
+      <div className="bg-surface rounded-2xl border border-border shadow-sm flex flex-col mb-10 w-full overflow-hidden hover:border-primary/40 transition-all duration-200">
+        <div className="p-5 sm:p-6 border-b border-border flex justify-between items-center bg-surface-subtle/50">
+          <h2 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
             Topic Progress
           </h2>
           <Link
             to="#"
-            className="text-sm font-medium text-primary hover:text-primary-hover flex items-center gap-1"
+            className="text-xs sm:text-sm font-bold text-primary hover:underline flex items-center gap-1"
           >
             View All Topics <FiArrowRight className="w-4 h-4" />
           </Link>
@@ -414,44 +421,38 @@ const StudentProgress = () => {
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse min-w-200">
             <thead>
-              <tr>
-                <th className="pb-3 pt-4 px-6 text-xs font-semibold text-text-muted uppercase tracking-wider w-1/3">
-                  Topic
-                </th>
-                <th className="pb-3 pt-4 px-6 text-xs font-semibold text-text-muted uppercase tracking-wider w-1/3">
-                  Status
-                </th>
-                <th className="pb-3 pt-4 px-6 text-xs font-semibold text-text-muted uppercase tracking-wider w-1/4">
-                  Last Activity
-                </th>
-                <th className="pb-3 pt-4 px-6 w-10"></th>
+              <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-mono font-bold bg-surface-subtle">
+                <th className="py-3.5 px-6 w-1/3">Topic</th>
+                <th className="py-3.5 px-6 w-1/3">Status</th>
+                <th className="py-3.5 px-6 w-1/4">Last Activity</th>
+                <th className="py-3.5 px-6 w-10"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle">
+            <tbody className="divide-y divide-border/60 text-xs sm:text-sm">
               {topicProgressData.map((topic) => (
                 <tr
                   key={topic.id}
-                  className="hover:bg-surface-subtle transition-colors"
+                  className="hover:bg-surface-subtle/50 transition-colors group"
                 >
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${topic.iconBg}`}
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-2xs ${topic.iconBg}`}
                       >
                         <topic.icon className={`w-5 h-5 ${topic.iconColor}`} />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-sm font-bold text-text-primary mb-2">
+                        <h4 className="text-xs sm:text-sm font-bold text-text-primary mb-2">
                           {topic.topic}
                         </h4>
                         <div className="flex items-center gap-3">
-                          <div className="flex-1 h-1.5 bg-surface-muted rounded-full max-w-30 overflow-hidden">
+                          <div className="flex-1 h-2 bg-surface-subtle rounded-full max-w-30 overflow-hidden border border-border/60">
                             <div
                               className="h-full bg-primary rounded-full"
                               style={{ width: `${topic.progress}%` }}
                             ></div>
                           </div>
-                          <span className="text-xs font-bold text-text-primary">
+                          <span className="text-xs font-bold text-text-primary font-mono">
                             {topic.progress}%
                           </span>
                         </div>
@@ -460,18 +461,18 @@ const StudentProgress = () => {
                   </td>
                   <td className="py-4 px-6">
                     <span
-                      className={`px-3 py-1 rounded-md text-[11px] font-bold ${getStatusBadgeStyles(topic.status)}`}
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${getStatusBadgeStyles(topic.status)}`}
                     >
                       {topic.status}
                     </span>
                   </td>
                   <td className="py-4 px-6">
-                    <span className="text-sm text-text-muted font-medium">
+                    <span className="text-xs sm:text-sm text-text-muted font-mono">
                       {topic.date}
                     </span>
                   </td>
                   <td className="py-4 px-6 text-right">
-                    <button className="text-text-muted hover:text-text-primary p-1 rounded-md hover:bg-surface-subtle">
+                    <button className="text-text-muted hover:text-text-primary p-2 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-border">
                       <FiMoreVertical className="w-4 h-4" />
                     </button>
                   </td>

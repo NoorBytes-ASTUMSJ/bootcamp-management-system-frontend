@@ -24,14 +24,14 @@ const StatusBadge = ({ status }) => {
   let styles =
     "px-2 py-0.5 rounded-md text-[11px] font-semibold border whitespace-nowrap ";
   if (status === "Present")
-    styles += "bg-success/10 text-success border-success/20";
+    styles += "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
   else if (status === "Absent")
-    styles += "bg-error/10 text-error border-error/20";
+    styles += "bg-rose-500/10 text-rose-500 border-rose-500/20";
   else if (status === "Late")
-    styles += "bg-warning/10 text-warning border-warning/20";
+    styles += "bg-amber-500/10 text-amber-500 border-amber-500/20";
   else if (status === "Excused")
-    styles += "bg-info/10 text-info border-info/20";
-  else styles += "bg-surface-subtle text-muted border-border";
+    styles += "bg-blue-500/10 text-blue-500 border-blue-500/20";
+  else styles += "bg-surface-subtle text-text-muted border border-border";
 
   return (
     <span className={styles}>
@@ -232,6 +232,10 @@ export default function StudentAttendance() {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -397,7 +401,7 @@ export default function StudentAttendance() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-border/60 text-xs sm:text-sm">
               {currentRecords.length > 0 ? (
                 currentRecords.map((session, index) => {
                   const isMentor = MENTOR_TYPES.includes(session.sessionType);
@@ -412,7 +416,7 @@ export default function StudentAttendance() {
                   return (
                     <tr
                       key={session._id || index}
-                      className="hover:bg-surface-subtle/30 transition-colors"
+                      className="hover:bg-surface-subtle/50 transition-colors"
                     >
                       <td className="px-4 py-3">
                         <p className="text-sm font-medium text-foreground">
@@ -461,7 +465,7 @@ export default function StudentAttendance() {
                 <tr>
                   <td
                     colSpan="4"
-                    className="text-center py-8 text-sm text-muted"
+                    className="text-center py-12 text-xs text-text-muted"
                   >
                     No attendance records found.
                   </td>

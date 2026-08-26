@@ -1,123 +1,137 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
 import {
-  FiHome,
-  FiUsers,
-  FiCheckSquare,
-  FiTrendingUp,
-  FiClipboard,
-  FiInbox,
-  FiSpeaker,
-  FiSettings,
-} from "react-icons/fi";
+  LayoutDashboard,
+  Users,
+  CalendarCheck,
+  TrendingUp,
+  ClipboardList,
+  FileCheck2,
+  Megaphone,
+  Settings,
+} from "lucide-react";
 
-export default function MentorSidebar({ isOpen }) {
+export default function MentorSidebar({ currentView, onNavigateMentorView }) {
   const navSections = [
     {
       title: "MAIN",
-      links: [
+      items: [
         {
           name: "Dashboard",
-          path: "/mentor/dashboard",
-          icon: <FiHome className="w-4 h-4" />,
+          icon: LayoutDashboard,
+          view: "dashboard-main",
         },
       ],
     },
     {
       title: "MANAGEMENT",
-      links: [
+      items: [
         {
           name: "My Students",
-          path: "/mentor/students",
-          icon: <FiUsers className="w-4 h-4" />,
+          icon: Users,
+          view: "dashboard-students",
         },
       ],
     },
     {
       title: "ACADEMIC",
-      links: [
+      items: [
         {
           name: "Attendance",
-          path: "/mentor/attendance",
-          icon: <FiCheckSquare className="w-4 h-4" />,
+          icon: CalendarCheck,
+          view: "dashboard-attendance",
         },
         {
           name: "Progress",
-          path: "/mentor/progress",
-          icon: <FiTrendingUp className="w-4 h-4" />,
+          icon: TrendingUp,
+          view: "dashboard-progress",
         },
         {
           name: "Assignments",
-          path: "/mentor/assignments",
-          icon: <FiClipboard className="w-4 h-4" />,
+          icon: ClipboardList,
+          view: "dashboard-assignments",
         },
         {
           name: "Submissions",
-          path: "/mentor/submissions",
-          icon: <FiInbox className="w-4 h-4" />,
+          icon: FileCheck2,
+          view: "dashboard-submissions",
         },
       ],
     },
     {
       title: "COMMUNICATION",
-      links: [
+      items: [
         {
           name: "Announcements",
-          path: "/mentor/announcements",
-          icon: <FiSpeaker className="w-4 h-4" />,
+          icon: Megaphone,
+          view: "dashboard-announcements",
         },
       ],
     },
     {
       title: "ACCOUNT",
-      links: [
+      items: [
         {
           name: "Settings",
-          path: "/mentor/settings",
-          icon: <FiSettings className="w-4 h-4" />,
+          icon: Settings,
+          view: "dashboard-settings",
         },
       ],
     },
   ];
 
-  if (!isOpen) return null;
-
   return (
-    <aside className="w-64 h-screen bg-surface border-r border-border flex flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto">
-      <div className="h-16 flex items-center px-6 shrink-0 border-b border-border/40">
-        <span className="text-text-primary font-bold text-xs uppercase tracking-wider">
-          MENTOR PAGE
-        </span>
+    <aside className="w-56 bg-white dark:bg-[#151921] border-r border-neutral-200/80 dark:border-neutral-800/80 flex flex-col shrink-0 select-none z-10">
+      <div className="pt-6 pb-4 px-6">
+        <h1 className="text-base font-black tracking-tight text-[#B91C1C]">
+          ASTU MSJ
+        </h1>
+        <p className="text-[10px] text-neutral-400 font-normal mt-0.5">
+          Mentor management
+        </p>
       </div>
 
-      <div className="flex-1 py-4 space-y-6 overflow-y-auto">
-        {navSections.map((section, idx) => (
+      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4">
+        {navSections.map((group, idx) => (
           <div key={idx} className="space-y-1">
-            <h4 className="px-6 text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2">
-              {section.title}
-            </h4>
-            <div className="flex flex-col">
-              {section.links.map((link, linkIdx) => (
-                <NavLink
-                  key={linkIdx}
-                  to={link.path}
-                  end
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-6 py-2.5 text-sm font-medium border-l-[3px] transition-colors ${
+            <div className="px-3 text-[10px] font-bold tracking-wider text-neutral-400 dark:text-neutral-500 uppercase mb-1">
+              {group.title}
+            </div>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentView === item.view;
+
+                return (
+                  <button
+                    key={item.name}
+                    type="button"
+                    onClick={() => {
+                      if (onNavigateMentorView) {
+                        onNavigateMentorView(item.view);
+                      }
+                    }}
+                    className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${
                       isActive
-                        ? "border-primary bg-primary/5 text-primary"
-                        : "border-transparent text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                    }`
-                  }
-                >
-                  {link.icon}
-                  {link.name}
-                </NavLink>
-              ))}
+                        ? "bg-[#FEF2F2] text-[#B91C1C] font-semibold dark:bg-red-500/10"
+                        : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/40"
+                    }`}
+                  >
+                    <Icon
+                      size={15}
+                      className={
+                        isActive
+                          ? "text-[#B91C1C]"
+                          : "text-neutral-400 dark:text-neutral-500"
+                      }
+                    />
+                    <span>{item.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}
-      </div>
+      </nav>
     </aside>
   );
 }

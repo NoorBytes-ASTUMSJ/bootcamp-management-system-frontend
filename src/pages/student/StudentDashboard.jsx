@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FiCalendar,
@@ -9,6 +9,8 @@ import {
   FiAlertCircle,
   FiBookOpen,
 } from "react-icons/fi";
+import { FaHtml5, FaReact, FaNodeJs } from "react-icons/fa";
+import { IoLogoJavascript } from "react-icons/io5";
 
 const MOCK_DATA = {
   student: { firstName: "Alex" },
@@ -19,36 +21,36 @@ const MOCK_DATA = {
       topic: "HTML / CSS",
       percentage: 100,
       status: "Completed",
-      iconText: "5",
-      iconBg: "bg-orange-100",
-      iconColor: "text-orange-600",
+      icon: FaHtml5,
+      iconBg: "bg-amber-500/10 border border-amber-500/20",
+      iconColor: "text-amber-500",
     },
     {
       id: 2,
       topic: "JavaScript",
       percentage: 72,
       status: "In Progress",
-      iconText: "JS",
-      iconBg: "bg-yellow-100",
-      iconColor: "text-yellow-600",
+      icon: IoLogoJavascript,
+      iconBg: "bg-blue-500/10 border border-blue-500/20",
+      iconColor: "text-blue-500",
     },
     {
       id: 3,
       topic: "React",
       percentage: 45,
       status: "Needs Improvement",
-      iconText: "Re",
-      iconBg: "bg-cyan-100",
-      iconColor: "text-cyan-600",
+      icon: FaReact,
+      iconBg: "bg-cyan-500/10 border border-cyan-500/20",
+      iconColor: "text-cyan-500",
     },
     {
       id: 4,
       topic: "Node.js",
       percentage: 60,
       status: "In Progress",
-      iconText: "nS",
-      iconBg: "bg-green-100",
-      iconColor: "text-green-600",
+      icon: FaNodeJs,
+      iconBg: "bg-emerald-500/10 border border-emerald-500/20",
+      iconColor: "text-emerald-500",
     },
   ],
   announcements: [
@@ -97,26 +99,32 @@ const MOCK_DATA = {
 };
 
 const StatCard = ({ icon: Icon, title, value, subtitle }) => (
-  <div className="flex flex-col justify-between rounded-xl border border-[#E5E5E5] bg-white p-5">
+  <div className="bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
     <div className="flex items-center gap-4 mb-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#B93325]/10 text-[#B93325]">
-        <Icon className="h-5 w-5" />
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary shadow-2xs">
+        <Icon className="h-6 w-6" />
       </div>
       <div>
-        <p className="text-xs font-medium text-[#777777]">{title}</p>
-        <h4 className="text-2xl font-bold text-[#171717]">{value}</h4>
+        <p className="text-xs font-bold text-text-muted mb-0.5 uppercase tracking-wider">
+          {title}
+        </p>
+        <h4 className="text-2xl font-black text-text-primary leading-none">
+          {value}
+        </h4>
       </div>
     </div>
-    <p className="text-xs text-[#777777]">{subtitle}</p>
+    <p className="text-xs text-text-muted">{subtitle}</p>
   </div>
 );
 
 const SectionHeader = ({ title, actionText, actionLink }) => (
   <div className="flex items-center justify-between mb-5">
-    <h3 className="text-base font-bold text-[#171717]">{title}</h3>
+    <h3 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
+      {title}
+    </h3>
     <Link
       to={actionLink}
-      className="group flex items-center gap-1 text-xs font-bold text-[#B93325] hover:underline"
+      className="group flex items-center gap-1 text-xs font-bold text-primary hover:underline"
     >
       {actionText}{" "}
       <FiChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -125,13 +133,16 @@ const SectionHeader = ({ title, actionText, actionLink }) => (
 );
 
 const StatusBadge = ({ status }) => {
-  let styles = "bg-gray-100 text-gray-700";
-  if (status === "Completed") styles = "bg-green-100 text-green-700";
-  if (status === "In Progress") styles = "bg-blue-100 text-blue-700";
-  if (status === "Needs Improvement") styles = "bg-orange-100 text-orange-700";
+  let styles = "bg-surface-subtle text-text-muted border border-border";
+  if (status === "Completed")
+    styles = "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
+  if (status === "In Progress")
+    styles = "bg-blue-500/10 text-blue-500 border border-blue-500/20";
+  if (status === "Needs Improvement")
+    styles = "bg-amber-500/10 text-amber-500 border border-amber-500/20";
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide ${styles}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${styles}`}
     >
       {status}
     </span>
@@ -149,21 +160,25 @@ export default function StudentDashboard() {
     recentFeedback,
   } = dashboardData;
 
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-7xl px-4 pb-12 space-y-8 animate-in fade-in duration-500">
       {/* HEADER SECTION */}
-      <div className="mb-8">
-        <h2 className="text-[28px] font-bold text-[#171717] tracking-tight">
+      <div>
+        <h2 className="text-xl sm:text-[28px] font-black text-text-primary tracking-tight">
           Welcome back, {student.firstName}
-          <span className="text-[#B93325]">.</span>
+          <span className="text-primary">.</span>
         </h2>
-        <p className="text-sm text-[#777777] mt-1">
+        <p className="text-xs sm:text-sm text-text-muted mt-0.5">
           Here's an overview of your bootcamp progress.
         </p>
       </div>
 
       {/* OVERVIEW STATS */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={FiCalendar}
           title="Attendance"
@@ -191,79 +206,82 @@ export default function StudentDashboard() {
       </div>
 
       {/* MAIN GRID */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 pb-10">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* LEFT COLUMN */}
         <div className="flex flex-col gap-6">
-          <div className="rounded-xl border border-[#E5E5E5] bg-white p-6">
+          <div className={cardStyle}>
             <SectionHeader
               title="Progress Summary"
               actionText="View Progress"
               actionLink="/student/progress"
             />
             <div className="space-y-6">
-              {progressSummary.map((item) => (
-                <div key={item.id} className="flex items-center gap-4">
-                  <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded ${item.iconBg} ${item.iconColor} font-bold text-xs`}
-                  >
-                    {item.iconText}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-semibold text-[#171717]">
-                        {item.topic}
-                      </span>
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-[#171717]">
-                          {item.percentage}%
+              {progressSummary.map((item) => {
+                const TopicIcon = item.icon;
+                return (
+                  <div key={item.id} className="flex items-center gap-4">
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${item.iconBg} ${item.iconColor} shadow-2xs`}
+                    >
+                      <TopicIcon className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs sm:text-sm font-bold text-text-primary">
+                          {item.topic}
                         </span>
-                        <StatusBadge status={item.status} />
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-bold text-text-primary font-mono">
+                            {item.percentage}%
+                          </span>
+                          <StatusBadge status={item.status} />
+                        </div>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-surface-subtle border border-border/60">
+                        <div
+                          className="h-full rounded-full bg-primary transition-all duration-500"
+                          style={{ width: `${item.percentage}%` }}
+                        />
                       </div>
                     </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#F8F8F6]">
-                      <div
-                        className="h-full rounded-full bg-[#B93325]"
-                        style={{ width: `${item.percentage}%` }}
-                      />
-                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#E5E5E5] bg-white p-6">
+          <div className={cardStyle}>
             <SectionHeader
               title="Upcoming Deadlines"
               actionText="View Assignments"
               actionLink="/student/assignments"
             />
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               {upcomingDeadlines.map((deadline) => (
                 <div
                   key={deadline.id}
-                  className="flex items-start gap-4 rounded-lg border border-[#F8F8F6] p-4"
+                  className="flex items-start gap-4 rounded-xl border border-border bg-surface-subtle/50 p-4 shadow-2xs hover:border-primary/40 transition-colors"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#B93325]/10 text-[#B93325]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary shadow-2xs">
                     <FiClipboard className="h-4 w-4" />
                   </div>
                   <div className="flex-1 pt-0.5">
-                    <div className="flex items-start justify-between">
-                      <h4 className="text-sm font-bold text-[#171717]">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-text-primary">
                         {deadline.title}
                       </h4>
-                      <div className="flex flex-col items-end gap-1">
-                        <span className="text-xs font-semibold text-[#171717]">
+                      <div className="flex flex-col items-end gap-0.5 shrink-0">
+                        <span className="text-xs font-bold text-text-primary font-mono">
                           {deadline.date}
                         </span>
                         <span
-                          className={`text-[10px] font-bold ${deadline.status === "In Progress" ? "text-blue-600" : "text-[#777777]"}`}
+                          className={`text-[10px] font-bold uppercase tracking-wide font-mono ${deadline.status === "In Progress" ? "text-blue-500" : "text-text-muted"}`}
                         >
                           {deadline.status}
                         </span>
                       </div>
                     </div>
-                    <p className="text-xs text-[#777777] mt-1">
+                    <p className="text-xs text-text-muted mt-1">
                       {deadline.description}
                     </p>
                   </div>
@@ -275,35 +293,35 @@ export default function StudentDashboard() {
 
         {/* RIGHT COLUMN */}
         <div className="flex flex-col gap-6">
-          <div className="rounded-xl border border-[#E5E5E5] bg-white p-6">
+          <div className={cardStyle}>
             <SectionHeader
               title="Recent Announcements"
               actionText="View All"
               actionLink="/student/announcements"
             />
-            <div className="space-y-5">
+            <div className="space-y-4">
               {announcements.map((announcement) => (
                 <div
                   key={announcement.id}
-                  className="flex items-start gap-4 border-b border-[#F8F8F6] pb-5 last:border-0 last:pb-0"
+                  className="flex items-start gap-4 border-b border-border/60 pb-4 last:border-0 last:pb-0"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#B93325]/10 text-[#B93325] mt-1">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary mt-1 shadow-2xs">
                     {announcement.priority === "High" ? (
                       <FiAlertCircle className="h-4 w-4" />
                     ) : (
                       <FiBookOpen className="h-4 w-4" />
                     )}
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-1">
-                      <h4 className="text-sm font-bold text-[#171717]">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-1 gap-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-text-primary truncate">
                         {announcement.title}
                       </h4>
-                      <span className="text-[11px] font-medium text-[#777777] ml-2">
+                      <span className="text-[11px] font-medium text-text-muted ml-2 font-mono shrink-0">
                         {announcement.date}
                       </span>
                     </div>
-                    <p className="text-xs text-[#777777]">
+                    <p className="text-xs text-text-muted line-clamp-1">
                       {announcement.preview}
                     </p>
                   </div>
@@ -312,38 +330,38 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#E5E5E5] bg-white p-6">
+          <div className={cardStyle}>
             <SectionHeader
               title="Recent Feedback"
               actionText="View Submissions"
               actionLink="/student/submissions"
             />
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               {recentFeedback.map((feedback) => (
                 <div
                   key={feedback.id}
-                  className="flex items-start gap-4 rounded-lg border border-[#F8F8F6] p-4"
+                  className="flex items-start gap-4 rounded-xl border border-border bg-surface-subtle/50 p-4 shadow-2xs hover:border-primary/40 transition-colors"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#B93325]/10 text-[#B93325]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary shadow-2xs">
                     <FiStar className="h-4 w-4" />
                   </div>
                   <div className="flex-1 pt-0.5">
-                    <div className="flex items-start justify-between mb-1">
-                      <h4 className="text-sm font-bold text-[#171717]">
+                    <div className="flex items-start justify-between mb-1 gap-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-text-primary">
                         {feedback.title}
                       </h4>
-                      <span className="text-sm font-bold text-green-600">
+                      <span className="text-xs font-bold text-emerald-500 font-mono shrink-0">
                         {feedback.score}{" "}
-                        <span className="text-[#171717]">
+                        <span className="text-text-muted font-normal">
                           / {feedback.maxScore}
                         </span>
                       </span>
                     </div>
-                    <p className="text-xs text-[#777777] leading-relaxed mb-2">
+                    <p className="text-xs text-text-muted leading-relaxed mb-2">
                       {feedback.feedback}
                     </p>
                     <div className="flex justify-end">
-                      <span className="text-[11px] font-medium text-[#777777]">
+                      <span className="text-[10px] font-medium text-text-muted font-mono">
                         {feedback.date}
                       </span>
                     </div>

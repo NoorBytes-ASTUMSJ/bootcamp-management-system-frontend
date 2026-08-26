@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { format } from "date-fns";
 import {
   FiCheckCircle,
@@ -37,6 +37,22 @@ import {
 } from "@/components/ui/select";
 
 import API from "../../services/api";
+
+// Helper to convert long university names to clean acronyms
+function getUniversityAcronym(uniName) {
+  if (!uniName) return "N/A";
+  const upper = uniName.toUpperCase();
+  if (upper.includes("ADAMA")) return "ASTU";
+  if (upper.includes("ADDIS ABABA")) return "AAU";
+  if (upper.includes("JIMMA")) return "JU";
+  if (upper.includes("BAHIRDAR") || upper.includes("BAHIR DAR")) return "BDU";
+  if (upper.includes("HAWASSA")) return "HU";
+  if (upper.includes("HARAMAYA")) return "HRU";
+  if (upper.includes("ARBA MINCH")) return "AMU";
+  return uniName.length > 10
+    ? uniName.substring(0, 8).toUpperCase() + "..."
+    : uniName;
+}
 
 export default function MentorAttendance() {
   const [sessionTitle, setSessionTitle] = useState("");
@@ -149,6 +165,7 @@ export default function MentorAttendance() {
             id: m._id,
             name: m.user?.fullName || "Unknown",
             email: m.user?.email || "No email",
+            university: m.user?.university || "N/A",
             avatar:
               m.user?.avatar ||
               `https://ui-avatars.com/api/?name=${encodeURIComponent(m.user?.fullName || "U")}&background=F3F4F6&color=374151`,
@@ -390,6 +407,10 @@ export default function MentorAttendance() {
     pastSessions.length === 0 || currentSessionIndex >= pastSessions.length - 1;
   const isNextDisabled = currentSessionIndex === -1;
 
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen">
@@ -424,7 +445,7 @@ export default function MentorAttendance() {
                       onClick={() => handleSearchSelect(session)}
                       className="w-full text-left px-3 py-2.5 text-sm hover:bg-surface-subtle rounded-lg transition-all duration-200 border border-transparent hover:border-border flex flex-col active:scale-[0.98]"
                     >
-                      <span className="font-bold text-foreground truncate">
+                      <span className="font-bold text-text-primary truncate">
                         {session.title}
                       </span>
                       <span className="text-xs text-muted mt-0.5">
@@ -490,6 +511,7 @@ export default function MentorAttendance() {
         </div>
       </div>
 
+      {/* Summary Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         <div className="group bg-surface border border-border shadow-sm rounded-2xl p-5 flex items-center gap-4 hover:border-success/50 hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-default">
           <div className="w-12 h-12 rounded-2xl bg-success/10 flex items-center justify-center text-success shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
@@ -684,6 +706,8 @@ export default function MentorAttendance() {
                     "all",
                   );
                   const colorClass = getPercentageColor(perc);
+                  const uniAcronym = getUniversityAcronym(student.university);
+
                   return (
                     <tr
                       key={student.id}
@@ -788,6 +812,7 @@ export default function MentorAttendance() {
         </div>
       </div>
 
+      {/* Student Details Modal */}
       {selectedStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
           <div className="bg-surface border border-border rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.3)] max-w-lg w-full max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300 overflow-hidden ring-1 ring-white/10">
@@ -819,7 +844,7 @@ export default function MentorAttendance() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div
                   className={`p-5 rounded-2xl border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-center ${getPercentageColor(getStudentAttendancePercentage(selectedStudent.id, "mentor"))}`}
                 >
@@ -929,6 +954,19 @@ export default function MentorAttendance() {
                             {historyItem.date}
                           </span>
                         </div>
+                        <span
+                          className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                            historyItem.status === "Present"
+                              ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                              : historyItem.status === "Absent"
+                                ? "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                                : historyItem.status === "Late"
+                                  ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                                  : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                          }`}
+                        >
+                          {historyItem.status}
+                        </span>
                       </div>
                       <span
                         className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border shadow-sm ${
@@ -953,6 +991,16 @@ export default function MentorAttendance() {
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className="flex items-center justify-end px-6 py-3 border-t border-border bg-surface-subtle">
+              <button
+                type="button"
+                onClick={() => setSelectedStudent(null)}
+                className="px-4 py-2 rounded-xl bg-surface border border-border text-xs font-bold text-text-primary hover:bg-surface-subtle transition-colors shadow-xs cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

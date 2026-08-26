@@ -31,6 +31,7 @@ import StudentSettings from "../pages/student/StudentSettings"; // ← የተማ
 
 // Layouts & Mentor Pages
 import MentorLayout from "../layouts/MentorLayout";
+import MentorDashboard from "../pages/mentor/MentorDashboard"; // ← አዲሱ የሜንቶር ዳሽቦርድ
 import MentorAllMember from "../pages/mentor/MentorAllMember";
 import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
@@ -197,17 +198,14 @@ export default function AppRoutes() {
         {/* Protected Mentor Portal */}
         <Route element={<ProtectedRoute allowedRoles={["mentor"]} />}>
           <Route path="/mentor" element={<MentorLayout />}>
-            <Route index element={<Navigate to="attendance" replace />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<MentorDashboard />} />
             <Route path="students" element={<MentorAllMember />} />
             <Route path="attendance" element={<MentorAttendance />} />
             <Route path="assignments" element={<MentorAssignments />} />
             <Route path="submissions" element={<MentorSubmissions />} />
             <Route path="announcements" element={<MentorAnnouncements />} />
             <Route path="progress" element={<MentorProgress />} />
-            <Route
-              path="dashboard"
-              element={<PagePlaceholder title="Dashboard Overview" />}
-            />
             <Route path="settings" element={<StudentSettings />} />
           </Route>
         </Route>
