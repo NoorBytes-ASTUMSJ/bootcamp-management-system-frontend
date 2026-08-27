@@ -400,7 +400,7 @@ export default function MentorsManagement() {
               }`}
             >
               <div className="flex flex-wrap items-center gap-3">
-                <div className="flex-1 min-w-[200px] relative">
+                <div className="flex-1 min-w-50 relative">
                   <Search
                     size={13}
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"

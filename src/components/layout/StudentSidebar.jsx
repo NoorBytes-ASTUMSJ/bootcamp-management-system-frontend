@@ -25,7 +25,6 @@ const NAV_CONFIG = [
       { name: "Attendance", path: "/student/attendance", icon: FiCheckCircle },
       { name: "Progress", path: "/student/progress", icon: FiTrendingUp },
       { name: "Assignments", path: "/student/assignments", icon: FiBookOpen },
-      { name: "Submissions", path: "/student/submissions", icon: FiUpload },
     ],
   },
   {
