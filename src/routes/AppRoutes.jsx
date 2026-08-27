@@ -24,7 +24,6 @@ import StudentDashboard from "../pages/student/StudentDashboard";
 import StudentAttendance from "../pages/student/StudentAttendance";
 import StudentProgress from "../pages/student/StudentProgress";
 import StudentAssignments from "../pages/student/StudentAssignments";
-import StudentSubmissions from "../pages/student/StudentSubmissions";
 import StudentAnnouncements from "../pages/student/AnnouncementsPage";
 import AllMembers from "../pages/student/AllMembers";
 import StudentSettings from "../pages/student/StudentSettings"; // ← የተማሪ እና ሜንተር የጋራ ሴቲንግ ፋይል
@@ -188,7 +187,6 @@ export default function AppRoutes() {
             <Route path="attendance" element={<StudentAttendance />} />
             <Route path="progress" element={<StudentProgress />} />
             <Route path="assignments" element={<StudentAssignments />} />
-            <Route path="submissions" element={<StudentSubmissions />} />
             <Route path="announcements" element={<StudentAnnouncements />} />
             <Route path="settings" element={<StudentSettings />} />
             <Route path="members" element={<AllMembers />} />

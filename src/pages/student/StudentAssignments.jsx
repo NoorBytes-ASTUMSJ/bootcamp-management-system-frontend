@@ -1,388 +1,545 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import API from "../../services/api";
 import {
-  FiSearch,
-  FiChevronDown,
-  FiClipboard,
-  FiClock,
-  FiDroplet,
-  FiCheckCircle,
-  FiCode,
-  FiDatabase,
-  FiEdit2,
-  FiMoreVertical,
-  FiChevronLeft,
-  FiChevronRight,
-} from "react-icons/fi";
-
-const mockAssignments = [
-  {
-    id: 1,
-    title: "React Portfolio Project",
-    description:
-      "Build and deploy a personal portfolio using React. Include at least 4 pages and a contact form.",
-    topic: "React",
-    week: "Week 6",
-    status: "In Progress",
-    dueDate: "Aug 20, 2025",
-    dueTime: "11:59 PM",
-    timeRemaining: "5 days left",
-    timeColor: "text-blue-500",
-    icon: <FiCode className="w-5 h-5 text-primary" />,
-    iconBg: "bg-primary/10 border border-primary/20",
-    action: "Submit",
-    actionState: "active",
-  },
-  {
-    id: 2,
-    title: "Backend API Assignment",
-    description:
-      "Create a RESTful API with authentication using Node.js and Express.",
-    topic: "Node.js / Express",
-    week: "Week 6",
-    status: "Not Started",
-    dueDate: "Aug 24, 2025",
-    dueTime: "11:59 PM",
-    timeRemaining: "9 days left",
-    timeColor: "text-amber-500",
-    icon: (
-      <span className="text-[10px] font-mono font-bold text-amber-500">
-        API
-      </span>
-    ),
-    iconBg: "bg-amber-500/10 border border-amber-500/20",
-    action: "Submit",
-    actionState: "active",
-  },
-  {
-    id: 3,
-    title: "MongoDB Database Design",
-    description:
-      "Design and implement a database schema for the blog application.",
-    topic: "MongoDB",
-    week: "Week 5",
-    status: "Submitted",
-    dueDate: "Aug 15, 2025",
-    dueTime: "11:59 PM",
-    timeRemaining: "Submitted",
-    timeColor: "text-emerald-500",
-    icon: <FiDatabase className="w-5 h-5 text-emerald-500" />,
-    iconBg: "bg-emerald-500/10 border border-emerald-500/20",
-    action: "Submitted",
-    actionState: "disabled",
-  },
-  {
-    id: 4,
-    title: "JavaScript Quiz",
-    description:
-      "Complete the quiz covering ES6+ features, array methods, and async concepts.",
-    topic: "JavaScript",
-    week: "Week 4",
-    status: "Graded",
-    dueDate: "Aug 10, 2025",
-    dueTime: "11:59 PM",
-    timeRemaining: "Graded on Aug 09",
-    timeColor: "text-emerald-500",
-    icon: (
-      <span className="text-[10px] font-mono font-bold text-blue-500">JS</span>
-    ),
-    iconBg: "bg-blue-500/10 border border-blue-500/20",
-    action: "Submitted",
-    actionState: "disabled",
-  },
-  {
-    id: 5,
-    title: "UI/UX Design Challenge",
-    description:
-      "Design a responsive landing page based on the provided Figma file.",
-    topic: "HTML / CSS",
-    week: "Week 4",
-    status: "In Progress",
-    dueDate: "Aug 18, 2025",
-    dueTime: "11:59 PM",
-    timeRemaining: "3 days left",
-    timeColor: "text-blue-500",
-    icon: <FiEdit2 className="w-5 h-5 text-primary" />,
-    iconBg: "bg-primary/10 border border-primary/20",
-    action: "Submit",
-    actionState: "active",
-  },
-];
-
-const getStatusBadge = (status) => {
-  if (status === "In Progress")
-    return "bg-blue-500/10 text-blue-500 border border-blue-500/20";
-  if (status === "Not Started")
-    return "bg-amber-500/10 text-amber-500 border border-amber-500/20";
-  if (status === "Submitted")
-    return "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
-  if (status === "Graded")
-    return "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
-  return "bg-surface-subtle text-text-muted border border-border";
-};
+  Search,
+  ClipboardList,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  UploadCloud,
+  FileText,
+  Code2,
+  ExternalLink,
+  X,
+  Loader2,
+  Paperclip,
+  Calendar,
+} from "lucide-react";
 
 export default function StudentAssignments() {
-  const [activeTab, setActiveTab] = useState("All Assignments");
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("All");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeSubmission, setActiveSubmission] = useState(null);
+  const [formData, setFormData] = useState({
+    githubUrl: "",
+    liveDemoUrl: "",
+    notes: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    fetchMySubmissions();
+  }, []);
+
+  const fetchMySubmissions = async () => {
+    setLoading(true);
+    try {
+      const response = await API.get("/submissions/me");
+      const data = response.data?.data?.submissions || [];
+
+      const formatted = data.map((sub) => ({
+        id: sub._id,
+        assignmentTitle: sub.assignment?.title || "Untitled Assignment",
+        description: sub.assignment?.description || "",
+        batchName: sub.assignment?.batch?.name || "",
+        deadline: sub.assignment?.deadline,
+        deadlineFormatted: sub.assignment?.deadline
+          ? new Date(sub.assignment.deadline).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "No Deadline",
+        fileName: sub.assignment?.fileName || "",
+        fileUrl: sub.assignment?.fileUrl || "",
+        status: sub.status,
+        score: sub.score,
+        maxScore: sub.assignment?.maxScore || 100,
+        feedback: sub.feedback || "",
+        githubUrl: sub.githubUrl || "",
+        demoUrl: sub.liveDemoUrl || "",
+        submittedAt: sub.submittedAt
+          ? new Date(sub.submittedAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })
+          : null,
+      }));
+      setSubmissions(formatted);
+    } catch (error) {
+      console.error("Failed to fetch submissions");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const openSubmitModal = (sub) => {
+    setActiveSubmission(sub);
+    setFormData({
+      githubUrl: sub.githubUrl || "",
+      liveDemoUrl: sub.demoUrl || "",
+      notes: "",
+    });
+    setErrorMessage("");
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.githubUrl) {
+      setErrorMessage("GitHub URL is required.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      await API.patch(`/submissions/${activeSubmission.id}/submit`, formData);
+      setIsModalOpen(false);
+      fetchMySubmissions();
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Failed to submit assignment.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const metrics = {
+    total: submissions.length,
+    toDo: submissions.filter((s) =>
+      ["not_started", "needs_resubmission"].includes(s.status),
+    ).length,
+    pending: submissions.filter((s) => s.status === "submitted").length,
+    completed: submissions.filter((s) =>
+      ["graded", "reviewed"].includes(s.status),
+    ).length,
+  };
+
+  const filteredSubmissions = submissions.filter((s) => {
+    const matchesSearch = s.assignmentTitle
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesTab =
+      activeTab === "All" ||
+      (activeTab === "Action Required" &&
+        ["not_started", "needs_resubmission"].includes(s.status)) ||
+      (activeTab === "Pending Review" && s.status === "submitted") ||
+      (activeTab === "Completed" && ["graded", "reviewed"].includes(s.status));
+
+    return matchesSearch && matchesTab;
+  });
+
+  const getStatusConfig = (status) => {
+    switch (status) {
+      case "not_started":
+        return {
+          icon: <UploadCloud className="w-3.5 h-3.5" />,
+          label: "Action Required",
+          classes:
+            "bg-surface-muted text-neutral-600 border-neutral-200 dark:border-neutral-700",
+        };
+      case "needs_resubmission":
+        return {
+          icon: <AlertTriangle className="w-3.5 h-3.5" />,
+          label: "Resubmission Needed",
+          classes:
+            "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/30 dark:border-rose-900/50",
+        };
+      case "submitted":
+        return {
+          icon: <Clock className="w-3.5 h-3.5" />,
+          label: "Pending Review",
+          classes:
+            "bg-sky-50 text-sky-600 border-sky-200 dark:bg-sky-950/30 dark:border-sky-900/50",
+        };
+      case "graded":
+      case "reviewed":
+        return {
+          icon: <CheckCircle className="w-3.5 h-3.5" />,
+          label: "Graded",
+          classes:
+            "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900/50",
+        };
+      default:
+        return {
+          icon: <FileText className="w-3.5 h-3.5" />,
+          label: status,
+          classes: "bg-surface-muted text-text-muted border-border",
+        };
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-100 text-neutral-500">
+        <Loader2 className="w-6 h-6 animate-spin text-[#B91C1C] mr-2" />
+        <span className="text-sm font-medium">Loading your workspace...</span>
+      </div>
+    );
+  }
 
   const cardStyle =
     "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4";
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 pb-12 space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
+      <main className="px-8 py-6 space-y-6 max-w-7xl mx-auto">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
-            Assignments
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+            My Work
           </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
-            View your assignments, deadlines, and submission status.
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            Track your assignments, submit your projects, and view mentor
+            feedback.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-          <div className="relative w-full sm:w-64">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-text-muted">
-              <FiSearch className="w-4 h-4" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex items-center gap-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-[#151921] p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+              <ClipboardList className="h-5 w-5" />
             </div>
-            <input
-              type="text"
-              className="w-full pl-10 pr-4 py-2.5 border border-border bg-surface-subtle rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
-              placeholder="Search assignments..."
-            />
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-0.5">
+                Total Tasks
+              </p>
+              <h4 className="text-2xl font-black text-neutral-900 dark:text-white leading-none">
+                {metrics.total}
+              </h4>
+            </div>
           </div>
-          <button className="inline-flex justify-center items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-xs sm:text-sm font-semibold text-text-primary hover:bg-surface-subtle hover:border-primary/40 transition-colors shadow-2xs whitespace-nowrap cursor-pointer">
-            All Status
-            <FiChevronDown className="h-4 w-4 text-text-muted" />
-          </button>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className={cardStyle}>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary shadow-2xs">
-            <FiClipboard className="h-5 w-5" />
+          <div className="flex items-center gap-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-[#151921] p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-500">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-500 mb-0.5">
+                Action Required
+              </p>
+              <h4 className="text-2xl font-black text-neutral-900 dark:text-white leading-none">
+                {metrics.toDo}
+              </h4>
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-bold text-text-muted mb-0.5 uppercase tracking-wider">
-              Total Assignments
-            </p>
-            <h4 className="text-2xl font-black text-text-primary leading-none mb-1">
-              12
-            </h4>
-            <p className="text-[11px] font-medium text-text-muted">All time</p>
-          </div>
-        </div>
 
-        <div className={cardStyle}>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 shadow-2xs">
-            <FiClock className="h-5 w-5" />
+          <div className="flex items-center gap-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-[#151921] p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-500">
+              <Clock className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-500 mb-0.5">
+                Pending Review
+              </p>
+              <h4 className="text-2xl font-black text-neutral-900 dark:text-white leading-none">
+                {metrics.pending}
+              </h4>
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-bold text-text-muted mb-0.5 uppercase tracking-wider">
-              Pending
-            </p>
-            <h4 className="text-2xl font-black text-text-primary leading-none mb-1">
-              3
-            </h4>
-            <p className="text-[11px] font-medium text-text-muted">
-              Need to start or continue
-            </p>
-          </div>
-        </div>
 
-        <div className={cardStyle}>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 shadow-2xs">
-            <FiDroplet className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-text-muted mb-0.5 uppercase tracking-wider">
-              Submitted
-            </p>
-            <h4 className="text-2xl font-black text-text-primary leading-none mb-1">
-              6
-            </h4>
-            <p className="text-[11px] font-medium text-text-muted">
-              Awaiting feedback
-            </p>
+          <div className="flex items-center gap-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-[#151921] p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-500">
+              <CheckCircle className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-500 mb-0.5">
+                Completed
+              </p>
+              <h4 className="text-2xl font-black text-neutral-900 dark:text-white leading-none">
+                {metrics.completed}
+              </h4>
+            </div>
           </div>
         </div>
 
-        <div className={cardStyle}>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 shadow-2xs">
-            <FiCheckCircle className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-text-muted mb-0.5 uppercase tracking-wider">
-              Completed
-            </p>
-            <h4 className="text-2xl font-black text-text-primary leading-none mb-1">
-              3
-            </h4>
-            <p className="text-[11px] font-medium text-text-muted">Graded</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-surface rounded-2xl border border-border flex flex-col mb-10 w-full overflow-hidden shadow-sm hover:border-primary/40 transition-all duration-200">
-        <div className="border-b border-border px-4 sm:px-6 flex gap-2 sm:gap-6 overflow-x-auto w-full bg-surface-subtle/50">
-          {[
-            "All Assignments",
-            "Pending",
-            "In Progress",
-            "Submitted",
-            "Graded",
-          ].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex items-center gap-2 px-3 sm:px-4 py-4 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
-                activeTab === tab
-                  ? "border-primary text-primary"
-                  : "border-transparent text-text-muted hover:text-text-primary"
-              }`}
-            >
-              {tab}
-              {tab === "Pending" && (
-                <span className="flex items-center justify-center bg-surface border border-border text-text-muted rounded-full px-2 py-0.5 text-[10px] font-mono font-bold">
-                  3
-                </span>
+        <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm overflow-hidden">
+          <div className="border-b border-neutral-200/80 dark:border-neutral-800/80 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex gap-2 sm:gap-6 overflow-x-auto px-2">
+              {["All", "Action Required", "Pending Review", "Completed"].map(
+                (tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex items-center gap-2 py-4 text-xs font-bold border-b-2 transition-colors whitespace-nowrap ${
+                      activeTab === tab
+                        ? "border-[#B91C1C] text-[#B91C1C] dark:text-[#F87171]"
+                        : "border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ),
               )}
-              {tab === "In Progress" && (
-                <span className="flex items-center justify-center bg-surface border border-border text-text-muted rounded-full px-2 py-0.5 text-[10px] font-mono font-bold">
-                  2
-                </span>
-              )}
-              {tab === "Submitted" && (
-                <span className="flex items-center justify-center bg-surface border border-border text-text-muted rounded-full px-2 py-0.5 text-[10px] font-mono font-bold">
-                  6
-                </span>
-              )}
-              {tab === "Graded" && (
-                <span className="flex items-center justify-center bg-surface border border-border text-text-muted rounded-full px-2 py-0.5 text-[10px] font-mono font-bold">
-                  3
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+            </div>
+            <div className="p-3 sm:py-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search assignments..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full sm:w-64 pl-9 pr-4 py-2 bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 rounded-xl text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                />
+              </div>
+            </div>
+          </div>
 
-        <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse min-w-250">
-            <thead>
-              <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-mono font-bold bg-surface-subtle">
-                <th className="px-6 py-4 w-[35%]">Assignment</th>
-                <th className="px-6 py-4 w-[15%]">Topic / Week</th>
-                <th className="px-6 py-4 w-[15%]">Status</th>
-                <th className="px-6 py-4 w-[20%]">Due Date</th>
-                <th className="px-6 py-4 w-[15%] text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-              {mockAssignments.map((assignment) => (
-                <tr
-                  key={assignment.id}
-                  className="hover:bg-surface-subtle/50 transition-colors group"
-                >
-                  <td className="px-6 py-5">
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`flex h-10 w-10 mt-1 shrink-0 items-center justify-center rounded-xl shadow-2xs ${assignment.iconBg}`}
-                      >
-                        {assignment.icon}
+          <div className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
+            {filteredSubmissions.length === 0 ? (
+              <div className="p-12 text-center text-neutral-400">
+                <FileText className="w-8 h-8 mx-auto mb-3 opacity-50" />
+                <p className="text-sm font-medium">
+                  No assignments found in this tab.
+                </p>
+              </div>
+            ) : (
+              filteredSubmissions.map((sub) => {
+                const statusConfig = getStatusConfig(sub.status);
+                const isActionRequired = [
+                  "not_started",
+                  "needs_resubmission",
+                ].includes(sub.status);
+
+                return (
+                  <div
+                    key={sub.id}
+                    className="p-6 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors"
+                  >
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+                      <div className="flex-1 space-y-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusConfig.classes}`}
+                            >
+                              {statusConfig.icon}
+                              {statusConfig.label}
+                            </span>
+                            {sub.batchName && (
+                              <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                                • {sub.batchName}
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
+                            {sub.assignmentTitle}
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 mt-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            Due: {sub.deadlineFormatted}
+                          </div>
+                        </div>
+
+                        {sub.description && (
+                          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-3xl">
+                            {sub.description}
+                          </p>
+                        )}
+
+                        {sub.fileUrl && (
+                          <div>
+                            <a
+                              href={
+                                API.defaults.baseURL.replace("/api", "") +
+                                sub.fileUrl
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors border border-neutral-200/50 dark:border-neutral-700/50 w-fit"
+                            >
+                              <Paperclip className="w-3.5 h-3.5" />
+                              {sub.fileName || "Download Attachment"}
+                            </a>
+                          </div>
+                        )}
+
+                        {sub.feedback && (
+                          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30 p-3.5 rounded-xl max-w-3xl">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-500 block mb-1">
+                              Mentor Feedback
+                            </span>
+                            <p className="text-xs text-amber-900 dark:text-amber-200 italic leading-relaxed">
+                              "{sub.feedback}"
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <h4 className="text-xs sm:text-sm font-bold text-text-primary">
-                          {assignment.title}
-                        </h4>
-                        <p className="text-xs text-text-muted mt-1 leading-relaxed pr-4">
-                          {assignment.description}
-                        </p>
+
+                      <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-4 shrink-0 lg:w-48 bg-neutral-50/50 dark:bg-neutral-800/30 p-4 rounded-xl border border-neutral-200/50 dark:border-neutral-800">
+                        <div className="text-left lg:text-right">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 block mb-0.5">
+                            Grade
+                          </span>
+                          <div className="text-2xl font-black text-neutral-900 dark:text-white leading-none">
+                            {sub.score !== null && sub.score !== undefined
+                              ? sub.score
+                              : "--"}
+                            <span className="text-sm font-bold text-neutral-400">
+                              /{sub.maxScore}
+                            </span>
+                          </div>
+                        </div>
+
+                        {isActionRequired ? (
+                          <button
+                            onClick={() => openSubmitModal(sub)}
+                            className="w-full px-4 py-2 bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-bold rounded-lg transition-colors shadow-sm shadow-red-500/20"
+                          >
+                            {sub.status === "not_started"
+                              ? "Turn In Work"
+                              : "Resubmit Work"}
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            className="w-full px-4 py-2 bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-xs font-bold rounded-lg cursor-not-allowed"
+                          >
+                            Work Submitted
+                          </button>
+                        )}
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-5 align-top pt-6">
-                    <p className="text-xs sm:text-sm font-bold text-text-primary">
-                      {assignment.topic}
-                    </p>
-                    <p className="text-xs text-text-muted mt-0.5 font-mono">
-                      {assignment.week}
-                    </p>
-                  </td>
-                  <td className="px-6 py-5 align-top pt-6">
-                    <span
-                      className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold tracking-wide uppercase ${getStatusBadge(assignment.status)}`}
-                    >
-                      {assignment.status}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </main>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center p-5 border-b border-neutral-100 dark:border-neutral-800">
+              <div>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white">
+                  {activeSubmission?.status === "not_started"
+                    ? "Turn In Assignment"
+                    : "Resubmit Assignment"}
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 truncate max-w-sm">
+                  {activeSubmission?.assignmentTitle}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto p-5">
+              <form
+                id="submissionForm"
+                onSubmit={handleSubmit}
+                className="space-y-5"
+              >
+                {errorMessage && (
+                  <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    {errorMessage}
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    GitHub Repository URL{" "}
+                    <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Code2 className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
+                    <input
+                      required
+                      type="url"
+                      name="githubUrl"
+                      value={formData.githubUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://github.com/username/repo"
+                      className="w-full pl-9 pr-4 py-2.5 bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 rounded-xl text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    Live Demo URL{" "}
+                    <span className="text-neutral-400 lowercase capitalize-none">
+                      (Optional)
                     </span>
-                  </td>
-                  <td className="px-6 py-5 align-top pt-6">
-                    <p className="text-xs sm:text-sm font-bold text-text-primary font-mono">
-                      {assignment.dueDate}
-                    </p>
-                    <p className="text-xs text-text-muted mt-0.5 font-mono">
-                      {assignment.dueTime}
-                    </p>
-                    <p
-                      className={`text-[11px] font-bold mt-1 font-mono ${assignment.timeColor}`}
-                    >
-                      {assignment.timeRemaining}
-                    </p>
-                  </td>
-                  <td className="px-6 py-5 align-top pt-6 text-right">
-                    <div className="flex items-center justify-end gap-2.5">
-                      {assignment.actionState === "active" ? (
-                        <button className="px-4 py-2 rounded-xl text-xs font-bold text-primary border border-primary/30 bg-primary/10 hover:bg-primary/20 transition-all cursor-pointer shadow-2xs">
-                          {assignment.action}
-                        </button>
-                      ) : (
-                        <button
-                          disabled
-                          className="px-4 py-2 rounded-xl text-xs font-bold text-text-muted/50 border border-border bg-surface-subtle cursor-not-allowed"
-                        >
-                          {assignment.action}
-                        </button>
-                      )}
-                      <button className="text-text-muted hover:text-text-primary p-2 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-border">
-                        <FiMoreVertical className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </label>
+                  <div className="relative">
+                    <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
+                    <input
+                      type="url"
+                      name="liveDemoUrl"
+                      value={formData.liveDemoUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://my-project.vercel.app"
+                      className="w-full pl-9 pr-4 py-2.5 bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 rounded-xl text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    />
+                  </div>
+                </div>
 
-        <div className="border-t border-border px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-subtle/50 text-xs">
-          <span className="text-text-muted">
-            Showing <span className="font-bold text-text-primary">1</span> to{" "}
-            <span className="font-bold text-text-primary">5</span> of{" "}
-            <span className="font-bold text-text-primary">12</span> assignments
-          </span>
-          <div className="flex items-center gap-1 font-mono">
-            <button className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-surface text-text-muted hover:bg-surface-subtle hover:text-text-primary transition-colors cursor-pointer">
-              <FiChevronLeft className="h-4 w-4" />
-            </button>
-            <button className="flex h-8 w-8 items-center justify-center rounded-xl border border-primary bg-primary text-primary-foreground font-bold text-xs transition-colors cursor-pointer shadow-2xs">
-              1
-            </button>
-            <button className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-surface text-text-muted hover:bg-surface-subtle font-semibold text-xs transition-colors cursor-pointer">
-              2
-            </button>
-            <button className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-surface text-text-muted hover:bg-surface-subtle font-semibold text-xs transition-colors cursor-pointer">
-              3
-            </button>
-            <span className="flex h-8 w-8 items-center justify-center text-text-muted text-xs tracking-widest">
-              ...
-            </span>
-            <button className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-surface text-text-muted hover:bg-surface-subtle font-semibold text-xs transition-colors cursor-pointer">
-              4
-            </button>
-            <button className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-surface text-text-muted hover:bg-surface-subtle hover:text-text-primary transition-colors cursor-pointer">
-              <FiChevronRight className="h-4 w-4" />
-            </button>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    Submission Notes
+                  </label>
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleInputChange}
+                    rows="3"
+                    placeholder="Any context or notes for your mentor..."
+                    className="w-full p-3 bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 rounded-xl text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] resize-none"
+                  ></textarea>
+                </div>
+              </form>
+            </div>
+
+            <div className="flex gap-3 p-5 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="flex-1 px-4 py-2.5 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-bold text-xs rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="submissionForm"
+                disabled={isSubmitting}
+                className="flex-1 px-4 py-2.5 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-bold text-xs rounded-xl transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Confirm Submission"
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

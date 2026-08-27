@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import AdminSidebar from "../../components/layout/AdminSidebar";
-import { getAssignmentsOverview } from "../../services/assignmentService";
+import { assignmentService } from "../../services/assignmentService";
+import API from "../../services/api";
 import {
   Search,
   ChevronDown,
@@ -16,7 +17,20 @@ import {
   Paperclip,
   Pencil,
   Trash2,
+  ExternalLink,
+  AlertCircle,
 } from "lucide-react";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function AssignmentsManagement({
   isDarkMode,
@@ -29,11 +43,33 @@ export default function AssignmentsManagement({
   const [searchTerm, setSearchTerm] = useState("");
   const [batchFilter, setBatchFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [typeFilter, setTypeFilter] = useState("ALL");
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const [batches, setBatches] = useState([]);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    batch: "",
+    deadline: "",
+    scope: "global",
+    maxScore: 100,
+    resourceLink: "",
+  });
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -46,38 +82,156 @@ export default function AssignmentsManagement({
   }, []);
 
   useEffect(() => {
+    async function fetchBatches() {
+      try {
+        const response = await API.get("/batches");
+        const resData = response.data;
+        let fetchedBatches = [];
+
+        if (Array.isArray(resData)) {
+          fetchedBatches = resData;
+        } else if (Array.isArray(resData?.data)) {
+          fetchedBatches = resData.data;
+        } else if (Array.isArray(resData?.data?.batches)) {
+          fetchedBatches = resData.data.batches;
+        } else if (Array.isArray(resData?.batches)) {
+          fetchedBatches = resData.batches;
+        }
+
+        if (fetchedBatches.length > 0) {
+          setBatches(fetchedBatches);
+        }
+      } catch (err) {}
+    }
+    fetchBatches();
+  }, []);
+
+  useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const overview = await getAssignmentsOverview();
-      setData(overview);
-      if (overview?.assignments?.length > 0) {
-        setSelectedAssignment(overview.assignments[0]);
-      }
+      try {
+        const overview = await assignmentService.getAssignmentsOverview();
+        setData(overview);
+        if (overview?.assignments?.length > 0) {
+          setSelectedAssignment(overview.assignments[0]);
+        }
+      } catch (error) {}
       setLoading(false);
     }
     loadData();
   }, []);
 
-  const handleDeleteAssignment = (id) => {
-    if (!data) return;
-    const updated = data.assignments.filter((a) => a.id !== id);
-    setData({ ...data, assignments: updated });
-    if (selectedAssignment?.id === id) {
-      setSelectedAssignment(null);
+  const formatForDateTimeInput = (isoString) => {
+    if (!isoString) return "";
+    const d = new Date(isoString);
+    const pad = (n) => n.toString().padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const handleOpenCreate = () => {
+    setIsEditMode(false);
+    setEditId(null);
+    setFormData({
+      title: "",
+      description: "",
+      batch: "",
+      deadline: "",
+      scope: "global",
+      maxScore: 100,
+      resourceLink: "",
+    });
+    setSelectedFile(null);
+    setErrorMessage("");
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (a) => {
+    setIsEditMode(true);
+    setEditId(a.id);
+    setFormData({
+      title: a.title,
+      description: a.description,
+      batch: a.rawBatchId || "",
+      deadline: formatForDateTimeInput(a.rawDeadline),
+      scope: a.scope || "global",
+      maxScore: a.rawMaxScore || 100,
+      resourceLink: a.resourceLink || "",
+    });
+    setSelectedFile(null);
+    setErrorMessage("");
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title || !formData.batch || !formData.deadline) {
+      setErrorMessage(
+        "Please fill in all required fields (Title, Batch, Deadline)",
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+    try {
+      const payload = new FormData();
+      payload.append("title", formData.title);
+      payload.append("description", formData.description);
+      payload.append("batch", formData.batch);
+      payload.append("deadline", formData.deadline);
+      payload.append("scope", formData.scope);
+      payload.append("maxScore", formData.maxScore);
+      payload.append("resourceLink", formData.resourceLink);
+
+      if (selectedFile) {
+        payload.append("file", selectedFile);
+      }
+
+      if (isEditMode) {
+        await assignmentService.updateAssignment(editId, payload);
+      } else {
+        await assignmentService.createAssignment(payload);
+      }
+
+      setIsModalOpen(false);
+      const overview = await assignmentService.getAssignmentsOverview();
+      setData(overview);
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message ||
+          "Failed to process assignment. Check file size (Max 2MB).",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const promptDelete = (id) => {
+    setDeleteTargetId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setIsDeleting(true);
+    try {
+      await assignmentService.deleteAssignment(deleteTargetId);
+      const updated = data.assignments.filter((a) => a.id !== deleteTargetId);
+      setData({ ...data, assignments: updated });
+      if (selectedAssignment?.id === deleteTargetId) {
+        setSelectedAssignment(null);
+      }
+      setDeleteModalOpen(false);
+      setDeleteTargetId(null);
+    } catch (error) {
+      console.error("Failed to delete assignment");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const assignmentsList = data?.assignments || [];
-
-  const availableBatches = [
-    ...new Set(assignmentsList.map((a) => a.batch).filter(Boolean)),
-  ];
-  const availableStatuses = [
-    ...new Set(assignmentsList.map((a) => a.status).filter(Boolean)),
-  ];
-  const availableTypes = [
-    ...new Set(assignmentsList.map((a) => a.type).filter(Boolean)),
-  ];
+  const availableBatches = batches.map((b) => b.name || b.title);
+  const availableStatuses = ["Active", "Closed", "Past Due"];
 
   const filteredAssignments = assignmentsList.filter((a) => {
     const query = searchTerm.toLowerCase().trim();
@@ -87,15 +241,12 @@ export default function AssignmentsManagement({
       (a.batchName || "").toLowerCase().includes(query);
     const matchesBatch =
       batchFilter === "ALL" ||
-      (a.batch || "").toLowerCase() === batchFilter.toLowerCase();
+      (a.batchName || "").toLowerCase() === batchFilter.toLowerCase();
     const matchesStatus =
       statusFilter === "ALL" ||
       (a.status || "").toLowerCase() === statusFilter.toLowerCase();
-    const matchesType =
-      typeFilter === "ALL" ||
-      (a.type || "").toLowerCase() === typeFilter.toLowerCase();
 
-    return matchesSearch && matchesBatch && matchesStatus && matchesType;
+    return matchesSearch && matchesBatch && matchesStatus;
   });
 
   const getStatusBadge = (status) => {
@@ -130,7 +281,6 @@ export default function AssignmentsManagement({
   return (
     <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Main Content Area */}
         <main className="px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-24 gap-2 text-xs text-neutral-500">
@@ -139,7 +289,6 @@ export default function AssignmentsManagement({
             </div>
           ) : (
             <>
-              {/* Header Title + Create Action Button */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
@@ -150,20 +299,192 @@ export default function AssignmentsManagement({
                   </p>
                 </div>
 
-                <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5">
-                  <Plus size={14} />
-                  <span>Create Assignment</span>
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleOpenCreate}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5 border-none outline-none"
+                  >
+                    <Plus size={14} />
+                    <span>Create Assignment</span>
+                  </button>
+
+                  <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                    <DialogContent className="sm:max-w-125 bg-white dark:bg-[#151921] border-neutral-200 dark:border-neutral-800">
+                      <DialogHeader>
+                        <DialogTitle className="text-neutral-900 dark:text-white">
+                          {isEditMode
+                            ? "Edit Assignment"
+                            : "Create New Assignment"}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        {errorMessage && (
+                          <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-lg flex items-center gap-2 text-xs text-red-700 dark:text-red-300">
+                            <AlertCircle size={15} className="shrink-0" />
+                            <span>{errorMessage}</span>
+                          </div>
+                        )}
+
+                        <div className="grid gap-2">
+                          <Label
+                            htmlFor="title"
+                            className="text-neutral-900 dark:text-neutral-200"
+                          >
+                            Assignment Title *
+                          </Label>
+                          <Input
+                            id="title"
+                            value={formData.title}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                title: e.target.value,
+                              })
+                            }
+                            placeholder="e.g., Build a REST API"
+                            className="dark:bg-[#0E1117] dark:border-neutral-700 dark:text-white"
+                          />
+                        </div>
+
+                        <div className="grid gap-2">
+                          <Label
+                            htmlFor="desc"
+                            className="text-neutral-900 dark:text-neutral-200"
+                          >
+                            Description
+                          </Label>
+                          <textarea
+                            id="desc"
+                            value={formData.description}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                description: e.target.value,
+                              })
+                            }
+                            className="flex min-h-20 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm shadow-sm dark:border-neutral-700 dark:bg-[#0E1117] dark:text-white"
+                            placeholder="Provide details..."
+                          />
+                        </div>
+
+                        <div className="grid gap-2">
+                          <Label
+                            htmlFor="file"
+                            className="text-neutral-900 dark:text-neutral-200"
+                          >
+                            Attachment (PDF - Max 2MB)
+                          </Label>
+                          <Input
+                            id="file"
+                            type="file"
+                            accept=".pdf"
+                            onChange={(e) => setSelectedFile(e.target.files[0])}
+                            className="dark:bg-[#0E1117] dark:border-neutral-700 dark:text-white cursor-pointer file:text-neutral-900 dark:file:text-white file:font-medium file:border-0 file:bg-transparent"
+                          />
+                        </div>
+
+                        <div className="grid gap-2">
+                          <Label
+                            htmlFor="resourceLink"
+                            className="text-neutral-900 dark:text-neutral-200"
+                          >
+                            Resource Link (Optional)
+                          </Label>
+                          <Input
+                            id="resourceLink"
+                            type="url"
+                            value={formData.resourceLink}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                resourceLink: e.target.value,
+                              })
+                            }
+                            placeholder="e.g., https://github.com/..."
+                            className="dark:bg-[#0E1117] dark:border-neutral-700 dark:text-white"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                            <Label className="text-neutral-900 dark:text-neutral-200">
+                              Target Batch *
+                            </Label>
+                            <select
+                              value={formData.batch}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  batch: e.target.value,
+                                })
+                              }
+                              disabled={isEditMode}
+                              className={`flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm dark:border-neutral-700 dark:bg-[#0E1117] dark:text-white ${isEditMode ? "opacity-50 cursor-not-allowed" : ""}`}
+                            >
+                              <option value="">Select Batch</option>
+                              {batches.map((b) => (
+                                <option
+                                  key={b._id || b.id}
+                                  value={b._id || b.id}
+                                >
+                                  {b.name || b.title}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="grid gap-2">
+                            <Label className="text-neutral-900 dark:text-neutral-200">
+                              Deadline (Date & Time) *
+                            </Label>
+                            <Input
+                              type="datetime-local"
+                              value={formData.deadline}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  deadline: e.target.value,
+                                })
+                              }
+                              className="dark:bg-[#0E1117] dark:border-neutral-700 dark:text-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsModalOpen(false)}
+                          className="dark:border-neutral-700 dark:text-white"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                          className="bg-[#B91C1C] hover:bg-[#991B1B] text-white"
+                        >
+                          {isSubmitting ? (
+                            <Loader2 className="animate-spin mr-2" size={14} />
+                          ) : null}
+                          {isSubmitting
+                            ? "Saving..."
+                            : isEditMode
+                              ? "Save Changes"
+                              : "Publish Assignment"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
-              {/* 4 Stat Cards with Modern Hover Effects */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                     TOTAL ASSIGNMENTS
                   </span>
                   <div className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
-                    {data?.metrics?.totalAssignments || 24}
+                    {data?.metrics?.totalAssignments || 0}
                   </div>
                 </div>
 
@@ -172,7 +493,7 @@ export default function AssignmentsManagement({
                     ACTIVE
                   </span>
                   <div className="text-2xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
-                    {data?.metrics?.active || 8}
+                    {data?.metrics?.active || 0}
                   </div>
                 </div>
 
@@ -181,7 +502,7 @@ export default function AssignmentsManagement({
                     PENDING REVIEW
                   </span>
                   <div className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
-                    {data?.metrics?.pendingReview || 156}
+                    {data?.metrics?.pendingReview || 0}
                   </div>
                 </div>
 
@@ -190,15 +511,14 @@ export default function AssignmentsManagement({
                     PAST DUE
                   </span>
                   <div className="text-2xl font-black tracking-tight text-sky-600 dark:text-sky-400">
-                    {data?.metrics?.pastDue || 3}
+                    {data?.metrics?.pastDue || 0}
                   </div>
                 </div>
               </div>
 
-              {/* Filter Bar */}
               <div className="p-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/40">
                 <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex-1 min-w-[200px] relative">
+                  <div className="flex-1 min-w-50 relative">
                     <Search
                       size={13}
                       className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
@@ -221,7 +541,7 @@ export default function AssignmentsManagement({
                       <option value="ALL">All Batches</option>
                       {availableBatches.map((b) => (
                         <option key={b} value={b}>
-                          {b} Batch
+                          {b}
                         </option>
                       ))}
                     </select>
@@ -249,29 +569,9 @@ export default function AssignmentsManagement({
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
-
-                  <div className="relative">
-                    <select
-                      value={typeFilter}
-                      onChange={(e) => setTypeFilter(e.target.value)}
-                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#0E1117] border border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
-                    >
-                      <option value="ALL">All Types</option>
-                      {availableTypes.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={12}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-                    />
-                  </div>
                 </div>
               </div>
 
-              {/* Table & Detail Card Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 <div
                   className={`space-y-4 transition-all duration-300 ${
@@ -312,13 +612,13 @@ export default function AssignmentsManagement({
                                     : ""
                                 }`}
                               >
-                                <td className="py-4 px-5 font-semibold text-neutral-900 dark:text-neutral-100">
+                                <td className="py-4 px-5 font-semibold text-neutral-900 dark:text-white">
                                   {a.title}
                                 </td>
 
                                 <td className="py-4 px-5 text-neutral-600 dark:text-neutral-300">
                                   <div className="text-[11px] font-medium">
-                                    {a.batch} Batch
+                                    {a.batchName}
                                   </div>
                                 </td>
 
@@ -340,7 +640,7 @@ export default function AssignmentsManagement({
                                       type="button"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        setSelectedAssignment(a);
+                                        handleOpenEdit(a);
                                       }}
                                       title="Edit"
                                       className="p-1.5 rounded-lg hover:text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 transition-colors cursor-pointer"
@@ -351,7 +651,7 @@ export default function AssignmentsManagement({
                                       type="button"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleDeleteAssignment(a.id);
+                                        promptDelete(a.id);
                                       }}
                                       title="Delete"
                                       className="p-1.5 rounded-lg hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
@@ -369,7 +669,6 @@ export default function AssignmentsManagement({
                   </div>
                 </div>
 
-                {/* Right Assignment Details Drawer */}
                 {selectedAssignment && (
                   <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-6 shadow-md shadow-neutral-200/50 dark:shadow-none relative space-y-4 animate-in fade-in zoom-in-95 duration-200 transition-all">
                     <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
@@ -402,7 +701,7 @@ export default function AssignmentsManagement({
                           BATCH
                         </span>
                         <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
-                          {selectedAssignment.batch} Batch
+                          {selectedAssignment.batchName}
                         </span>
                       </div>
 
@@ -438,6 +737,17 @@ export default function AssignmentsManagement({
                       <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                         RESOURCES
                       </span>
+                      {selectedAssignment.resourceLink && (
+                        <a
+                          href={selectedAssignment.resourceLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-[11px] font-medium text-sky-600 dark:text-sky-400 hover:underline cursor-pointer mb-1"
+                        >
+                          <ExternalLink size={13} />
+                          <span>External Resource Link</span>
+                        </a>
+                      )}
                       <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-sky-600 dark:text-sky-400 hover:underline cursor-pointer">
                         <Paperclip size={13} />
                         <span>{selectedAssignment.resourceName}</span>
@@ -464,19 +774,6 @@ export default function AssignmentsManagement({
                         </span>
                       </div>
                     </div>
-
-                    <div className="pt-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onNavigateAdminView &&
-                          onNavigateAdminView("dashboard-submissions")
-                        }
-                        className="w-full py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shadow-xs"
-                      >
-                        View Submissions
-                      </button>
-                    </div>
                   </div>
                 )}
               </div>
@@ -484,6 +781,36 @@ export default function AssignmentsManagement({
           )}
         </main>
       </div>
+
+      {deleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+            <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
+              Delete Assignment
+            </h3>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              Are you sure you want to delete this assignment? This will
+              permanently remove it and all related student submissions.
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setDeleteModalOpen(false)}
+                className="dark:border-neutral-700 dark:text-white text-xs h-8"
+              >
+                Cancel
+              </Button>
+              <Button
+                disabled={isDeleting}
+                onClick={confirmDelete}
+                className="bg-rose-600 hover:bg-rose-700 text-white text-xs h-8"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

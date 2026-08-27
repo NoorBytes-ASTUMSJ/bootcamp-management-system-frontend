@@ -12,6 +12,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
+import API from "../../services/api";
 
 export default function MentorSubmissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -23,135 +24,58 @@ export default function MentorSubmissions() {
     status: "Reviewed",
   });
 
-  const MOCK_SUBMISSIONS = [
-    {
-      id: 1,
-      studentName: "Alex Johnson",
-      studentEmail: "alex.johnson@example.com",
-      avatar: "https://i.pravatar.cc/150?u=alex",
-      assignment: "React Components Development",
-      submittedDate: "May 24, 2026",
-      submittedTime: "10:30 PM",
-      status: "Pending Review",
-      score: null,
-      githubUrl: "https://github.com/alexjohnson/react-components",
-      liveDemoUrl: "https://react-components-demo.vercel.app",
-      studentNotes:
-        "I focused on component reusability and state management. Please review the responsive design as well.",
-    },
-    {
-      id: 2,
-      studentName: "Maya Smith",
-      studentEmail: "maya.smith@example.com",
-      avatar: "https://i.pravatar.cc/150?u=maya",
-      assignment: "JavaScript Functions & Scope",
-      submittedDate: "May 23, 2026",
-      submittedTime: "09:15 PM",
-      status: "Reviewed",
-      score: 85,
-      githubUrl: "https://github.com/mayasmith/js-functions",
-      liveDemoUrl: "",
-      studentNotes: "",
-    },
-    {
-      id: 3,
-      studentName: "James Wilson",
-      studentEmail: "james.wilson@example.com",
-      avatar: "https://i.pravatar.cc/150?u=james",
-      assignment: "HTML & CSS Layout",
-      submittedDate: "May 22, 2026",
-      submittedTime: "11:45 PM",
-      status: "Resubmission Requested",
-      score: 65,
-      githubUrl: "https://github.com/jamesw/html-layout",
-      liveDemoUrl: "",
-      studentNotes: "",
-    },
-    {
-      id: 4,
-      studentName: "Sophia Brown",
-      studentEmail: "sophia.brown@example.com",
-      avatar: "https://i.pravatar.cc/150?u=sophia",
-      assignment: "Node.js Fundamentals",
-      submittedDate: "May 21, 2026",
-      submittedTime: "08:20 PM",
-      status: "Pending Review",
-      score: null,
-      githubUrl: "https://github.com/sophiabrown/node-basics",
-      liveDemoUrl: "",
-      studentNotes: "",
-    },
-    {
-      id: 5,
-      studentName: "Liam Davis",
-      studentEmail: "liam.davis@example.com",
-      avatar: "https://i.pravatar.cc/150?u=liam",
-      assignment: "API Integration Project",
-      submittedDate: "May 21, 2026",
-      submittedTime: "07:10 PM",
-      status: "Reviewed",
-      score: 90,
-      githubUrl: "https://github.com/liamdavis/api-project",
-      liveDemoUrl: "",
-      studentNotes: "",
-    },
-    {
-      id: 6,
-      studentName: "Olivia Miller",
-      studentEmail: "olivia.miller@example.com",
-      avatar: "https://i.pravatar.cc/150?u=olivia",
-      assignment: "Database Design Basics",
-      submittedDate: "May 20, 2026",
-      submittedTime: "06:05 PM",
-      status: "Pending Review",
-      score: null,
-      githubUrl: "https://github.com/oliviamiller/db-design",
-      liveDemoUrl: "",
-      studentNotes: "",
-    },
-    {
-      id: 7,
-      studentName: "Noah Martinez",
-      studentEmail: "noah.martinez@example.com",
-      avatar: "https://i.pravatar.cc/150?u=noah",
-      assignment: "Git & GitHub Workflow",
-      submittedDate: "May 19, 2026",
-      submittedTime: "04:30 PM",
-      status: "Reviewed",
-      score: 80,
-      githubUrl: "https://github.com/noahmartinez/git-workflow",
-      liveDemoUrl: "",
-      studentNotes: "",
-    },
-    {
-      id: 8,
-      studentName: "Isabella Anderson",
-      studentEmail: "isabella.anderson@example.com",
-      avatar: "https://i.pravatar.cc/150?u=isabella",
-      assignment: "Final Project",
-      submittedDate: "May 18, 2026",
-      submittedTime: "03:50 PM",
-      status: "Resubmission Requested",
-      score: 70,
-      githubUrl: "https://github.com/isabellaa/final-project",
-      liveDemoUrl: "",
-      studentNotes: "",
-    },
-  ];
-
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setSubmissions(MOCK_SUBMISSIONS);
-      setLoading(false);
-    }, 400);
+    fetchMentorSubmissions();
   }, []);
+
+  const fetchMentorSubmissions = async () => {
+    setLoading(true);
+    try {
+      const response = await API.get("/submissions/mentor");
+      const raw =
+        response.data?.data?.submissions || response.data?.submissions || [];
+
+      const formatted = raw.map((s) => ({
+        id: s._id,
+        studentName: s.member?.user?.fullName || "Student",
+        studentEmail: s.member?.user?.email || "No Email",
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${s.member?.user?.fullName || "Student"}`,
+        assignment: s.assignment?.title || "Assignment",
+        submittedDate: s.submittedAt
+          ? new Date(s.submittedAt).toLocaleDateString()
+          : "Not Submitted",
+        submittedTime: s.submittedAt
+          ? new Date(s.submittedAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "",
+        status:
+          s.status === "graded"
+            ? "Reviewed"
+            : s.status === "needs_resubmission"
+              ? "Resubmission Requested"
+              : "Pending Review",
+        score: s.score !== undefined ? s.score : null,
+        githubUrl: s.githubUrl || "",
+        liveDemoUrl: s.liveDemoUrl || "",
+        studentNotes: s.notes || "",
+        feedback: s.feedback || "",
+      }));
+
+      setSubmissions(formatted);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openReviewPanel = (submission) => {
     setSelectedSubmission(submission);
     setReviewForm({
-      score: submission.score || "",
-      feedback: "",
+      score: submission.score !== null ? submission.score : "",
+      feedback: submission.feedback || "",
       status:
         submission.status === "Pending Review" ? "Reviewed" : submission.status,
     });
@@ -166,9 +90,22 @@ export default function MentorSubmissions() {
     setReviewForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveReview = (e) => {
+  const handleSaveReview = async (e) => {
     e.preventDefault();
-    closeReviewPanel();
+    if (!selectedSubmission) return;
+
+    try {
+      await API.patch(`/submissions/${selectedSubmission.id}/grade`, {
+        score: Number(reviewForm.score),
+        feedback: reviewForm.feedback,
+        needsResubmission: reviewForm.status === "Resubmission Requested",
+      });
+
+      closeReviewPanel();
+      fetchMentorSubmissions();
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to submit review.");
+    }
   };
 
   const getStatusStyles = (status) => {
@@ -184,9 +121,19 @@ export default function MentorSubmissions() {
     }
   };
 
+<<<<<<< HEAD
+  const totalCount = submissions.length;
+  const pendingCount = submissions.filter(
+    (s) => s.status === "Pending Review",
+  ).length;
+  const reviewedCount = submissions.filter(
+    (s) => s.status === "Reviewed",
+  ).length;
+=======
   // Shared modern card style
   const cardStyle =
     "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4";
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
 
   if (loading) {
     return (
@@ -217,10 +164,14 @@ export default function MentorSubmissions() {
               Total Submissions
             </div>
             <div className="text-2xl font-black text-text-primary leading-none">
+<<<<<<< HEAD
+              {totalCount}
+=======
               28
             </div>
             <div className="text-[11px] text-text-muted mt-1">
               All time submissions
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
             </div>
           </div>
         </div>
@@ -234,10 +185,14 @@ export default function MentorSubmissions() {
               Pending Review
             </div>
             <div className="text-2xl font-black text-text-primary leading-none">
+<<<<<<< HEAD
+              {pendingCount}
+=======
               8
             </div>
             <div className="text-[11px] text-text-muted mt-1">
               Awaiting your review
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
             </div>
           </div>
         </div>
@@ -251,15 +206,22 @@ export default function MentorSubmissions() {
               Reviewed
             </div>
             <div className="text-2xl font-black text-text-primary leading-none">
+<<<<<<< HEAD
+              {reviewedCount}
+=======
               20
             </div>
             <div className="text-[11px] text-text-muted mt-1">
               Completed reviews
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
             </div>
           </div>
         </div>
       </div>
 
+<<<<<<< HEAD
+      <div className="bg-surface border border-border shadow-sm rounded-xl overflow-hidden flex flex-col">
+=======
       <div className="bg-surface border border-border shadow-sm rounded-2xl overflow-hidden flex flex-col hover:border-primary/40 transition-all duration-200">
         <div className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row gap-4 justify-between items-center bg-surface-subtle/50">
           <div className="relative w-full sm:w-80">
@@ -292,6 +254,7 @@ export default function MentorSubmissions() {
           </div>
         </div>
 
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
@@ -353,6 +316,16 @@ export default function MentorSubmissions() {
                     </div>
                   </td>
                   <td className="py-3 px-5 text-right">
+<<<<<<< HEAD
+                    <button
+                      onClick={() => openReviewPanel(sub)}
+                      className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors border focus:outline-none ${sub.status === "Pending Review" ? "bg-primary text-primary-foreground hover:bg-primary-hover border-primary" : "bg-surface text-text-primary hover:bg-surface-subtle border-border"}`}
+                    >
+                      {sub.status === "Pending Review"
+                        ? "Review"
+                        : "View Review"}
+                    </button>
+=======
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => openReviewPanel(sub)}
@@ -366,12 +339,15 @@ export default function MentorSubmissions() {
                         <FiMoreVertical className="w-4 h-4" />
                       </button>
                     </div>
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+<<<<<<< HEAD
+=======
 
         <div className="p-4 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-subtle/50 text-xs">
           <div className="text-text-muted">
@@ -403,6 +379,7 @@ export default function MentorSubmissions() {
             </button>
           </div>
         </div>
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
       </div>
 
       {selectedSubmission && (
@@ -412,14 +389,24 @@ export default function MentorSubmissions() {
             onClick={closeReviewPanel}
           ></div>
 
+<<<<<<< HEAD
+          <div className="fixed inset-y-0 right-0 w-full max-w-lg bg-surface border-l border-border shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto">
+            <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface">
+              <h2 className="text-lg font-bold text-text-primary">
+=======
           <div className="fixed inset-y-0 right-0 w-full max-w-120 bg-surface border-l border-border shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface z-10">
               <h2 className="text-base font-bold text-text-primary">
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                 Review Submission
               </h2>
               <button
                 onClick={closeReviewPanel}
+<<<<<<< HEAD
+                className="text-text-muted hover:text-text-primary transition-colors p-1 rounded-md"
+=======
                 className="text-text-muted hover:text-text-primary transition-colors p-2 rounded-xl hover:bg-surface-subtle cursor-pointer border border-transparent hover:border-border"
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               >
                 <FiX className="w-5 h-5" />
               </button>
@@ -442,9 +429,12 @@ export default function MentorSubmissions() {
                     </div>
                   </div>
                 </div>
+<<<<<<< HEAD
+=======
                 <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wide rounded-full border border-emerald-500/20">
                   On Track
                 </span>
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               </div>
 
               <div className="space-y-4">
@@ -461,9 +451,15 @@ export default function MentorSubmissions() {
                       {selectedSubmission.assignment}
                     </div>
                   </div>
+<<<<<<< HEAD
+                  <div>
+                    <div className="text-xs text-text-muted mb-1">
+                      Submitted
+=======
                   <div className="p-3.5 rounded-xl border border-border bg-surface-subtle shadow-2xs">
                     <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                       Submitted Date
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </div>
                     <div className="text-xs sm:text-sm font-bold text-text-primary font-mono">
                       {selectedSubmission.submittedDate}{" "}
@@ -472,6 +468,27 @@ export default function MentorSubmissions() {
                   </div>
                 </div>
 
+<<<<<<< HEAD
+                {selectedSubmission.githubUrl && (
+                  <div>
+                    <div className="text-xs text-text-muted mb-1">
+                      GitHub Repository URL
+                    </div>
+                    <a
+                      href={selectedSubmission.githubUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between p-3 bg-surface-subtle border border-border rounded-lg hover:border-primary transition-colors group text-primary"
+                    >
+                      <div className="flex items-center gap-3 truncate">
+                        <FiGithub className="shrink-0 w-4 h-4" />
+                        <span className="text-sm font-medium truncate">
+                          {selectedSubmission.githubUrl}
+                        </span>
+                      </div>
+                      <FiExternalLink className="shrink-0 w-4 h-4 ml-3 text-text-muted group-hover:text-primary" />
+                    </a>
+=======
                 <div>
                   <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                     GitHub Repository URL
@@ -495,37 +512,57 @@ export default function MentorSubmissions() {
                 <div>
                   <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                     Live Demo URL (Optional)
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                   </div>
-                  {selectedSubmission.liveDemoUrl ? (
+                )}
+
+                {selectedSubmission.liveDemoUrl && (
+                  <div>
+                    <div className="text-xs text-text-muted mb-1">
+                      Live Demo URL
+                    </div>
                     <a
                       href={selectedSubmission.liveDemoUrl}
                       target="_blank"
                       rel="noreferrer"
+<<<<<<< HEAD
+                      className="flex items-center justify-between p-3 bg-surface-subtle border border-border rounded-lg hover:border-primary transition-colors group text-primary"
+=======
                       className="flex items-center justify-between p-3.5 bg-surface-subtle border border-border rounded-xl hover:border-primary transition-colors group shadow-2xs"
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     >
-                      <div className="flex items-center gap-3 overflow-hidden text-primary">
+                      <div className="flex items-center gap-3 truncate">
                         <FiExternalLink className="shrink-0 w-4 h-4" />
                         <span className="text-xs sm:text-sm font-medium truncate font-mono">
                           {selectedSubmission.liveDemoUrl}
                         </span>
                       </div>
-                      <FiExternalLink className="shrink-0 text-text-muted group-hover:text-primary transition-colors w-4 h-4 ml-3" />
+                      <FiExternalLink className="shrink-0 w-4 h-4 ml-3 text-text-muted group-hover:text-primary" />
                     </a>
+<<<<<<< HEAD
+                  </div>
+                )}
+=======
                   ) : (
                     <div className="p-3.5 bg-surface-subtle border border-border border-dashed rounded-xl text-xs text-text-muted italic">
                       No live demo provided.
                     </div>
                   )}
                 </div>
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
 
                 <div>
                   <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                     Student Notes
                   </div>
+<<<<<<< HEAD
+                  <div className="p-4 bg-surface-subtle border border-border rounded-lg text-sm text-text-secondary leading-relaxed">
+=======
                   <div className="p-4 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-secondary leading-relaxed min-h-20 shadow-2xs">
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     {selectedSubmission.studentNotes || (
                       <span className="italic text-text-muted">
-                        No notes provided by the student.
+                        No notes provided.
                       </span>
                     )}
                   </div>
@@ -539,8 +576,13 @@ export default function MentorSubmissions() {
 
                 <form onSubmit={handleSaveReview} className="space-y-4">
                   <div>
+<<<<<<< HEAD
+                    <label className="text-xs font-bold text-text-primary mb-1.5 block">
+                      Score (out of 100) *
+=======
                     <label className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider mb-1.5 block">
                       Score (out of 100) <span className="text-primary">*</span>
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </label>
                     <input
                       type="number"
@@ -550,13 +592,22 @@ export default function MentorSubmissions() {
                       required
                       min="0"
                       max="100"
+<<<<<<< HEAD
+                      className="w-24 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary"
+=======
                       className="w-24 px-3.5 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary font-mono placeholder:text-text-muted/50 hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none shadow-2xs"
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     />
                   </div>
 
                   <div>
+<<<<<<< HEAD
+                    <label className="text-xs font-bold text-text-primary mb-1.5 block">
+                      Feedback *
+=======
                     <label className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider mb-1.5 block">
                       Feedback <span className="text-primary">*</span>
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </label>
                     <textarea
                       name="feedback"
@@ -564,21 +615,34 @@ export default function MentorSubmissions() {
                       onChange={handleReviewChange}
                       required
                       rows="4"
+<<<<<<< HEAD
+                      className="w-full p-3 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary resize-y"
+=======
                       placeholder="Write your feedback here..."
                       className="w-full p-3.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary focus:border-primary transition outline-none resize-y shadow-2xs"
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     ></textarea>
                   </div>
 
                   <div>
+<<<<<<< HEAD
+                    <label className="text-xs font-bold text-text-primary mb-1.5 block">
+                      Review Status *
+=======
                     <label className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider mb-1.5 block">
                       Review Status <span className="text-primary">*</span>
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </label>
                     <div className="relative">
                       <select
                         name="status"
                         value={reviewForm.status}
                         onChange={handleReviewChange}
+<<<<<<< HEAD
+                        className="w-full appearance-none pl-3 pr-8 py-2.5 bg-surface border border-border rounded-lg text-sm text-text-primary font-medium focus:outline-none focus:border-primary cursor-pointer"
+=======
                         className="w-full appearance-none pl-3.5 pr-10 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary font-semibold hover:border-primary focus:border-primary transition outline-none shadow-2xs cursor-pointer"
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                       >
                         <option value="Reviewed">Reviewed</option>
                         <option value="Resubmission Requested">
@@ -596,12 +660,20 @@ export default function MentorSubmissions() {
               <button
                 type="button"
                 onClick={closeReviewPanel}
+<<<<<<< HEAD
+                className="px-5 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-bold text-sm rounded-lg transition-colors"
+=======
                 className="px-4 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-semibold text-xs rounded-xl transition-colors shadow-xs cursor-pointer"
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               >
                 Cancel
               </button>
               <button
                 type="button"
+<<<<<<< HEAD
+                onClick={handleSaveReview}
+                className="px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover font-bold text-sm rounded-lg transition-colors shadow-sm"
+=======
                 onClick={(e) => {
                   setReviewForm((prev) => ({
                     ...prev,
@@ -617,6 +689,7 @@ export default function MentorSubmissions() {
                 type="submit"
                 onClick={handleSaveReview}
                 className="px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover font-semibold text-xs rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
+>>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               >
                 Save Review
               </button>
