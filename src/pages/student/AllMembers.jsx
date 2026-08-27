@@ -2,10 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { FiSearch, FiUsers, FiStar } from "react-icons/fi";
 import { getMyBatchMembers } from "../../services/studentService";
 
-// TODO: Replace this with however your app actually exposes the logged-in
-// user (an AuthContext / useAuth() hook, Redux store, decoded JWT, etc).
-// This reads from localStorage as a reasonable default — adjust the key
-// and shape ("_id" vs "id") to match how you store the user after login.
+// Helper to get the logged-in user ID from localStorage
 function getCurrentUserId() {
   try {
     const stored = localStorage.getItem("user");
@@ -16,6 +13,22 @@ function getCurrentUserId() {
   } catch {
     return null;
   }
+}
+
+// Helper to convert long university names to clean acronyms
+function getUniversityAcronym(uniName) {
+  if (!uniName) return "N/A";
+  const upper = uniName.toUpperCase();
+  if (upper.includes("ADAMA")) return "ASTU";
+  if (upper.includes("ADDIS ABABA")) return "AAU";
+  if (upper.includes("JIMMA")) return "JU";
+  if (upper.includes("BAHIRDAR") || upper.includes("BAHIR DAR")) return "BDU";
+  if (upper.includes("HAWASSA")) return "HU";
+  if (upper.includes("HARAMAYA")) return "HRU";
+  if (upper.includes("ARBA MINCH")) return "AMU";
+  return uniName.length > 10
+    ? uniName.substring(0, 8).toUpperCase() + "..."
+    : uniName;
 }
 
 export default function AllMembers() {
@@ -99,75 +112,78 @@ export default function AllMembers() {
   // unique assigned mentors instead of filtering by role.
   const totalMentors = useMemo(() => {
     const mentorIds = new Set(
-      members
-        .map((member) => member.assignedMentor?._id)
-        .filter(Boolean),
+      members.map((member) => member.assignedMentor?._id).filter(Boolean),
     );
     return mentorIds.size;
   }, [members]);
 
   const myGroupSize = myGroupMembers.length;
 
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   return (
-    <div className="mx-auto w-full max-w-300 space-y-8 animate-in fade-in duration-500 pb-10">
+    <div className="mx-auto w-full max-w-7xl space-y-8 animate-in fade-in duration-500 pb-12 px-4">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-[28px] font-bold text-text-primary tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
             Batch Members
           </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Connect with your batch peers and coordinate with your project group.
+          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
+            Connect with your batch peers and coordinate with your project
+            group.
           </p>
         </div>
       </div>
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
+        <div className="bg-rose-500/10 border border-rose-500/25 text-rose-500 rounded-xl px-4 py-3 text-xs sm:text-sm font-medium">
           {error}
         </div>
       )}
 
       {/* Summary Counters */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0">
             <FiUsers className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1 uppercase tracking-wider">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
               Total Students
             </p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {loading ? "..." : totalStudents}
             </h4>
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10 text-success">
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
             <FiStar className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1 uppercase tracking-wider">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
               Batch Mentors
             </p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {loading ? "..." : totalMentors}
             </h4>
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-warning/10 text-warning">
+        <div className={`${cardStyle} flex items-center gap-4`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0">
             <FiUsers className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-text-primary mb-1 uppercase tracking-wider">
+            <p className="text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">
               My Group Size
             </p>
-            <h4 className="text-2xl font-bold text-text-primary leading-none">
+            <h4 className="text-2xl font-black text-text-primary leading-none">
               {loading ? "..." : myGroupSize}
             </h4>
           </div>
@@ -175,24 +191,24 @@ export default function AllMembers() {
       </div>
 
       {/* Search & Group Toggle */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-surface border border-border p-4 rounded-xl shadow-sm">
+      <div className={`${cardStyle} flex flex-col sm:flex-row gap-4 p-4`}>
         <div className="relative flex-1">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
           <input
             type="text"
             placeholder="Search batch members..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-surface-subtle border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary transition-shadow"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
           />
         </div>
 
-        <div className="flex bg-surface-subtle border border-border rounded-lg p-1 shrink-0">
+        <div className="flex bg-surface-subtle border border-border rounded-xl p-1 shrink-0">
           <button
             onClick={() => setShowOnlyMyGroup(false)}
-            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${
+            className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
               !showOnlyMyGroup
-                ? "bg-surface border border-border shadow-sm text-text-primary"
+                ? "bg-surface border border-border shadow-xs text-text-primary"
                 : "text-text-muted hover:text-text-primary"
             }`}
           >
@@ -201,9 +217,9 @@ export default function AllMembers() {
 
           <button
             onClick={() => setShowOnlyMyGroup(true)}
-            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors flex items-center gap-1.5 ${
+            className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               showOnlyMyGroup
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-text-muted hover:text-text-primary"
             }`}
           >
@@ -214,7 +230,7 @@ export default function AllMembers() {
       </div>
 
       {/* Single Table */}
-      <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
+      <div className={`${cardStyle} overflow-hidden p-0!`}>
         <div className="overflow-x-auto">
           {loading ? (
             <div className="text-center py-12 text-sm text-text-muted">
@@ -223,68 +239,72 @@ export default function AllMembers() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-bold bg-surface-subtle">
-                  <th className="px-6 py-4 font-bold">Member</th>
-                  <th className="px-6 py-4 font-bold">Email</th>
-                  <th className="px-6 py-4 font-bold">Attendance</th>
-                  <th className="px-6 py-4 font-bold">Progress</th>
-                  <th className="px-6 py-4 font-bold">University</th>
+                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-mono font-bold bg-surface-subtle">
+                  <th className="px-4 py-3.5 font-bold">Member</th>
+                  <th className="px-4 py-3.5 font-bold">Email</th>
+                  <th className="px-4 py-3.5 font-bold">Attendance</th>
+                  <th className="px-4 py-3.5 font-bold">Progress</th>
+                  <th className="px-4 py-3.5 font-bold">University</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody className="divide-y divide-border/60 text-xs sm:text-sm">
                 {filteredMembers.map((member) => {
                   const user = member.user;
                   if (!user) return null;
 
                   const name = user.fullName || "Unknown";
+                  const uniAcronym = getUniversityAcronym(user.university);
 
                   return (
                     <tr
                       key={member._id}
-                      className="hover:bg-surface-subtle transition-colors group"
+                      className="hover:bg-surface-subtle/50 transition-colors group"
                     >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
                           <img
                             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
                               name,
                             )}&background=F3F4F6&color=374151`}
                             alt={`${name} profile`}
-                            className="w-8 h-8 rounded-full border border-border group-hover:border-primary/50 transition-colors shrink-0 object-cover"
+                            className="w-8 h-8 rounded-xl border border-border group-hover:border-primary/50 transition-colors shrink-0 object-cover shadow-2xs"
                           />
-                          <span className="text-sm font-bold text-text-primary">
+                          <span className="text-xs sm:text-sm font-bold text-text-primary truncate max-w-45">
                             {name}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-text-muted">
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-text-muted truncate max-w-50 block">
                           {user.email}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-medium text-text-primary">
+                      <td className="px-4 py-3">
+                        <span className="text-xs sm:text-sm font-semibold text-text-primary font-mono">
                           {member.attendance ?? "0%"}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-16 h-1.5 bg-surface-muted rounded-full overflow-hidden">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-16 h-2 bg-surface-subtle rounded-full overflow-hidden border border-border/60">
                             <div
-                              className="h-full bg-[#B91C1C] rounded-full"
+                              className="h-full bg-primary rounded-full transition-all duration-500"
                               style={{
                                 width: `${member.progress ?? 0}%`,
                               }}
                             />
                           </div>
-                          <span className="text-sm text-text-muted font-medium">
+                          <span className="text-xs text-text-muted font-mono font-semibold">
                             {member.progress ?? 0}%
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600">
-                          {user.university || "N/A"}
+                      <td className="px-4 py-3">
+                        <span
+                          className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                          title={user.university}
+                        >
+                          {uniAcronym}
                         </span>
                       </td>
                     </tr>
@@ -297,7 +317,7 @@ export default function AllMembers() {
           {/* Empty State */}
           {!loading && filteredMembers.length === 0 && (
             <div className="text-center py-12 px-4">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-muted text-text-muted mb-3 border border-border">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-surface-subtle text-text-muted mb-3 border border-border shadow-2xs">
                 <FiSearch className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-text-primary mb-1">

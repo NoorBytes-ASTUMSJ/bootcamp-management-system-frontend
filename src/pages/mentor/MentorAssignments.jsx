@@ -175,7 +175,7 @@ export default function MentorAssignments() {
     <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
             Assignments
           </h1>
           <p className="text-sm text-text-muted mt-1">
@@ -242,10 +242,10 @@ export default function MentorAssignments() {
                 )}
               </div>
 
-              <h3 className="text-lg font-bold text-text-primary mt-3">
+              <h3 className="text-base sm:text-lg font-bold text-text-primary mt-3 tracking-tight">
                 {item.title}
               </h3>
-              <p className="text-sm text-text-muted mt-1 line-clamp-2">
+              <p className="text-xs sm:text-sm text-text-muted mt-1 line-clamp-2">
                 {item.description}
               </p>
 
@@ -257,7 +257,7 @@ export default function MentorAssignments() {
               )}
             </div>
 
-            <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted">
+            <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted font-mono">
               <div className="flex items-center gap-1.5">
                 <FiCalendar className="w-4 h-4 text-primary" />
                 <span>
@@ -297,7 +297,7 @@ export default function MentorAssignments() {
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-text-muted hover:text-text-primary rounded-lg transition-colors"
+                className="p-2 rounded-xl text-text-muted hover:bg-surface hover:text-text-primary transition-colors cursor-pointer border border-transparent hover:border-border"
               >
                 <FiX className="w-5 h-5" />
               </button>
@@ -321,7 +321,7 @@ export default function MentorAssignments() {
                   placeholder="e.g. State Management in React"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  className="w-full px-3.5 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
                 />
               </div>
 
@@ -378,7 +378,7 @@ export default function MentorAssignments() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1.5">
                   Description & Instructions
                 </label>
                 <textarea
@@ -386,15 +386,15 @@ export default function MentorAssignments() {
                   placeholder="Provide instructions or requirements for your students..."
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none"
+                  className="w-full px-3.5 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary focus:border-primary transition outline-none resize-none shadow-2xs"
                 ></textarea>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-border text-text-secondary hover:bg-surface-subtle font-bold text-sm rounded-lg transition-colors"
+                  className="px-4 py-2.5 border border-border bg-surface text-text-primary hover:bg-surface-subtle font-semibold text-xs rounded-xl transition-colors shadow-xs cursor-pointer"
                 >
                   Cancel
                 </button>

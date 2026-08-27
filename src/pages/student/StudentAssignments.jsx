@@ -193,6 +193,9 @@ export default function StudentAssignments() {
     );
   }
 
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4";
+
   return (
     <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
       <main className="px-8 py-6 space-y-6 max-w-7xl mx-auto">
