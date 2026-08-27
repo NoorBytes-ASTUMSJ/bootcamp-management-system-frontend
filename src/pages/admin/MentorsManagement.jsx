@@ -1,5 +1,5 @@
-
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import AdminSidebar from "../../components/layout/AdminSidebar";
 import API from "../../services/api";
 import {
   Plus,
@@ -89,8 +89,7 @@ export default function MentorsManagement() {
 
       const response = await API.get("/members/staff", { params });
 
-      const data =
-        response.data?.data?.staff || response.data?.staff || [];
+      const data = response.data?.data?.staff || response.data?.staff || [];
 
       setStaff(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -111,8 +110,7 @@ export default function MentorsManagement() {
         },
       });
 
-      const data =
-        response.data?.data?.users || response.data?.users || [];
+      const data = response.data?.data?.users || response.data?.users || [];
 
       setCandidateUsers(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -177,9 +175,7 @@ export default function MentorsManagement() {
     (person) => person.role === "mentor",
   ).length;
 
-  const totalAdmins = staff.filter(
-    (person) => person.role === "admin",
-  ).length;
+  const totalAdmins = staff.filter((person) => person.role === "admin").length;
 
   const openAddForm = () => {
     setEditingStaff(null);
@@ -288,14 +284,11 @@ export default function MentorsManagement() {
           await loadStaff();
         }
       } else {
-        const response = await API.post(
-          `/members/approve/${formData.user}`,
-          {
-            role: formData.role,
-            status: formData.status,
-            joinedAt: formData.joinedAt,
-          },
-        );
+        const response = await API.post(`/members/approve/${formData.user}`, {
+          role: formData.role,
+          status: formData.status,
+          joinedAt: formData.joinedAt,
+        });
 
         const created =
           response.data?.data?.member ||
@@ -325,9 +318,7 @@ export default function MentorsManagement() {
 
       await API.delete(`/members/${deleteTarget._id}`);
 
-      setStaff((prev) =>
-        prev.filter((p) => p._id !== deleteTarget._id),
-      );
+      setStaff((prev) => prev.filter((p) => p._id !== deleteTarget._id));
 
       if (selectedStaff?._id === deleteTarget._id) {
         setSelectedStaff(null);
@@ -342,9 +333,9 @@ export default function MentorsManagement() {
   };
 
   return (
-    <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+    <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
+      <div className="flex-1 flex flex-col min-w-0">
+        <main className="px-8 py-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
@@ -358,15 +349,16 @@ export default function MentorsManagement() {
 
             <button
               onClick={openAddForm}
-              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-colors cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5"
             >
-              <Plus size={13} />
+              <Plus size={14} />
               <span>Add Mentor</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+          {/* Metric Cards with Modern Hover Effects */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                 TOTAL STAFF
               </span>
@@ -376,7 +368,7 @@ export default function MentorsManagement() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                 MENTORS
               </span>
@@ -386,7 +378,7 @@ export default function MentorsManagement() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                 ADMINS
               </span>
@@ -398,20 +390,20 @@ export default function MentorsManagement() {
           </div>
 
           <div
-            className={`grid grid-cols-1 lg:grid-cols-12 gap-5 items-start ${
+            className={`grid grid-cols-1 lg:grid-cols-12 gap-6 items-start ${
               selectedStaff ? "transition-all duration-300" : ""
             }`}
           >
             <div
-              className={`space-y-3 ${
+              className={`space-y-4 ${
                 selectedStaff ? "lg:col-span-8" : "lg:col-span-12"
               }`}
             >
-              <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-3">
                 <div className="flex-1 min-w-[200px] relative">
                   <Search
                     size={13}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
                   />
 
                   <input
@@ -419,7 +411,7 @@ export default function MentorsManagement() {
                     placeholder="Search by name, email, phone or university..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                   />
                 </div>
 
@@ -427,16 +419,12 @@ export default function MentorsManagement() {
                   <select
                     value={roleFilter}
                     onChange={(e) => setRoleFilter(e.target.value)}
-                    className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer capitalize"
+                    className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer capitalize shadow-xs font-medium"
                   >
                     <option value="ALL">Filter by Role</option>
 
                     {ROLE_OPTIONS.map((role) => (
-                      <option
-                        key={role}
-                        value={role}
-                        className="capitalize"
-                      >
+                      <option key={role} value={role} className="capitalize">
                         {role}
                       </option>
                     ))}
@@ -444,21 +432,17 @@ export default function MentorsManagement() {
 
                   <ChevronDown
                     size={12}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
                 </div>
 
                 <div className="relative">
                   <select
                     value={universityFilter}
-                    onChange={(e) =>
-                      setUniversityFilter(e.target.value)
-                    }
-                    className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                    onChange={(e) => setUniversityFilter(e.target.value)}
+                    className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                   >
-                    <option value="ALL">
-                      Filter by University
-                    </option>
+                    <option value="ALL">Filter by University</option>
 
                     {uniqueUniversities.map((uni) => (
                       <option key={uni} value={uni}>
@@ -469,12 +453,12 @@ export default function MentorsManagement() {
 
                   <ChevronDown
                     size={12}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-2xs">
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
                 {loading ? (
                   <div className="flex items-center justify-center py-16 gap-2 text-xs text-neutral-500">
                     <Loader2
@@ -489,14 +473,12 @@ export default function MentorsManagement() {
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
                         <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                          <th className="py-2.5 px-4">NAME</th>
-                          <th className="py-2.5 px-4">EMAIL</th>
-                          <th className="py-2.5 px-4">ROLE BADGE</th>
-                          <th className="py-2.5 px-4">UNIVERSITY</th>
-                          <th className="py-2.5 px-4">GENDER</th>
-                          <th className="py-2.5 px-4 text-right">
-                            ACTIONS
-                          </th>
+                          <th className="py-3.5 px-5">NAME</th>
+                          <th className="py-3.5 px-5">EMAIL</th>
+                          <th className="py-3.5 px-5">ROLE BADGE</th>
+                          <th className="py-3.5 px-5">UNIVERSITY</th>
+                          <th className="py-3.5 px-5">GENDER</th>
+                          <th className="py-3.5 px-5 text-right">ACTIONS</th>
                         </tr>
                       </thead>
 
@@ -505,7 +487,7 @@ export default function MentorsManagement() {
                           <tr>
                             <td
                               colSpan={6}
-                              className="text-center py-10 text-neutral-400 text-xs"
+                              className="text-center py-12 text-neutral-400 text-xs"
                             >
                               No staff found.
                             </td>
@@ -514,19 +496,17 @@ export default function MentorsManagement() {
                           filteredStaff.map((person) => (
                             <tr
                               key={person._id}
-                              onClick={() =>
-                                setSelectedStaff(person)
-                              }
+                              onClick={() => setSelectedStaff(person)}
                               className={`hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
                                 selectedStaff?._id === person._id
-                                  ? "bg-[#FEF2F2]/50 dark:bg-primary/10"
+                                  ? "bg-neutral-100/70 dark:bg-neutral-800/60"
                                   : ""
                               }`}
                             >
-                              <td className="py-3 px-4">
-                                <div className="flex items-center gap-2.5">
-                                  <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-500 font-bold text-[10px] shrink-0">
-                                    <User size={12} />
+                              <td className="py-4 px-5">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-500 font-bold text-[10px] shrink-0">
+                                    <User size={14} />
                                   </div>
 
                                   <span className="font-semibold text-neutral-900 dark:text-neutral-100">
@@ -535,13 +515,13 @@ export default function MentorsManagement() {
                                 </div>
                               </td>
 
-                              <td className="py-3 px-4 text-neutral-500 dark:text-neutral-400">
+                              <td className="py-4 px-5 text-neutral-500 dark:text-neutral-400">
                                 {person.email || "N/A"}
                               </td>
 
-                              <td className="py-3 px-4">
+                              <td className="py-4 px-5">
                                 <span
-                                  className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold capitalize ${
+                                  className={`inline-block px-2.5 py-0.5 rounded text-[10px] font-semibold capitalize ${
                                     ROLE_STYLES[person.role] || ""
                                   }`}
                                 >
@@ -549,15 +529,15 @@ export default function MentorsManagement() {
                                 </span>
                               </td>
 
-                              <td className="py-3 px-4 text-neutral-600 dark:text-neutral-300">
+                              <td className="py-4 px-5 text-neutral-600 dark:text-neutral-300">
                                 {person.university || "N/A"}
                               </td>
 
-                              <td className="py-3 px-4 text-neutral-600 dark:text-neutral-300 capitalize">
+                              <td className="py-4 px-5 text-neutral-600 dark:text-neutral-300 capitalize">
                                 {person.gender || "N/A"}
                               </td>
 
-                              <td className="py-3 px-4 text-right">
+                              <td className="py-4 px-5 text-right">
                                 <div className="flex items-center justify-end gap-2 text-neutral-400">
                                   <button
                                     onClick={(e) => {
@@ -565,9 +545,9 @@ export default function MentorsManagement() {
                                       openEditForm(person);
                                     }}
                                     title="Edit"
-                                    className="p-1 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                    className="p-1.5 rounded-lg hover:text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 transition-colors cursor-pointer"
                                   >
-                                    <Pencil size={13} />
+                                    <Pencil size={14} />
                                   </button>
 
                                   <button
@@ -576,9 +556,9 @@ export default function MentorsManagement() {
                                       setDeleteTarget(person);
                                     }}
                                     title="Delete"
-                                    className="p-1 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                    className="p-1.5 rounded-lg hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
                                   >
-                                    <Trash2 size={13} />
+                                    <Trash2 size={14} />
                                   </button>
                                 </div>
                               </td>
@@ -590,7 +570,7 @@ export default function MentorsManagement() {
                   </div>
                 )}
 
-                <div className="px-4 py-2.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">
+                <div className="px-5 py-3.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 bg-neutral-50/30 dark:bg-neutral-800/20">
                   <span>
                     Showing {filteredStaff.length} of {totalStaff} staff
                   </span>
@@ -599,16 +579,16 @@ export default function MentorsManagement() {
             </div>
 
             {selectedStaff && (
-              <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-5 shadow-2xs relative space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-6 shadow-md shadow-neutral-200/50 dark:shadow-none relative space-y-4 animate-in fade-in zoom-in-95 duration-200 transition-all">
                 <button
                   onClick={() => setSelectedStaff(null)}
-                  className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer"
+                  className="absolute top-5 right-5 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer p-1"
                   title="Close Details"
                 >
                   <X size={15} />
                 </button>
 
-                <div className="flex flex-col items-center text-center space-y-1.5 pt-2">
+                <div className="flex flex-col items-center text-center space-y-2 pt-1">
                   <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-500">
                     <User size={22} />
                   </div>
@@ -626,69 +606,61 @@ export default function MentorsManagement() {
                   </span>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800 text-xs">
+                <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800 text-xs">
                   <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block mb-1">
                     CONTACT INFORMATION
                   </span>
 
-                  <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-                    <Mail
-                      size={12}
-                      className="text-neutral-400 shrink-0"
-                    />
+                  <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                    <Mail size={13} className="text-neutral-400 shrink-0" />
                     <span>{selectedStaff.email}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-                    <Phone
-                      size={12}
-                      className="text-neutral-400 shrink-0"
-                    />
-                    <span>
-                      {selectedStaff.phone || "N/A"}
-                    </span>
+                  <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                    <Phone size={13} className="text-neutral-400 shrink-0" />
+                    <span>{selectedStaff.phone || "N/A"}</span>
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                   <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                     PROFILE DETAILS
                   </span>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                       <span className="text-[9px] text-neutral-400 block mb-0.5">
                         University
                       </span>
 
-                      <span className="text-[11px] font-medium">
+                      <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
                         {selectedStaff.university || "N/A"}
                       </span>
                     </div>
 
-                    <div className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
+                    <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                       <span className="text-[9px] text-neutral-400 block mb-0.5">
                         Gender
                       </span>
 
-                      <span className="text-[11px] font-medium capitalize">
+                      <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200 capitalize">
                         {selectedStaff.gender || "N/A"}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                <div className="grid grid-cols-2 gap-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                   <button
                     onClick={() => openEditForm(selectedStaff)}
-                    className="py-1.5 rounded-md border border-neutral-200 dark:border-neutral-700 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                    className="py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shadow-xs"
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => setDeleteTarget(selectedStaff)}
-                    className="py-1.5 rounded-md border border-red-200 dark:border-red-900/50 text-[#B91C1C] text-xs font-medium hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                    className="py-2 rounded-xl border border-red-200 dark:border-red-900/50 text-[#B91C1C] text-xs font-medium hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer shadow-xs"
                   >
                     Delete
                   </button>
@@ -700,9 +672,9 @@ export default function MentorsManagement() {
       </div>
 
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs px-4">
+          <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
               <div>
                 <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
                   {editingStaff ? "Edit Mentor" : "Add Mentor"}
@@ -717,32 +689,25 @@ export default function MentorsManagement() {
 
               <button
                 onClick={closeForm}
-                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-white cursor-pointer"
+                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-white cursor-pointer p-1"
               >
                 <X size={17} />
               </button>
             </div>
 
-            <form
-              onSubmit={handleSubmit}
-              className="p-5 space-y-5"
-            >
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   Mentor User
                 </label>
 
                 {editingStaff ? (
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-md text-xs bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300">
-                    <User
-                      size={13}
-                      className="text-neutral-400 shrink-0"
-                    />
+                  <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300">
+                    <User size={14} className="text-neutral-400 shrink-0" />
 
                     <div className="flex flex-col">
-                      <span className="font-medium">
-                        {selectedUserLabel?.fullName ||
-                          "Unknown user"}
+                      <span className="font-medium text-neutral-900 dark:text-white">
+                        {selectedUserLabel?.fullName || "Unknown user"}
                       </span>
 
                       <span className="text-[10px] text-neutral-400">
@@ -753,20 +718,15 @@ export default function MentorsManagement() {
                 ) : (
                   <div className="relative">
                     <div
-                      onClick={() =>
-                        setUserDropdownOpen((open) => !open)
-                      }
-                      className="flex items-center gap-2 px-3 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 cursor-pointer"
+                      onClick={() => setUserDropdownOpen((open) => !open)}
+                      className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 cursor-pointer shadow-xs"
                     >
-                      <Search
-                        size={13}
-                        className="text-neutral-400 shrink-0"
-                      />
+                      <Search size={14} className="text-neutral-400 shrink-0" />
 
                       {selectedUserLabel ? (
-                        <span className="flex-1 truncate">
+                        <span className="flex-1 truncate text-neutral-900 dark:text-white font-medium">
                           {selectedUserLabel.fullName}{" "}
-                          <span className="text-neutral-400">
+                          <span className="text-neutral-400 font-normal">
                             ({selectedUserLabel.email})
                           </span>
                         </span>
@@ -777,25 +737,21 @@ export default function MentorsManagement() {
                       )}
 
                       <ChevronDown
-                        size={12}
+                        size={13}
                         className="text-neutral-400 shrink-0"
                       />
                     </div>
 
                     {userDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-700 rounded-md shadow-lg z-20 p-1 space-y-1">
+                      <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl z-20 p-1.5 space-y-1">
                         <div className="p-1">
                           <input
                             type="text"
                             placeholder="Search mentor applicants..."
                             value={userSearch}
-                            onChange={(e) =>
-                              setUserSearch(e.target.value)
-                            }
-                            onClick={(e) =>
-                              e.stopPropagation()
-                            }
-                            className="w-full px-2 py-1 text-xs bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded focus:outline-none"
+                            onChange={(e) => setUserSearch(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full px-3 py-1.5 text-xs bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg focus:outline-none"
                           />
                         </div>
 
@@ -812,9 +768,9 @@ export default function MentorsManagement() {
                             <div
                               key={user._id}
                               onClick={() => pickUser(user)}
-                              className="px-2 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded cursor-pointer text-xs"
+                              className="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg cursor-pointer text-xs"
                             >
-                              <div className="font-medium">
+                              <div className="font-medium text-neutral-900 dark:text-white">
                                 {user.fullName}
                               </div>
 
@@ -830,7 +786,7 @@ export default function MentorsManagement() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                     Role
@@ -840,14 +796,10 @@ export default function MentorsManagement() {
                     name="role"
                     value={formData.role}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 capitalize"
+                    className="w-full px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white capitalize shadow-xs font-medium cursor-pointer"
                   >
                     {ROLE_OPTIONS.map((role) => (
-                      <option
-                        key={role}
-                        value={role}
-                        className="capitalize"
-                      >
+                      <option key={role} value={role} className="capitalize">
                         {role}
                       </option>
                     ))}
@@ -863,7 +815,7 @@ export default function MentorsManagement() {
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 capitalize"
+                    className="w-full px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white capitalize shadow-xs font-medium cursor-pointer"
                   >
                     {STATUS_OPTIONS.map((status) => (
                       <option
@@ -888,21 +840,21 @@ export default function MentorsManagement() {
                   name="joinedAt"
                   value={formData.joinedAt}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700"
+                  className="w-full px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white shadow-xs font-medium"
                 />
               </div>
 
-              <div className="w-full px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 text-[11px] text-neutral-400">
-                Member ID is generated automatically by the
-                backend when the mentor is added.
+              <div className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-100/70 dark:bg-neutral-800/40 border border-neutral-200/60 dark:border-neutral-800 text-[11px] text-neutral-500 dark:text-neutral-400">
+                Member ID is generated automatically by the backend when the
+                mentor is added.
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                 <button
                   type="button"
                   onClick={closeForm}
                   disabled={formLoading}
-                  className="px-4 py-1.5 rounded-md text-xs font-medium border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer shadow-xs transition-colors"
                 >
                   Cancel
                 </button>
@@ -910,18 +862,13 @@ export default function MentorsManagement() {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium bg-[#B91C1C] hover:bg-[#991B1B] text-white cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium bg-[#B91C1C] hover:bg-[#991B1B] text-white cursor-pointer shadow-xs transition-colors"
                 >
                   {formLoading && (
-                    <Loader2
-                      size={13}
-                      className="animate-spin"
-                    />
+                    <Loader2 size={13} className="animate-spin" />
                   )}
 
-                  <span>
-                    {editingStaff ? "Save Changes" : "Add Mentor"}
-                  </span>
+                  <span>{editingStaff ? "Save Changes" : "Add Mentor"}</span>
                 </button>
               </div>
             </form>
@@ -930,8 +877,8 @@ export default function MentorsManagement() {
       )}
 
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="w-full max-w-sm bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xl p-5 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs px-4">
+          <div className="w-full max-w-sm bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xl p-6 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/50 text-[#B91C1C] flex items-center justify-center shrink-0">
                 <AlertTriangle size={18} />
@@ -942,19 +889,22 @@ export default function MentorsManagement() {
                   Remove Staff Member
                 </h3>
 
-                <p className="text-[11px] text-neutral-400">
+                <p className="text-[11px] text-neutral-400 mt-0.5">
                   Are you sure you want to remove{" "}
-                  {deleteTarget.fullName}?
+                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                    {deleteTarget.fullName}
+                  </span>
+                  ?
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteLoading}
-                className="px-3 py-1.5 rounded-md text-xs font-medium border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl text-xs font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer shadow-xs transition-colors"
               >
                 Cancel
               </button>
@@ -963,13 +913,10 @@ export default function MentorsManagement() {
                 type="button"
                 onClick={confirmDelete}
                 disabled={deleteLoading}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium bg-[#B91C1C] hover:bg-[#991B1B] text-white cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium bg-red-600 hover:bg-red-700 text-white cursor-pointer shadow-xs transition-colors"
               >
                 {deleteLoading && (
-                  <Loader2
-                    size={12}
-                    className="animate-spin"
-                  />
+                  <Loader2 size={12} className="animate-spin" />
                 )}
 
                 <span>Delete</span>
@@ -981,4 +928,3 @@ export default function MentorsManagement() {
     </div>
   );
 }
-

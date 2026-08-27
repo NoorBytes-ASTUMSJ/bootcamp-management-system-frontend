@@ -16,6 +16,8 @@ import {
   Loader2,
   BookOpen,
   Briefcase,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import API from "../../services/api";
@@ -32,6 +34,10 @@ export default function MentorRegister({
 
   const [isOpen, setIsOpen] = useState(true);
   const [checkingStatus, setCheckingStatus] = useState(true);
+
+  // Toggle visibility states for password fields
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Real-time Global Registration Status Listener
   useEffect(() => {
@@ -184,7 +190,7 @@ export default function MentorRegister({
     "w-full bg-surface border border-border rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs cursor-text";
 
   const inputWithIconStyle =
-    "w-full bg-surface border border-border rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs cursor-text";
+    "w-full bg-surface border border-border rounded-xl pl-10 pr-10 py-2.5 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs cursor-text";
 
   const primaryBtnStyle =
     "w-full py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover active:scale-[0.99] text-primary-foreground text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-primary/20 cursor-pointer disabled:opacity-60 text-center flex items-center justify-center select-none";
@@ -315,7 +321,7 @@ export default function MentorRegister({
                         className="absolute left-3.5 text-text-muted pointer-events-none"
                       />
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         name="password"
                         required
                         placeholder="••••••••"
@@ -323,6 +329,17 @@ export default function MentorRegister({
                         onChange={handleChange}
                         className={inputWithIconStyle}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3.5 text-text-muted hover:text-primary transition-colors cursor-pointer select-none"
+                      >
+                        {showPassword ? (
+                          <Eye size={16} />
+                        ) : (
+                          <EyeOff size={16} />
+                        )}
+                      </button>
                     </div>
                   </div>
 
@@ -336,7 +353,7 @@ export default function MentorRegister({
                         className="absolute left-3.5 text-text-muted pointer-events-none"
                       />
                       <input
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
                         required
                         placeholder="••••••••"
@@ -344,6 +361,19 @@ export default function MentorRegister({
                         onChange={handleChange}
                         className={inputWithIconStyle}
                       />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute right-3.5 text-text-muted hover:text-primary transition-colors cursor-pointer select-none"
+                      >
+                        {showConfirmPassword ? (
+                          <Eye size={16} />
+                        ) : (
+                          <EyeOff size={16} />
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>

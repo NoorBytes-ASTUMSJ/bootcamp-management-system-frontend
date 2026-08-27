@@ -1,7 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
-
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import API from "../../services/api";
-
 import {
   Users,
   Plus,
@@ -237,11 +235,6 @@ export default function StudentsDashboard() {
   // ==================================================
   // BATCH HELPER
   // ==================================================
-  // Batch lives on the User document (user.batch), not on the
-  // Member/Student record. GET /members/students populates
-  // student.user.batch as a full { _id, name, ... } object, so we
-  // read from there first and fall back to student.batch just in
-  // case a caller ever passes a differently-shaped record in.
 
   const getBatchName = (student) => {
     const batch = student?.user?.batch ?? student?.batch;
@@ -450,10 +443,6 @@ export default function StudentsDashboard() {
     try {
       setFormLoading(true);
 
-      // -----------------------------
-      // EDIT STUDENT
-      // -----------------------------
-
       if (editingStudent) {
         const payload = {
           status: formData.status,
@@ -484,12 +473,7 @@ export default function StudentsDashboard() {
         } else {
           await loadStudents();
         }
-      }
-
-      // -----------------------------
-      // ADD / APPROVE STUDENT
-      // -----------------------------
-      else {
+      } else {
         const response = await API.post(`/members/approve/${formData.user}`, {
           role: "student",
           status: formData.status,
@@ -550,9 +534,9 @@ export default function StudentsDashboard() {
   // ==================================================
 
   return (
-    <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+    <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
+      <div className="flex-1 flex flex-col min-w-0">
+        <main className="px-8 py-6 space-y-6">
           {/* HEADER */}
 
           <div className="flex items-center justify-between">
@@ -568,7 +552,7 @@ export default function StudentsDashboard() {
 
             <button
               onClick={openAddForm}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-colors cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5"
             >
               <Plus size={14} />
               <span>Add Student</span>
@@ -577,8 +561,8 @@ export default function StudentsDashboard() {
 
           {/* STATS */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   TOTAL STUDENTS
@@ -587,12 +571,12 @@ export default function StudentsDashboard() {
                 <Users size={16} className="text-neutral-400" />
               </div>
 
-              <div className="text-2xl font-black tracking-tight mt-3">
+              <div className="text-2xl font-black tracking-tight mt-3 text-neutral-900 dark:text-white">
                 {totalStudents}
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   ACTIVE STUDENTS
@@ -601,12 +585,12 @@ export default function StudentsDashboard() {
                 <CheckCircle2 size={16} className="text-neutral-400" />
               </div>
 
-              <div className="text-2xl font-black tracking-tight mt-3">
+              <div className="text-2xl font-black tracking-tight mt-3 text-neutral-900 dark:text-white">
                 {activeStudents}
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   GRADUATED
@@ -615,12 +599,12 @@ export default function StudentsDashboard() {
                 <GraduationCap size={16} className="text-neutral-400" />
               </div>
 
-              <div className="text-2xl font-black tracking-tight mt-3">
+              <div className="text-2xl font-black tracking-tight mt-3 text-neutral-900 dark:text-white">
                 {graduatedStudents}
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   SUSPENDED
@@ -629,7 +613,7 @@ export default function StudentsDashboard() {
                 <ShieldCheck size={16} className="text-neutral-400" />
               </div>
 
-              <div className="text-2xl font-black tracking-tight mt-3">
+              <div className="text-2xl font-black tracking-tight mt-3 text-neutral-900 dark:text-white">
                 {suspendedStudents}
               </div>
             </div>
@@ -637,23 +621,23 @@ export default function StudentsDashboard() {
 
           {/* MAIN AREA */}
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* TABLE */}
 
             <div
-              className={`space-y-3 ${
+              className={`space-y-4 ${
                 selectedStudent ? "lg:col-span-8" : "lg:col-span-12"
               }`}
             >
               {/* FILTERS */}
 
-              <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-3">
                 {/* SEARCH */}
 
-                <div className="flex-1 min-w-50 relative">
+                <div className="flex-1 min-w-[200px] relative">
                   <Search
                     size={13}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
                   />
 
                   <input
@@ -661,7 +645,7 @@ export default function StudentsDashboard() {
                     placeholder="Search by name, email, phone or member ID..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                   />
                 </div>
 
@@ -671,7 +655,7 @@ export default function StudentsDashboard() {
                   <select
                     value={universityFilter}
                     onChange={(e) => setUniversityFilter(e.target.value)}
-                    className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                    className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                   >
                     <option value="ALL">Filter by University</option>
 
@@ -684,7 +668,7 @@ export default function StudentsDashboard() {
 
                   <ChevronDown
                     size={12}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
                 </div>
 
@@ -694,7 +678,7 @@ export default function StudentsDashboard() {
                   <select
                     value={genderFilter}
                     onChange={(e) => setGenderFilter(e.target.value)}
-                    className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer capitalize"
+                    className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer capitalize shadow-xs font-medium"
                   >
                     <option value="ALL">Filter by Gender</option>
 
@@ -711,7 +695,7 @@ export default function StudentsDashboard() {
 
                   <ChevronDown
                     size={12}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
                 </div>
 
@@ -721,7 +705,7 @@ export default function StudentsDashboard() {
                   <select
                     value={batchFilter}
                     onChange={(e) => setBatchFilter(e.target.value)}
-                    className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                    className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                   >
                     <option value="ALL">Filter by Batch</option>
 
@@ -734,7 +718,7 @@ export default function StudentsDashboard() {
 
                   <ChevronDown
                     size={12}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
                 </div>
 
@@ -744,7 +728,7 @@ export default function StudentsDashboard() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer capitalize"
+                    className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none focus:border-[#B91C1C] cursor-pointer capitalize shadow-xs font-medium"
                   >
                     <option value="ALL">Filter by Status</option>
 
@@ -761,14 +745,14 @@ export default function StudentsDashboard() {
 
                   <ChevronDown
                     size={12}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
                 </div>
               </div>
 
               {/* TABLE */}
 
-              <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-2xs">
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
                 {loading ? (
                   <div className="flex items-center justify-center py-16 gap-2 text-xs text-neutral-500">
                     <Loader2
@@ -783,13 +767,13 @@ export default function StudentsDashboard() {
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
                         <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                          <th className="py-2.5 px-4">STUDENT</th>
-                          <th className="py-2.5 px-4">EMAIL</th>
-                          <th className="py-2.5 px-4">BATCH</th>
-                          <th className="py-2.5 px-4">ATTENDANCE</th>
-                          <th className="py-2.5 px-4">PROGRESS</th>
-                          <th className="py-2.5 px-4">UNIVERSITY</th>
-                          <th className="py-2.5 px-4 text-right">ACTION</th>
+                          <th className="py-3.5 px-5">STUDENT</th>
+                          <th className="py-3.5 px-5">EMAIL</th>
+                          <th className="py-3.5 px-5">BATCH</th>
+                          <th className="py-3.5 px-5">ATTENDANCE</th>
+                          <th className="py-3.5 px-5">PROGRESS</th>
+                          <th className="py-3.5 px-5">UNIVERSITY</th>
+                          <th className="py-3.5 px-5 text-right">ACTION</th>
                         </tr>
                       </thead>
 
@@ -798,7 +782,7 @@ export default function StudentsDashboard() {
                           <tr>
                             <td
                               colSpan={7}
-                              className="text-center py-10 text-neutral-400 text-xs"
+                              className="text-center py-12 text-neutral-400 text-xs"
                             >
                               No students found.
                             </td>
@@ -822,13 +806,13 @@ export default function StudentsDashboard() {
                                 onClick={() => setSelectedStudent(student)}
                                 className={`hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
                                   selectedStudent?._id === student._id
-                                    ? "bg-[#FEF2F2]/50 dark:bg-primary/10"
+                                    ? "bg-neutral-100/70 dark:bg-neutral-800/60"
                                     : ""
                                 }`}
                               >
-                                <td className="py-3 px-4">
-                                  <div className="flex items-center gap-2.5">
-                                    <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-neutral-500 dark:text-neutral-400">
+                                <td className="py-4 px-5">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-neutral-500 dark:text-neutral-400">
                                       {initials}
                                     </div>
 
@@ -837,34 +821,34 @@ export default function StudentsDashboard() {
                                         {user.fullName || "Unknown"}
                                       </span>
 
-                                      <span className="text-[10px] text-neutral-400">
+                                      <span className="text-[10px] text-neutral-400 mt-0.5">
                                         {student.memberId || "Pending ID"}
                                       </span>
                                     </div>
                                   </div>
                                 </td>
 
-                                <td className="py-3 px-4 text-neutral-600 dark:text-neutral-300">
+                                <td className="py-4 px-5 text-neutral-600 dark:text-neutral-300">
                                   {user.email || "N/A"}
                                 </td>
 
-                                <td className="py-3 px-4 text-neutral-600 dark:text-neutral-300">
+                                <td className="py-4 px-5 text-neutral-600 dark:text-neutral-300">
                                   {batchName || "N/A"}
                                 </td>
 
-                                <td className="py-3 px-4 text-neutral-400">
+                                <td className="py-4 px-5 text-neutral-400">
                                   N/A
                                 </td>
 
-                                <td className="py-3 px-4 text-neutral-400">
+                                <td className="py-4 px-5 text-neutral-400">
                                   N/A
                                 </td>
 
-                                <td className="py-3 px-4 text-neutral-600 dark:text-neutral-300">
+                                <td className="py-4 px-5 text-neutral-600 dark:text-neutral-300">
                                   {user.university || "N/A"}
                                 </td>
 
-                                <td className="py-3 px-4 text-right">
+                                <td className="py-4 px-5 text-right">
                                   <div className="flex items-center justify-end gap-2 text-neutral-400">
                                     <button
                                       onClick={(e) => {
@@ -872,9 +856,9 @@ export default function StudentsDashboard() {
                                         openEditForm(student);
                                       }}
                                       title="Edit"
-                                      className="p-1 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                      className="p-1.5 rounded-lg hover:text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 transition-colors cursor-pointer"
                                     >
-                                      <Pencil size={13} />
+                                      <Pencil size={14} />
                                     </button>
 
                                     <button
@@ -883,9 +867,9 @@ export default function StudentsDashboard() {
                                         setDeleteTarget(student);
                                       }}
                                       title="Delete"
-                                      className="p-1 hover:text-[#B91C1C] transition-colors cursor-pointer"
+                                      className="p-1.5 rounded-lg hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
                                     >
-                                      <Trash2 size={13} />
+                                      <Trash2 size={14} />
                                     </button>
                                   </div>
                                 </td>
@@ -900,7 +884,7 @@ export default function StudentsDashboard() {
 
                 {/* FOOTER */}
 
-                <div className="px-4 py-2.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">
+                <div className="px-5 py-3.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 bg-neutral-50/30 dark:bg-neutral-800/20">
                   <span>
                     Showing {filteredStudents.length} of {totalStudents}{" "}
                     students
@@ -912,10 +896,10 @@ export default function StudentsDashboard() {
             {/* DETAILS */}
 
             {selectedStudent && (
-              <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-5 shadow-2xs relative space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              <div className="lg:col-span-4 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-6 shadow-md shadow-neutral-200/50 dark:shadow-none relative space-y-4 animate-in fade-in zoom-in-95 duration-200 transition-all">
                 <button
                   onClick={() => setSelectedStudent(null)}
-                  className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer"
+                  className="absolute top-5 right-5 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer p-1"
                   title="Close Details"
                 >
                   <X size={15} />
@@ -935,7 +919,7 @@ export default function StudentsDashboard() {
                     <>
                       {/* PROFILE */}
 
-                      <div className="flex flex-col items-center text-center space-y-1.5 pt-2">
+                      <div className="flex flex-col items-center text-center space-y-2 pt-1">
                         <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-500 font-bold">
                           {initials}
                         </div>
@@ -959,23 +943,23 @@ export default function StudentsDashboard() {
 
                       {/* CONTACT */}
 
-                      <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                      <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block mb-1">
                           CONTACT INFORMATION
                         </span>
 
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                        <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
                           <Mail
-                            size={12}
+                            size={13}
                             className="text-neutral-400 shrink-0"
                           />
 
                           <span>{user.email || "N/A"}</span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                        <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
                           <Phone
-                            size={12}
+                            size={13}
                             className="text-neutral-400 shrink-0"
                           />
 
@@ -985,48 +969,48 @@ export default function StudentsDashboard() {
 
                       {/* PROFILE DETAILS */}
 
-                      <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                      <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           PROFILE DETAILS
                         </span>
 
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
+                        <div className="grid grid-cols-2 gap-2.5">
+                          <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                             <span className="text-[9px] text-neutral-400 block mb-0.5">
                               University
                             </span>
 
-                            <span className="text-[11px] font-medium">
+                            <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
                               {user.university || "N/A"}
                             </span>
                           </div>
 
-                          <div className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
+                          <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                             <span className="text-[9px] text-neutral-400 block mb-0.5">
                               Gender
                             </span>
 
-                            <span className="text-[11px] font-medium capitalize">
+                            <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200 capitalize">
                               {user.gender || "N/A"}
                             </span>
                           </div>
 
-                          <div className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
+                          <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                             <span className="text-[9px] text-neutral-400 block mb-0.5">
                               Member ID
                             </span>
 
-                            <span className="text-[11px] font-medium">
+                            <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
                               {selectedStudent.memberId || "N/A"}
                             </span>
                           </div>
 
-                          <div className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
+                          <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                             <span className="text-[9px] text-neutral-400 block mb-0.5">
                               Status
                             </span>
 
-                            <span className="text-[11px] font-medium capitalize">
+                            <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200 capitalize">
                               {selectedStudent.status || "N/A"}
                             </span>
                           </div>
@@ -1035,13 +1019,16 @@ export default function StudentsDashboard() {
 
                       {/* MEMBERSHIP */}
 
-                      <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                      <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           MEMBERSHIP
                         </span>
 
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-                          <Calendar size={12} className="text-neutral-400" />
+                        <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                          <Calendar
+                            size={13}
+                            className="text-neutral-400 shrink-0"
+                          />
 
                           <span>
                             Joined:{" "}
@@ -1056,15 +1043,15 @@ export default function StudentsDashboard() {
 
                       {/* BATCH */}
 
-                      <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                      <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           BATCH
                         </span>
 
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                        <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
                           <GraduationCap
-                            size={12}
-                            className="text-neutral-400"
+                            size={13}
+                            className="text-neutral-400 shrink-0"
                           />
 
                           <span>
@@ -1076,13 +1063,16 @@ export default function StudentsDashboard() {
 
                       {/* MENTOR */}
 
-                      <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                      <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           ASSIGNED MENTOR
                         </span>
 
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-                          <User size={12} className="text-neutral-400" />
+                        <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                          <User
+                            size={13}
+                            className="text-neutral-400 shrink-0"
+                          />
 
                           <span>
                             {selectedStudent.assignedMentor
@@ -1098,13 +1088,16 @@ export default function StudentsDashboard() {
 
                       {/* APPROVED BY */}
 
-                      <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                      <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
                           APPROVED BY
                         </span>
 
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 text-[11px]">
-                          <ShieldCheck size={12} className="text-neutral-400" />
+                        <div className="flex items-center gap-2.5 text-neutral-600 dark:text-neutral-300 text-[11px]">
+                          <ShieldCheck
+                            size={13}
+                            className="text-neutral-400 shrink-0"
+                          />
 
                           <span>
                             {selectedStudent.approvedBy
@@ -1119,17 +1112,17 @@ export default function StudentsDashboard() {
 
                       {/* ACTIONS */}
 
-                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                      <div className="grid grid-cols-2 gap-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <button
                           onClick={() => openEditForm(selectedStudent)}
-                          className="py-1.5 rounded-md border border-neutral-200 dark:border-neutral-700 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                          className="py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shadow-xs"
                         >
                           Edit
                         </button>
 
                         <button
                           onClick={() => setDeleteTarget(selectedStudent)}
-                          className="py-1.5 rounded-md border border-red-200 dark:border-red-900/50 text-[#B91C1C] text-xs font-medium hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                          className="py-2 rounded-xl border border-red-200 dark:border-red-900/50 text-[#B91C1C] text-xs font-medium hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer shadow-xs"
                         >
                           Delete
                         </button>
@@ -1148,11 +1141,11 @@ export default function StudentsDashboard() {
           ================================================== */}
 
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xl overflow-hidden">
             {/* HEADER */}
 
-            <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100 dark:border-neutral-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
               <div>
                 <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
                   {editingStudent ? "Edit Student" : "Add Student"}
@@ -1167,7 +1160,7 @@ export default function StudentsDashboard() {
 
               <button
                 onClick={closeForm}
-                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer"
+                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer p-1"
               >
                 <X size={16} />
               </button>
@@ -1175,7 +1168,7 @@ export default function StudentsDashboard() {
 
             {/* FORM */}
 
-            <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {/* ==================================================
                   USER SEARCH
                   ================================================== */}
@@ -1191,7 +1184,7 @@ export default function StudentsDashboard() {
                   <div className="relative">
                     <Search
                       size={13}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
 
                     <input
@@ -1216,12 +1209,12 @@ export default function StudentsDashboard() {
                           : "Search student by name or email..."
                       }
                       disabled={userOptionsLoading}
-                      className="w-full pl-8 pr-9 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C]"
+                      className="w-full pl-9 pr-9 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:border-[#B91C1C] shadow-xs"
                     />
 
                     <ChevronDown
                       size={13}
-                      className={`absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none transition-transform ${
+                      className={`absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none transition-transform ${
                         isUserDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
@@ -1230,8 +1223,8 @@ export default function StudentsDashboard() {
                   {/* SEARCH DROPDOWN */}
 
                   {isUserDropdownOpen && !userOptionsLoading && (
-                    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 rounded-md shadow-lg overflow-hidden">
-                      <div className="max-h-52 overflow-y-auto">
+                    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl overflow-hidden">
+                      <div className="max-h-52 overflow-y-auto p-1">
                         {filteredUserOptions.length === 0 ? (
                           <div className="px-3 py-3 text-center text-[11px] text-neutral-400">
                             No users found.
@@ -1252,7 +1245,7 @@ export default function StudentsDashboard() {
                                 key={option._id}
                                 type="button"
                                 onClick={() => handleSelectUser(option)}
-                                className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors ${
+                                className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-left transition-colors ${
                                   isSelected
                                     ? "bg-[#FEF2F2] dark:bg-red-950/30"
                                     : "hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
@@ -1297,7 +1290,7 @@ export default function StudentsDashboard() {
                   {/* SELECTED USER DETAILS */}
 
                   {selectedUser && (
-                    <div className="flex items-center justify-between mt-1.5 px-2.5 py-1.5 rounded-md bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
+                    <div className="flex items-center justify-between mt-1.5 px-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                       <div className="flex items-center gap-2 min-w-0">
                         <User size={12} className="text-neutral-400 shrink-0" />
 
@@ -1344,7 +1337,7 @@ export default function StudentsDashboard() {
                     value={editingStudent.memberId || "Auto-generated"}
                     disabled
                     readOnly
-                    className="w-full px-3 py-2 rounded-md text-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 text-neutral-500 cursor-not-allowed"
+                    className="w-full px-3.5 py-2 rounded-xl text-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 text-neutral-500 cursor-not-allowed shadow-xs"
                   />
                 </div>
               )}
@@ -1367,7 +1360,7 @@ export default function StudentsDashboard() {
                     }
                     required
                     disabled={mentorOptionsLoading}
-                    className="w-full appearance-none px-3 py-2 pr-8 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full appearance-none px-3.5 py-2 pr-8 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] shadow-xs font-medium cursor-pointer"
                   >
                     <option value="">
                       {mentorOptionsLoading
@@ -1386,8 +1379,8 @@ export default function StudentsDashboard() {
                   </select>
 
                   <ChevronDown
-                    size={12}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    size={13}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
                 </div>
               </div>
@@ -1407,7 +1400,7 @@ export default function StudentsDashboard() {
                       status: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 focus:outline-none focus:border-[#B91C1C] capitalize"
+                  className="w-full px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] capitalize shadow-xs font-medium cursor-pointer"
                 >
                   {STATUS_OPTIONS.map((status) => (
                     <option key={status} value={status} className="capitalize">
@@ -1433,18 +1426,18 @@ export default function StudentsDashboard() {
                       joinedAt: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 rounded-md text-xs bg-white dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white shadow-xs font-medium"
                 />
               </div>
 
               {/* BUTTONS */}
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                 <button
                   type="button"
                   onClick={closeForm}
                   disabled={formLoading}
-                  className="px-3.5 py-1.5 rounded-md border border-neutral-200 dark:border-neutral-700 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shadow-xs"
                 >
                   Cancel
                 </button>
@@ -1456,7 +1449,7 @@ export default function StudentsDashboard() {
                     (!editingStudent && !formData.user) ||
                     !formData.assignedMentor
                   }
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium transition-colors cursor-pointer shadow-xs"
                 >
                   {formLoading && (
                     <Loader2 size={13} className="animate-spin" />
@@ -1475,8 +1468,8 @@ export default function StudentsDashboard() {
           ================================================== */}
 
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xl p-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-sm bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xl p-6 space-y-4">
             <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
               Delete Student
             </h3>
@@ -1489,11 +1482,11 @@ export default function StudentsDashboard() {
               ? This action cannot be undone.
             </p>
 
-            <div className="flex justify-end gap-2 mt-5">
+            <div className="flex justify-end gap-2.5 pt-2">
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteLoading}
-                className="px-3.5 py-1.5 rounded-md border border-neutral-200 dark:border-neutral-700 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shadow-xs"
               >
                 Cancel
               </button>
@@ -1501,7 +1494,7 @@ export default function StudentsDashboard() {
               <button
                 onClick={handleDeleteStudent}
                 disabled={deleteLoading}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] disabled:opacity-50 text-white text-xs font-medium transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-xs font-medium transition-colors cursor-pointer shadow-xs"
               >
                 {deleteLoading && (
                   <Loader2 size={13} className="animate-spin" />

@@ -61,13 +61,11 @@ export default function MainDashboard({
     data?.availableBatches?.[0];
 
   return (
-    <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-    
+    <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
       {/* ================= MAIN CONTENT CONTAINER ================= */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117]">
-        
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Dashboard Main Content */}
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+        <main className="px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-24 gap-2 text-xs text-neutral-500">
               <Loader2 className="animate-spin text-[#B91C1C]" size={18} />
@@ -94,7 +92,7 @@ export default function MainDashboard({
                     <select
                       value={selectedBatchId}
                       onChange={(e) => setSelectedBatchId(e.target.value)}
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] cursor-pointer"
+                      className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] cursor-pointer shadow-xs font-medium"
                     >
                       {(data?.availableBatches || []).map((b) => (
                         <option key={b.id} value={b.id}>
@@ -104,20 +102,20 @@ export default function MainDashboard({
                     </select>
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons Row */}
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <button
                   onClick={() =>
                     onNavigateAdminView &&
                     onNavigateAdminView("dashboard-announcements")
                   }
-                  className="px-3.5 py-1.5 rounded-md bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-colors cursor-pointer shadow-2xs"
+                  className="px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991B1B] text-white text-xs font-medium transition-all duration-300 cursor-pointer shadow-md shadow-red-500/10 hover:-translate-y-0.5"
                 >
                   Create Announcement
                 </button>
@@ -126,7 +124,7 @@ export default function MainDashboard({
                     onNavigateAdminView &&
                     onNavigateAdminView("dashboard-students")
                   }
-                  className="px-3.5 py-1.5 rounded-md bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-all duration-300 cursor-pointer shadow-xs hover:border-[#B91C1C]/40"
                 >
                   + Add Student
                 </button>
@@ -135,7 +133,7 @@ export default function MainDashboard({
                     onNavigateAdminView &&
                     onNavigateAdminView("dashboard-mentors")
                   }
-                  className="px-3.5 py-1.5 rounded-md bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-all duration-300 cursor-pointer shadow-xs hover:border-[#B91C1C]/40"
                 >
                   + Add Mentor
                 </button>
@@ -144,23 +142,23 @@ export default function MainDashboard({
                     onNavigateAdminView &&
                     onNavigateAdminView("dashboard-batches")
                   }
-                  className="px-3.5 py-1.5 rounded-md bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-all duration-300 cursor-pointer shadow-xs hover:border-[#B91C1C]/40"
                 >
                   Create Batch
                 </button>
               </div>
 
-              {/* 4 Stats Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              {/* 4 Stats Cards with Modern Hover Effect */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* 1. Students */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex flex-col justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex flex-col justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       STUDENTS
                     </span>
-                    <GraduationCap size={15} className="text-[#B91C1C]" />
+                    <GraduationCap size={16} className="text-[#B91C1C]" />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-3">
                     <div className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
                       {data?.metrics?.students || 248}
                     </div>
@@ -171,14 +169,14 @@ export default function MainDashboard({
                 </div>
 
                 {/* 2. Mentors */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex flex-col justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex flex-col justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       MENTORS
                     </span>
-                    <Users size={15} className="text-[#B91C1C]" />
+                    <Users size={16} className="text-[#B91C1C]" />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-3">
                     <div className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
                       {data?.metrics?.mentors || 32}
                     </div>
@@ -189,14 +187,14 @@ export default function MainDashboard({
                 </div>
 
                 {/* 3. Batches */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex flex-col justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex flex-col justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       BATCHES
                     </span>
-                    <Layers size={15} className="text-[#B91C1C]" />
+                    <Layers size={16} className="text-[#B91C1C]" />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-3">
                     <div className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
                       {data?.metrics?.batches || 8}
                     </div>
@@ -207,14 +205,14 @@ export default function MainDashboard({
                 </div>
 
                 {/* 4. Attendance */}
-                <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs flex flex-col justify-between">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none flex flex-col justify-between transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       ATTENDANCE
                     </span>
-                    <CalendarCheck size={15} className="text-[#B91C1C]" />
+                    <CalendarCheck size={16} className="text-[#B91C1C]" />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-3">
                     <div className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
                       {data?.metrics?.attendance || "92%"}
                     </div>
@@ -226,29 +224,29 @@ export default function MainDashboard({
               </div>
 
               {/* Main Content 2-Column Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 {/* Left Column (Span 8): Attendance & Assignment Overview */}
-                <div className="lg:col-span-8 space-y-5">
+                <div className="lg:col-span-8 space-y-6">
                   {/* Attendance Overview Card */}
-                  <div className="p-5 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-4">
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none space-y-4 transition-all duration-300">
                     <h3 className="font-bold text-xs text-neutral-900 dark:text-white tracking-tight">
                       Attendance Overview
                     </h3>
 
                     {/* Present - Emerald / Green */}
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                        <span className="text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
                           Present
                         </span>
                         <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                           {selectedBatch?.attendanceBreakdown?.present || 85}%
                         </span>
                       </div>
-                      <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+                      <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-2 overflow-hidden">
                         <div
-                          className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
+                          className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
                           style={{
                             width: `${selectedBatch?.attendanceBreakdown?.present || 85}%`,
                           }}
@@ -257,19 +255,19 @@ export default function MainDashboard({
                     </div>
 
                     {/* Late - Amber / Yellow */}
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+                        <span className="text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
                           Late
                         </span>
                         <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                           {selectedBatch?.attendanceBreakdown?.late || 10}%
                         </span>
                       </div>
-                      <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+                      <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-2 overflow-hidden">
                         <div
-                          className="bg-amber-500 h-1.5 rounded-full transition-all duration-300"
+                          className="bg-amber-500 h-2 rounded-full transition-all duration-300"
                           style={{
                             width: `${selectedBatch?.attendanceBreakdown?.late || 10}%`,
                           }}
@@ -278,19 +276,19 @@ export default function MainDashboard({
                     </div>
 
                     {/* Absent - Rose / Red */}
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-rose-500 inline-block" />
+                        <span className="text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
                           Absent
                         </span>
                         <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                           {selectedBatch?.attendanceBreakdown?.absent || 5}%
                         </span>
                       </div>
-                      <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+                      <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-2 overflow-hidden">
                         <div
-                          className="bg-rose-500 h-1.5 rounded-full transition-all duration-300"
+                          className="bg-rose-500 h-2 rounded-full transition-all duration-300"
                           style={{
                             width: `${selectedBatch?.attendanceBreakdown?.absent || 5}%`,
                           }}
@@ -300,14 +298,14 @@ export default function MainDashboard({
                   </div>
 
                   {/* Assignment Overview Card */}
-                  <div className="p-5 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-4">
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none space-y-4 transition-all duration-300">
                     <h3 className="font-bold text-xs text-neutral-900 dark:text-white tracking-tight">
                       Assignment Overview
                     </h3>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {/* Total */}
-                      <div className="p-3 rounded-lg border border-neutral-100 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-800/20 text-center">
+                      <div className="p-3.5 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/60 dark:bg-neutral-800/20 text-center">
                         <div className="text-lg font-black text-neutral-900 dark:text-white">
                           {selectedBatch?.assignmentStats?.total || 42}
                         </div>
@@ -317,7 +315,7 @@ export default function MainDashboard({
                       </div>
 
                       {/* Active */}
-                      <div className="p-3 rounded-lg border border-neutral-100 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-800/20 text-center">
+                      <div className="p-3.5 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/60 dark:bg-neutral-800/20 text-center">
                         <div className="text-lg font-black text-neutral-900 dark:text-white">
                           {selectedBatch?.assignmentStats?.active || 12}
                         </div>
@@ -327,7 +325,7 @@ export default function MainDashboard({
                       </div>
 
                       {/* Pending Review */}
-                      <div className="p-3 rounded-lg border border-neutral-100 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-800/20 text-center">
+                      <div className="p-3.5 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/60 dark:bg-neutral-800/20 text-center">
                         <div className="text-lg font-black text-neutral-900 dark:text-white">
                           {selectedBatch?.assignmentStats?.pendingReview || 28}
                         </div>
@@ -337,7 +335,7 @@ export default function MainDashboard({
                       </div>
 
                       {/* Past Due */}
-                      <div className="p-3 rounded-lg border border-red-100 dark:border-red-900/30 bg-[#FEF2F2]/60 dark:bg-red-950/20 text-center">
+                      <div className="p-3.5 rounded-xl border border-red-100 dark:border-red-900/30 bg-[#FEF2F2]/60 dark:bg-red-950/20 text-center">
                         <div className="text-lg font-black text-[#B91C1C]">
                           {selectedBatch?.assignmentStats?.pastDue || 5}
                         </div>
@@ -350,15 +348,15 @@ export default function MainDashboard({
                 </div>
 
                 {/* Right Column (Span 4): Selected Batch Details & Recent Activity */}
-                <div className="lg:col-span-4 space-y-5">
+                <div className="lg:col-span-4 space-y-6">
                   {/* Selected Batch Details */}
-                  <div className="p-5 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-3.5">
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none space-y-4 transition-all duration-300">
                     <h3 className="font-bold text-xs text-neutral-900 dark:text-white tracking-tight">
                       Selected Batch
                     </h3>
 
-                    <div className="space-y-2.5 text-xs">
-                      <div className="flex items-center justify-between pb-2 border-b border-neutral-100 dark:border-neutral-800">
+                    <div className="space-y-3 text-xs">
+                      <div className="flex items-center justify-between pb-2.5 border-b border-neutral-100 dark:border-neutral-800">
                         <span className="text-neutral-400 text-[11px]">
                           Students
                         </span>
@@ -367,7 +365,7 @@ export default function MainDashboard({
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between pb-2 border-b border-neutral-100 dark:border-neutral-800">
+                      <div className="flex items-center justify-between pb-2.5 border-b border-neutral-100 dark:border-neutral-800">
                         <span className="text-neutral-400 text-[11px]">
                           Mentors
                         </span>
@@ -376,7 +374,7 @@ export default function MainDashboard({
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between pb-2 border-b border-neutral-100 dark:border-neutral-800">
+                      <div className="flex items-center justify-between pb-2.5 border-b border-neutral-100 dark:border-neutral-800">
                         <span className="text-neutral-400 text-[11px]">
                           Attendance Avg
                         </span>
@@ -397,17 +395,14 @@ export default function MainDashboard({
                   </div>
 
                   {/* Recent Activity Stream */}
-                  <div className="p-5 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs space-y-3.5">
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none space-y-4 transition-all duration-300">
                     <h3 className="font-bold text-xs text-neutral-900 dark:text-white tracking-tight">
                       Recent Activity
                     </h3>
 
-                    <div className="space-y-3.5">
+                    <div className="space-y-4">
                       {(data?.recentActivities || []).map((act, i) => (
-                        <div
-                          key={i}
-                          className="flex items-start gap-2.5 text-xs"
-                        >
+                        <div key={i} className="flex items-start gap-3 text-xs">
                           <div className="mt-0.5 text-neutral-400 shrink-0">
                             {act.type === "submission" && (
                               <FileCheck2 size={14} />

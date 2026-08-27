@@ -1,120 +1,167 @@
-import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { FiMenu, FiBell, FiUser, FiMoon, FiLogOut } from "react-icons/fi";
+import React, { useState, useRef, useEffect } from "react";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import MentorSidebar from "../components/layout/MentorSidebar";
+import { useAuth } from "../context/AuthContext";
+import { LogOut, Sun, Moon, Bell, User, Check, Globe } from "lucide-react";
 
 export default function MentorLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { logout } = useAuth(); // Extracted logout from useAuth context
   const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
 
-  const mentor = { firstName: "John", lastName: "Doe" };
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
 
-  const navLinks = [
-    { name: "Dashboard", path: "/mentor/dashboard" },
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Tracks", path: "/tracks" },
-    { name: "Mentors", path: "/mentors" },
-    { name: "Contact", path: "/contact" },
-  ];
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Compute active page title for the header dynamically based on route path
+  const getHeaderTitle = () => {
+    const pathSegment = location.pathname.split("/mentor/")[1] || "dashboard";
+    if (pathSegment === "students") return "My Students";
+    return pathSegment.charAt(0).toUpperCase() + pathSegment.slice(1);
+  };
+
+  const getCurrentView = () => {
+    const pathSegment = location.pathname.split("/mentor/")[1] || "dashboard";
+    if (pathSegment === "dashboard") return "dashboard-main";
+    return `dashboard-${pathSegment}`;
+  };
+
+  const handleNavigateMentorView = (viewKey) => {
+    const route = viewKey.replace("dashboard-", "");
+    if (route === "main") {
+      navigate("/mentor/dashboard");
+    } else if (route === "students") {
+      navigate("/mentor/students");
+    } else {
+      navigate(`/mentor/${route}`);
+    }
+  };
+
+  const toggleDarkMode = (enabled) => {
+    setIsDarkMode(enabled);
+    if (enabled) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
   const handleLogout = () => {
-    setIsProfileOpen(false);
-    if (logout) {
-      logout();
-    }
+    logout?.();
     localStorage.clear();
     sessionStorage.clear();
     navigate("/login", { replace: true });
   };
 
   return (
-    <div className="min-h-screen bg-background flex overflow-hidden w-full">
-      <MentorSidebar isOpen={isSidebarOpen} />
+    <div className="flex h-screen bg-neutral-50 dark:bg-[#0d1117] text-neutral-900 dark:text-neutral-100 overflow-hidden">
+      {/* Sidebar Navigation */}
+      <MentorSidebar
+        currentView={getCurrentView()}
+        onNavigateMentorView={handleNavigateMentorView}
+      />
 
-      <div
-        className={`flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300 ease-in-out w-full ${
-          isSidebarOpen ? "md:pl-64" : "pl-0"
-        }`}
-      >
-        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border bg-surface px-4 md:px-6 shrink-0">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="flex h-8 w-8 items-center justify-center rounded-md text-text-muted hover:bg-surface-subtle hover:text-primary transition-colors focus:outline-none"
-            >
-              <FiMenu className="h-5 w-5" />
-            </button>
-            <span className="text-lg font-bold text-primary tracking-tight">
-              ASTU MSJ
-            </span>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Top Navbar */}
+        <header className="h-14 bg-white dark:bg-[#151921] border-b border-neutral-200/80 dark:border-neutral-800/80 px-8 flex items-center justify-between shrink-0">
+          <div className="text-xs sm:text-sm font-semibold tracking-tight text-neutral-800 dark:text-neutral-200">
+            {getHeaderTitle()}
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.path}
-                className={({ isActive }) =>
-                  `transition-all duration-200 hover:text-primary ${
-                    isActive
-                      ? "text-primary underline underline-offset-4 decoration-2"
-                      : "text-text-muted"
-                  }`
-                }
+          <div className="flex items-center gap-3">
+            <button className="relative p-1.5 rounded-full text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors cursor-pointer">
+              <Bell size={17} />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#B91C1C] ring-2 ring-white dark:ring-[#151921]" />
+            </button>
+
+            {/* Profile Dropdown */}
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden"
               >
-                {link.name}
-              </NavLink>
-            ))}
-          </nav>
+                <User size={15} />
+              </button>
 
-          <div className="flex items-center gap-4 relative">
-            <button className="text-text-muted hover:text-text-primary transition-colors relative">
-              <FiBell className="h-5 w-5" />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary"></span>
-            </button>
+              {isProfileOpen && (
+                <div className="absolute right-0 top-10 w-52 rounded-xl bg-white dark:bg-[#1A1F29] border border-neutral-200 dark:border-neutral-800 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2 py-1.5 border-b border-neutral-100 dark:border-neutral-800 mb-1.5">
+                    <p className="font-semibold text-xs text-neutral-900 dark:text-neutral-100">
+                      Mentor Account
+                    </p>
+                    <p className="text-[10px] text-neutral-400 capitalize">
+                      Mentor
+                    </p>
+                  </div>
 
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-muted hover:text-text-primary hover:bg-surface-subtle transition-colors focus:outline-none"
-            >
-              <FiUser className="h-4 w-4" />
-            </button>
+                  <div className="space-y-0.5">
+                    <button
+                      onClick={() => {
+                        setIsProfileOpen(false);
+                        navigate("/mentor/settings");
+                      }}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer text-neutral-700 dark:text-neutral-300"
+                    >
+                      <User size={13} className="text-neutral-400" />
+                      <span>Profile Settings</span>
+                    </button>
 
-            {isProfileOpen && (
-              <div className="absolute right-0 top-10 mt-2 w-48 rounded-md bg-surface border border-border shadow-lg py-1 z-50">
-                <div className="px-4 py-2 border-b border-border">
-                  <p className="text-sm font-bold text-text-primary truncate">
-                    {mentor.firstName} {mentor.lastName}
-                  </p>
-                  <p className="text-xs text-text-muted truncate">Mentor</p>
+                    <button
+                      onClick={() => {
+                        setIsProfileOpen(false);
+                        navigate("/");
+                      }}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer text-neutral-700 dark:text-neutral-300"
+                    >
+                      <Globe size={13} className="text-neutral-400" />
+                      <span>Public Home</span>
+                    </button>
+
+                    <button
+                      onClick={() => toggleDarkMode(!isDarkMode)}
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer text-neutral-700 dark:text-neutral-300"
+                    >
+                      <div className="flex items-center gap-2">
+                        {isDarkMode ? (
+                          <Sun size={13} className="text-neutral-400" />
+                        ) : (
+                          <Moon size={13} className="text-neutral-400" />
+                        )}
+                        <span>Dark Mode</span>
+                      </div>
+                      {isDarkMode && (
+                        <Check size={12} className="text-[#B91C1C]" />
+                      )}
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium text-[#B91C1C] hover:bg-red-500/10 transition-colors cursor-pointer"
+                    >
+                      <LogOut size={13} className="text-[#B91C1C]" />
+                      <span>Log out</span>
+                    </button>
+                  </div>
                 </div>
-                <NavLink
-                  onClick={() => setIsProfileOpen(false)}
-                  to="/mentor/settings"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary"
-                >
-                  <FiUser className="h-4 w-4" /> Profile
-                </NavLink>
-                <button className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-muted hover:bg-surface-subtle hover:text-text-primary text-left">
-                  <FiMoon className="h-4 w-4" /> Dark Mode
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#B91C1C] hover:bg-red-500/10 transition-colors cursor-pointer text-left"
-                >
-                  <FiLogOut className="h-4 w-4 text-[#B91C1C]" />
-                  <span>Log out</span>
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </header>
 
-        <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto p-4 md:p-8">
+        {/* Page Content View */}
+        <main className="flex-1 overflow-y-auto p-6 bg-neutral-50 dark:bg-[#0d1117]">
           <Outlet />
         </main>
       </div>

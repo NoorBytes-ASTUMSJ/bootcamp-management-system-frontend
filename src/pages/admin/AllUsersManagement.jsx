@@ -89,10 +89,7 @@ export default function AllUsersManagement() {
 
         return {
           id: u._id,
-          userId:
-            u.universityId ||
-            u._id?.slice(-6).toUpperCase() ||
-            "N/A",
+          userId: u.universityId || u._id?.slice(-6).toUpperCase() || "N/A",
           name: u.fullName || "Unnamed User",
           email: u.email || "N/A",
           phone: u.phone || "N/A",
@@ -113,8 +110,7 @@ export default function AllUsersManagement() {
           codeforces: u.codeforces || "",
           leetcode: u.leetcode || "",
           dailyAvailableHours: u.dailyAvailableHours ?? "N/A",
-          availabilityDescription:
-            u.availabilityDescription || "N/A",
+          availabilityDescription: u.availabilityDescription || "N/A",
           motivation: u.motivation || "N/A",
           experience: u.experience || "N/A",
           expertise: u.expertise || "N/A",
@@ -145,7 +141,7 @@ export default function AllUsersManagement() {
 
       if (current) {
         const updatedSelectedUser = formatted.find(
-          (user) => user.id === current.id
+          (user) => user.id === current.id,
         );
 
         if (updatedSelectedUser) {
@@ -191,15 +187,11 @@ export default function AllUsersManagement() {
       fullName: user.name === "Unnamed User" ? "" : user.name,
       email: user.email === "N/A" ? "" : user.email,
       phone: user.phone === "N/A" ? "" : user.phone,
-      gender:
-        user.gender === "N/A" ? "" : user.gender.toLowerCase(),
+      gender: user.gender === "N/A" ? "" : user.gender.toLowerCase(),
       university: user.university === "N/A" ? "" : user.university,
-      universityId:
-        user.universityId === "N/A" ? "" : user.universityId,
+      universityId: user.universityId === "N/A" ? "" : user.universityId,
       telegramUsername:
-        user.telegramUsername === "N/A"
-          ? ""
-          : user.telegramUsername,
+        user.telegramUsername === "N/A" ? "" : user.telegramUsername,
       batch: user.batchId || "",
       year: user.year === "N/A" ? "" : user.year,
       department: user.department === "N/A" ? "" : user.department,
@@ -209,9 +201,7 @@ export default function AllUsersManagement() {
       codeforces: user.codeforces,
       leetcode: user.leetcode,
       dailyAvailableHours:
-        user.dailyAvailableHours === "N/A"
-          ? ""
-          : user.dailyAvailableHours,
+        user.dailyAvailableHours === "N/A" ? "" : user.dailyAvailableHours,
       availabilityDescription:
         user.availabilityDescription === "N/A"
           ? ""
@@ -242,11 +232,6 @@ export default function AllUsersManagement() {
     setSaving(true);
 
     try {
-      // Build the update payload based on applicationType, mirroring the
-      // backend User schema's conditional-required fields. Sending
-      // student-only fields for a mentor (or vice versa) trips enum/cast
-      // validators on the backend even when the field isn't "required" for
-      // that type, so irrelevant fields are simply omitted here.
       const isStudentApplication = editForm.applicationType === "student";
       const isMentorApplication = editForm.applicationType === "mentor";
 
@@ -263,10 +248,8 @@ export default function AllUsersManagement() {
         department: editForm.department,
         role: editForm.role,
         applicationType: editForm.applicationType,
-        // Required for both student and mentor applications.
         github: editForm.github,
         motivation: editForm.motivation,
-        // Student-only fields.
         codeforces: isStudentApplication ? editForm.codeforces : undefined,
         leetcode: isStudentApplication ? editForm.leetcode : undefined,
         dailyAvailableHours:
@@ -276,7 +259,6 @@ export default function AllUsersManagement() {
         availabilityDescription: isStudentApplication
           ? editForm.availabilityDescription
           : undefined,
-        // Mentor-only fields.
         experience: isMentorApplication ? editForm.experience : undefined,
         expertise:
           isMentorApplication && editForm.expertise
@@ -284,10 +266,7 @@ export default function AllUsersManagement() {
             : undefined,
       };
 
-      const updatedUser = await updateUserApi(
-        selectedUser.id,
-        updates
-      );
+      const updatedUser = await updateUserApi(selectedUser.id, updates);
 
       const formattedUser = {
         id: updatedUser._id,
@@ -312,44 +291,34 @@ export default function AllUsersManagement() {
           : "N/A",
         university: updatedUser.university || "N/A",
         universityId: updatedUser.universityId || "N/A",
-        telegramUsername:
-          updatedUser.telegramUsername || "N/A",
+        telegramUsername: updatedUser.telegramUsername || "N/A",
         batch: updatedUser.batch?.name || "N/A",
         batchId: updatedUser.batch?._id || updatedUser.batch || null,
         year: updatedUser.year || "N/A",
         department: updatedUser.department || "N/A",
         role: updatedUser.role || "user",
-        applicationType:
-          updatedUser.applicationType || "student",
+        applicationType: updatedUser.applicationType || "student",
         github: updatedUser.github || "",
         codeforces: updatedUser.codeforces || "",
         leetcode: updatedUser.leetcode || "",
-        dailyAvailableHours:
-          updatedUser.dailyAvailableHours ?? "N/A",
-        availabilityDescription:
-          updatedUser.availabilityDescription || "N/A",
+        dailyAvailableHours: updatedUser.dailyAvailableHours ?? "N/A",
+        availabilityDescription: updatedUser.availabilityDescription || "N/A",
         motivation: updatedUser.motivation || "N/A",
         experience: updatedUser.experience || "N/A",
         expertise: updatedUser.expertise || "N/A",
         registeredDate: updatedUser.createdAt
-          ? new Date(updatedUser.createdAt).toLocaleDateString(
-              "en-US",
-              {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              }
-            )
+          ? new Date(updatedUser.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
           : "N/A",
         updatedDate: updatedUser.updatedAt
-          ? new Date(updatedUser.updatedAt).toLocaleDateString(
-              "en-US",
-              {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              }
-            )
+          ? new Date(updatedUser.updatedAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
           : "N/A",
         rawUser: updatedUser,
       };
@@ -358,8 +327,8 @@ export default function AllUsersManagement() {
 
       setUsers((previousUsers) =>
         previousUsers.map((user) =>
-          user.id === formattedUser.id ? formattedUser : user
-        )
+          user.id === formattedUser.id ? formattedUser : user,
+        ),
       );
 
       setEditing(false);
@@ -384,9 +353,7 @@ export default function AllUsersManagement() {
       await deleteUserApi(deleteUser.id);
 
       setUsers((previousUsers) =>
-        previousUsers.filter(
-          (user) => user.id !== deleteUser.id
-        )
+        previousUsers.filter((user) => user.id !== deleteUser.id),
       );
 
       if (selectedUser?.id === deleteUser.id) {
@@ -433,12 +400,7 @@ export default function AllUsersManagement() {
     }
   };
 
-  const InputField = ({
-    label,
-    field,
-    type = "text",
-    className = "",
-  }) => (
+  const InputField = ({ label, field, type = "text", className = "" }) => (
     <div className={className}>
       <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block mb-1">
         {label}
@@ -447,20 +409,13 @@ export default function AllUsersManagement() {
       <input
         type={type}
         value={editForm[field] ?? ""}
-        onChange={(event) =>
-          handleEditChange(field, event.target.value)
-        }
+        onChange={(event) => handleEditChange(field, event.target.value)}
         className="w-full px-2.5 py-1.5 rounded-md text-xs bg-white dark:bg-[#10141b] border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C]"
       />
     </div>
   );
 
-  const SelectField = ({
-    label,
-    field,
-    children,
-    disabled = false,
-  }) => (
+  const SelectField = ({ label, field, children, disabled = false }) => (
     <div>
       <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block mb-1">
         {label}
@@ -469,9 +424,7 @@ export default function AllUsersManagement() {
       <div className="relative">
         <select
           value={editForm[field] ?? ""}
-          onChange={(event) =>
-            handleEditChange(field, event.target.value)
-          }
+          onChange={(event) => handleEditChange(field, event.target.value)}
           disabled={disabled}
           className="appearance-none w-full pl-2.5 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#10141b] border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] disabled:opacity-60"
         >
@@ -489,11 +442,11 @@ export default function AllUsersManagement() {
   const totalUsersCount = users.length;
 
   const membersCount = users.filter((user) =>
-    ["student", "mentor", "admin"].includes(user.role)
+    ["student", "mentor", "admin"].includes(user.role),
   ).length;
 
   const standardUsersCount = users.filter(
-    (user) => user.role === "user"
+    (user) => user.role === "user",
   ).length;
 
   const getStepTitle = () => {
@@ -511,9 +464,9 @@ export default function AllUsersManagement() {
 
   return (
     <>
-      <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+      <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
+        <div className="flex-1 flex flex-col min-w-0">
+          <main className="px-8 py-6 space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
@@ -521,14 +474,14 @@ export default function AllUsersManagement() {
                 </h2>
 
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                  Manage all registered accounts, applicants,
-                  mentors, students, and administrators.
+                  Manage all registered accounts, applicants, mentors, students,
+                  and administrators.
                 </p>
               </div>
 
               <button
                 onClick={fetchUsers}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/80 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/80 transition-colors cursor-pointer shadow-xs hover:border-[#B91C1C]/40"
               >
                 <RefreshCw
                   size={12}
@@ -538,8 +491,9 @@ export default function AllUsersManagement() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-              <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+            {/* Stat Cards with Modern UI Hover Effect (Border Light, Shadow, Smooth Up & Down Motion) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                   TOTAL ACCOUNTS
                 </span>
@@ -549,7 +503,7 @@ export default function AllUsersManagement() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                   ACTIVE MEMBERS
                 </span>
@@ -559,7 +513,7 @@ export default function AllUsersManagement() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
                   UNAPPROVED USERS
                 </span>
@@ -570,15 +524,15 @@ export default function AllUsersManagement() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               <div
-                className={`space-y-3 ${
+                className={`space-y-4 ${
                   selectedUser
                     ? "lg:col-span-7 xl:col-span-7"
                     : "lg:col-span-12"
                 }`}
               >
-                <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-3">
                   <div className="flex-1 min-w-[180px] relative">
                     <Search
                       size={13}
@@ -589,25 +543,19 @@ export default function AllUsersManagement() {
                       type="text"
                       placeholder="Search by name or email..."
                       value={searchTerm}
-                      onChange={(event) =>
-                        setSearchTerm(event.target.value)
-                      }
-                      className="w-full pl-8 pr-3 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C]"
+                      onChange={(event) => setSearchTerm(event.target.value)}
+                      className="w-full pl-8 pr-3 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] transition-colors shadow-xs"
                     />
                   </div>
 
                   <div className="relative">
                     <select
                       value={roleFilter}
-                      onChange={(event) =>
-                        setRoleFilter(event.target.value)
-                      }
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium"
+                      onChange={(event) => setRoleFilter(event.target.value)}
+                      className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium shadow-xs"
                     >
                       <option value="ALL">All Roles</option>
-                      <option value="ALLmembers">
-                        All Members
-                      </option>
+                      <option value="ALLmembers">All Members</option>
                       <option value="user">User</option>
                       <option value="student">Student</option>
                       <option value="mentor">Mentor</option>
@@ -616,7 +564,7 @@ export default function AllUsersManagement() {
 
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
@@ -626,11 +574,9 @@ export default function AllUsersManagement() {
                       onChange={(event) =>
                         setUniversityFilter(event.target.value)
                       }
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium"
+                      className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium shadow-xs"
                     >
-                      <option value="ALL">
-                        All Universities
-                      </option>
+                      <option value="ALL">All Universities</option>
 
                       {availableUniversities.map((uni) => (
                         <option key={uni} value={uni}>
@@ -641,30 +587,23 @@ export default function AllUsersManagement() {
 
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
                   <div className="relative">
                     <select
                       value={batchFilter}
-                      onChange={(event) =>
-                        setBatchFilter(event.target.value)
-                      }
+                      onChange={(event) => setBatchFilter(event.target.value)}
                       disabled={batchesLoading}
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium disabled:opacity-60"
+                      className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium disabled:opacity-60 shadow-xs"
                     >
                       <option value="ALL">
-                        {batchesLoading
-                          ? "Loading..."
-                          : "All Batches"}
+                        {batchesLoading ? "Loading..." : "All Batches"}
                       </option>
 
                       {availableBatches.map((batch) => (
-                        <option
-                          key={batch._id}
-                          value={batch._id}
-                        >
+                        <option key={batch._id} value={batch._id}>
                           {batch.name}
                         </option>
                       ))}
@@ -672,17 +611,15 @@ export default function AllUsersManagement() {
 
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
                   <div className="relative">
                     <select
                       value={genderFilter}
-                      onChange={(event) =>
-                        setGenderFilter(event.target.value)
-                      }
-                      className="appearance-none pl-3 pr-7 py-1.5 rounded-md text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium"
+                      onChange={(event) => setGenderFilter(event.target.value)}
+                      className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium shadow-xs"
                     >
                       <option value="ALL">All Genders</option>
                       <option value="Male">Male</option>
@@ -691,28 +628,22 @@ export default function AllUsersManagement() {
 
                     <ChevronDown
                       size={12}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
                         <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                          <th className="py-2.5 px-4">
-                            APPLICANT
-                          </th>
-                          <th className="py-2.5 px-4">TYPE</th>
-                          <th className="py-2.5 px-4">
-                            UNIVERSITY
-                          </th>
-                          <th className="py-2.5 px-4">BATCH</th>
-                          <th className="py-2.5 px-4">ROLE</th>
-                          <th className="py-2.5 px-4 text-right">
-                            ACTION
-                          </th>
+                          <th className="py-3 px-4">APPLICANT</th>
+                          <th className="py-3 px-4">TYPE</th>
+                          <th className="py-3 px-4">UNIVERSITY</th>
+                          <th className="py-3 px-4">BATCH</th>
+                          <th className="py-3 px-4">ROLE</th>
+                          <th className="py-3 px-4 text-right">ACTION</th>
                         </tr>
                       </thead>
 
@@ -721,7 +652,7 @@ export default function AllUsersManagement() {
                           <tr>
                             <td
                               colSpan={6}
-                              className="py-8 text-center text-neutral-400"
+                              className="py-12 text-center text-neutral-400"
                             >
                               Loading accounts...
                             </td>
@@ -730,7 +661,7 @@ export default function AllUsersManagement() {
                           <tr>
                             <td
                               colSpan={6}
-                              className="py-8 text-center text-neutral-400"
+                              className="py-12 text-center text-neutral-400"
                             >
                               No records found matching filters.
                             </td>
@@ -739,18 +670,16 @@ export default function AllUsersManagement() {
                           users.map((user) => (
                             <tr
                               key={user.id}
-                              onClick={() =>
-                                handleSelectUser(user)
-                              }
+                              onClick={() => handleSelectUser(user)}
                               className={`hover:bg-neutral-50/70 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
                                 selectedUser?.id === user.id
                                   ? "bg-[#FEF2F2]/50 dark:bg-red-950/20"
                                   : ""
                               }`}
                             >
-                              <td className="py-3 px-4">
-                                <div className="flex items-center gap-2.5">
-                                  <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-neutral-500 dark:text-neutral-400">
+                              <td className="py-3.5 px-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-neutral-500 dark:text-neutral-400">
                                     {user.initials}
                                   </div>
 
@@ -759,20 +688,20 @@ export default function AllUsersManagement() {
                                       {user.name}
                                     </div>
 
-                                    <div className="text-[10px] text-neutral-400">
+                                    <div className="text-[10px] text-neutral-400 mt-0.5">
                                       {user.email}
                                     </div>
                                   </div>
                                 </div>
                               </td>
 
-                              <td className="py-3 px-4">
+                              <td className="py-3.5 px-4">
                                 <span className="inline-block capitalize px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
                                   {user.applicationType}
                                 </span>
                               </td>
 
-                              <td className="py-3 px-4 font-medium text-neutral-700 dark:text-neutral-300">
+                              <td className="py-3.5 px-4 font-medium text-neutral-700 dark:text-neutral-300">
                                 {user.university}
 
                                 <span className="text-[10px] text-neutral-400">
@@ -781,23 +710,23 @@ export default function AllUsersManagement() {
                                 </span>
                               </td>
 
-                              <td className="py-3 px-4 font-medium text-neutral-600 dark:text-neutral-400">
+                              <td className="py-3.5 px-4 font-medium text-neutral-600 dark:text-neutral-400">
                                 {user.batch}
                               </td>
 
-                              <td className="py-3 px-4">
+                              <td className="py-3.5 px-4">
                                 {getStatusBadge(user.role)}
                               </td>
 
-                              <td className="py-3 px-4 text-right">
-                                <div className="flex items-center justify-end gap-1">
+                              <td className="py-3.5 px-4 text-right">
+                                <div className="flex items-center justify-end gap-1.5">
                                   <button
                                     onClick={(event) => {
                                       event.stopPropagation();
                                       handleEditUser(user);
                                     }}
                                     title="Edit user"
-                                    className="p-1.5 text-neutral-400 hover:text-[#B91C1C] dark:hover:text-red-400 transition-colors cursor-pointer"
+                                    className="p-1.5 rounded-lg text-neutral-400 hover:text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-colors cursor-pointer"
                                   >
                                     <Pencil size={14} />
                                   </button>
@@ -808,7 +737,7 @@ export default function AllUsersManagement() {
                                       handleDeleteUser(user);
                                     }}
                                     title="Delete user"
-                                    className="p-1.5 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
+                                    className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-colors cursor-pointer"
                                   >
                                     <Trash2 size={14} />
                                   </button>
@@ -821,16 +750,14 @@ export default function AllUsersManagement() {
                     </table>
                   </div>
 
-                  <div className="px-4 py-2.5 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">
-                    <span>
-                      Showing {users.length} user records
-                    </span>
+                  <div className="px-5 py-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 bg-neutral-50/30 dark:bg-neutral-800/20">
+                    <span>Showing {users.length} user records</span>
                   </div>
                 </div>
               </div>
 
               {selectedUser && (
-                <div className="lg:col-span-5 xl:col-span-5 bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-5 shadow-2xs relative space-y-4">
+                <div className="lg:col-span-5 xl:col-span-5 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-6 shadow-md shadow-neutral-200/50 dark:shadow-none relative space-y-4 transition-all duration-300">
                   <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-neutral-900 dark:text-white">
@@ -845,7 +772,7 @@ export default function AllUsersManagement() {
                         <button
                           onClick={() => handleEditUser(selectedUser)}
                           title="Edit user"
-                          className="text-neutral-400 hover:text-[#B91C1C] dark:hover:text-red-400 cursor-pointer"
+                          className="text-neutral-400 hover:text-[#B91C1C] dark:hover:text-red-400 cursor-pointer p-1"
                         >
                           <Pencil size={15} />
                         </button>
@@ -856,14 +783,14 @@ export default function AllUsersManagement() {
                           setSelectedUser(null);
                           setEditing(false);
                         }}
-                        className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer"
+                        className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer p-1"
                       >
                         <X size={15} />
                       </button>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 p-2.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-lg border border-neutral-100 dark:border-neutral-800">
+                  <div className="flex items-center gap-3 p-3 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800">
                     <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center font-bold text-xs text-neutral-700 dark:text-neutral-200 shrink-0">
                       {selectedUser.initials}
                     </div>
@@ -882,67 +809,38 @@ export default function AllUsersManagement() {
                   {editing ? (
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-3">
-                        <InputField
-                          label="FULL NAME"
-                          field="fullName"
-                        />
+                        <InputField label="FULL NAME" field="fullName" />
 
-                        <SelectField
-                          label="GENDER"
-                          field="gender"
-                        >
+                        <SelectField label="GENDER" field="gender">
                           <option value="">Select gender</option>
                           <option value="male">Male</option>
-                          <option value="female">
-                            Female
-                          </option>
+                          <option value="female">Female</option>
                         </SelectField>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <InputField
-                          label="EMAIL"
-                          field="email"
-                          type="email"
-                        />
+                        <InputField label="EMAIL" field="email" type="email" />
 
-                        <InputField
-                          label="PHONE"
-                          field="phone"
-                        />
+                        <InputField label="PHONE" field="phone" />
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <InputField
-                          label="TELEGRAM"
-                          field="telegramUsername"
-                        />
+                        <InputField label="TELEGRAM" field="telegramUsername" />
 
                         <SelectField
                           label="APPLICATION TYPE"
                           field="applicationType"
                         >
-                          <option value="student">
-                            Student
-                          </option>
-                          <option value="mentor">
-                            Mentor
-                          </option>
+                          <option value="student">Student</option>
+                          <option value="mentor">Mentor</option>
                         </SelectField>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <SelectField
-                          label="ROLE"
-                          field="role"
-                        >
+                        <SelectField label="ROLE" field="role">
                           <option value="user">User</option>
-                          <option value="student">
-                            Student
-                          </option>
-                          <option value="mentor">
-                            Mentor
-                          </option>
+                          <option value="student">Student</option>
+                          <option value="mentor">Mentor</option>
                           <option value="admin">Admin</option>
                         </SelectField>
 
@@ -952,16 +850,11 @@ export default function AllUsersManagement() {
                           disabled={batchesLoading}
                         >
                           <option value="">
-                            {batchesLoading
-                              ? "Loading batches..."
-                              : "No batch"}
+                            {batchesLoading ? "Loading batches..." : "No batch"}
                           </option>
 
                           {availableBatches.map((batch) => (
-                            <option
-                              key={batch._id}
-                              value={batch._id}
-                            >
+                            <option key={batch._id} value={batch._id}>
                               {batch.name}
                             </option>
                           ))}
@@ -969,24 +862,14 @@ export default function AllUsersManagement() {
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <SelectField
-                          label="UNIVERSITY"
-                          field="university"
-                        >
-                          <option value="">
-                            Select university
-                          </option>
+                        <SelectField label="UNIVERSITY" field="university">
+                          <option value="">Select university</option>
 
-                          {availableUniversities.map(
-                            (university) => (
-                              <option
-                                key={university}
-                                value={university}
-                              >
-                                {university}
-                              </option>
-                            )
-                          )}
+                          {availableUniversities.map((university) => (
+                            <option key={university} value={university}>
+                              {university}
+                            </option>
+                          ))}
                         </SelectField>
 
                         <InputField
@@ -996,13 +879,8 @@ export default function AllUsersManagement() {
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <SelectField
-                          label="YEAR"
-                          field="year"
-                        >
-                          <option value="">
-                            Select year
-                          </option>
+                        <SelectField label="YEAR" field="year">
+                          <option value="">Select year</option>
                           <option value="1st">1st</option>
                           <option value="2nd">2nd</option>
                           <option value="3rd">3rd</option>
@@ -1010,32 +888,17 @@ export default function AllUsersManagement() {
                           <option value="5th">5th</option>
                         </SelectField>
 
-                        <InputField
-                          label="DEPARTMENT"
-                          field="department"
-                        />
+                        <InputField label="DEPARTMENT" field="department" />
                       </div>
 
-                      <InputField
-                        label="GITHUB"
-                        field="github"
-                      />
+                      <InputField label="GITHUB" field="github" />
 
-                      {/* Student-only fields — required by the backend only
-                          when applicationType === "student". Hidden for
-                          mentors so irrelevant values are never submitted. */}
                       {editForm.applicationType === "student" && (
                         <>
                           <div className="grid grid-cols-2 gap-3">
-                            <InputField
-                              label="CODEFORCES"
-                              field="codeforces"
-                            />
+                            <InputField label="CODEFORCES" field="codeforces" />
 
-                            <InputField
-                              label="LEETCODE"
-                              field="leetcode"
-                            />
+                            <InputField label="LEETCODE" field="leetcode" />
                           </div>
 
                           <InputField
@@ -1050,14 +913,11 @@ export default function AllUsersManagement() {
                             </label>
 
                             <textarea
-                              value={
-                                editForm.availabilityDescription ??
-                                ""
-                              }
+                              value={editForm.availabilityDescription ?? ""}
                               onChange={(event) =>
                                 handleEditChange(
                                   "availabilityDescription",
-                                  event.target.value
+                                  event.target.value,
                                 )
                               }
                               rows={3}
@@ -1075,19 +935,13 @@ export default function AllUsersManagement() {
                         <textarea
                           value={editForm.motivation ?? ""}
                           onChange={(event) =>
-                            handleEditChange(
-                              "motivation",
-                              event.target.value
-                            )
+                            handleEditChange("motivation", event.target.value)
                           }
                           rows={3}
                           className="w-full px-2.5 py-1.5 rounded-md text-xs bg-white dark:bg-[#10141b] border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] resize-none"
                         />
                       </div>
 
-                      {/* Mentor-only fields — required by the backend only
-                          when applicationType === "mentor". Hidden for
-                          students so irrelevant values are never submitted. */}
                       {editForm.applicationType === "mentor" && (
                         <div className="grid grid-cols-2 gap-3">
                           <div>
@@ -1100,7 +954,7 @@ export default function AllUsersManagement() {
                               onChange={(event) =>
                                 handleEditChange(
                                   "experience",
-                                  event.target.value
+                                  event.target.value,
                                 )
                               }
                               rows={3}
@@ -1108,15 +962,10 @@ export default function AllUsersManagement() {
                             />
                           </div>
 
-                          <SelectField
-                            label="EXPERTISE"
-                            field="expertise"
-                          >
+                          <SelectField label="EXPERTISE" field="expertise">
                             <option value="">None</option>
                             <option value="DSA">DSA</option>
-                            <option value="Development">
-                              Development
-                            </option>
+                            <option value="Development">Development</option>
                           </SelectField>
                         </div>
                       )}
@@ -1125,7 +974,7 @@ export default function AllUsersManagement() {
                         <button
                           onClick={handleCancelEdit}
                           disabled={saving}
-                          className="px-3 py-1.5 rounded-md text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 disabled:opacity-50 cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 disabled:opacity-50 cursor-pointer transition-colors"
                         >
                           Cancel
                         </button>
@@ -1133,13 +982,11 @@ export default function AllUsersManagement() {
                         <button
                           onClick={handleSaveUser}
                           disabled={saving}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[#B91C1C] hover:bg-[#991B1B] text-white disabled:opacity-50 cursor-pointer"
+                          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#B91C1C] hover:bg-[#991B1B] text-white disabled:opacity-50 cursor-pointer shadow-xs transition-colors"
                         >
                           <Save size={13} />
 
-                          {saving
-                            ? "Saving..."
-                            : "Save Changes"}
+                          {saving ? "Saving..." : "Save Changes"}
                         </button>
                       </div>
                     </div>
@@ -1160,15 +1007,13 @@ export default function AllUsersManagement() {
                           {[1, 2, 3].map((step) => (
                             <button
                               key={step}
-                              onClick={() =>
-                                setDetailStep(step)
-                              }
+                              onClick={() => setDetailStep(step)}
                               className={`h-1.5 rounded-full transition-all cursor-pointer ${
                                 detailStep === step
                                   ? "bg-[#B91C1C]"
                                   : detailStep > step
-                                  ? "bg-neutral-400 dark:bg-neutral-600"
-                                  : "bg-neutral-200 dark:bg-neutral-800"
+                                    ? "bg-neutral-400 dark:bg-neutral-600"
+                                    : "bg-neutral-200 dark:bg-neutral-800"
                               }`}
                             />
                           ))}
@@ -1312,7 +1157,7 @@ export default function AllUsersManagement() {
                                   href={selectedUser.github}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-[11px]"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-[11px] hover:bg-neutral-200 transition-colors"
                                 >
                                   GitHub
                                   <ExternalLink size={10} />
@@ -1324,7 +1169,7 @@ export default function AllUsersManagement() {
                                   href={selectedUser.codeforces}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-[11px]"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-[11px] hover:bg-neutral-200 transition-colors"
                                 >
                                   Codeforces
                                   <ExternalLink size={10} />
@@ -1336,7 +1181,7 @@ export default function AllUsersManagement() {
                                   href={selectedUser.leetcode}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="inline-flex items-center gap-1 px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-[11px]"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-[11px] hover:bg-neutral-200 transition-colors"
                                 >
                                   LeetCode
                                   <ExternalLink size={10} />
@@ -1382,9 +1227,8 @@ export default function AllUsersManagement() {
                               EXPERIENCE / EXPERTISE
                             </span>
 
-                            <p className="text-xs text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/40 p-2 rounded border border-neutral-100 dark:border-neutral-800">
-                              {selectedUser.experience !==
-                              "N/A"
+                            <p className="text-xs text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/40 p-2.5 rounded-lg border border-neutral-100 dark:border-neutral-800">
+                              {selectedUser.experience !== "N/A"
                                 ? selectedUser.experience
                                 : selectedUser.expertise}
                             </p>
@@ -1395,7 +1239,7 @@ export default function AllUsersManagement() {
                               MOTIVATION
                             </span>
 
-                            <p className="text-xs text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/40 p-2 rounded border border-neutral-100 dark:border-neutral-800 line-clamp-3">
+                            <p className="text-xs text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/40 p-2.5 rounded-lg border border-neutral-100 dark:border-neutral-800 line-clamp-3">
                               {selectedUser.motivation}
                             </p>
                           </div>
@@ -1405,12 +1249,10 @@ export default function AllUsersManagement() {
                       <div className="flex items-center justify-between pt-3 border-t border-neutral-100 dark:border-neutral-800">
                         <button
                           onClick={() =>
-                            setDetailStep((prev) =>
-                              Math.max(prev - 1, 1)
-                            )
+                            setDetailStep((prev) => Math.max(prev - 1, 1))
                           }
                           disabled={detailStep === 1}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed transition-colors"
                         >
                           <ChevronLeft size={13} />
                           Prev
@@ -1418,12 +1260,10 @@ export default function AllUsersManagement() {
 
                         <button
                           onClick={() =>
-                            setDetailStep((prev) =>
-                              Math.min(prev + 1, 3)
-                            )
+                            setDetailStep((prev) => Math.min(prev + 1, 3))
                           }
                           disabled={detailStep === 3}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed transition-colors"
                         >
                           Next
                           <ChevronRight size={13} />
@@ -1440,7 +1280,7 @@ export default function AllUsersManagement() {
 
       {deleteUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 max-w-sm w-full space-y-4 shadow-xl">
+          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 max-w-sm w-full space-y-4 shadow-xl">
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
                 Confirm Deletion
@@ -1459,7 +1299,7 @@ export default function AllUsersManagement() {
               <button
                 onClick={() => setDeleteUser(null)}
                 disabled={deleteLoading}
-                className="px-3 py-1.5 rounded text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -1467,7 +1307,7 @@ export default function AllUsersManagement() {
               <button
                 onClick={confirmDeleteUser}
                 disabled={deleteLoading}
-                className="px-3 py-1.5 rounded text-xs font-medium bg-red-600 hover:bg-red-700 text-white disabled:opacity-50 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-red-600 hover:bg-red-700 text-white disabled:opacity-50 cursor-pointer transition-colors shadow-xs"
               >
                 {deleteLoading ? "Deleting..." : "Delete User"}
               </button>

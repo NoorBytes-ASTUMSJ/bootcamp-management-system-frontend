@@ -27,9 +27,11 @@ import StudentAssignments from "../pages/student/StudentAssignments";
 import StudentSubmissions from "../pages/student/StudentSubmissions";
 import StudentAnnouncements from "../pages/student/AnnouncementsPage";
 import AllMembers from "../pages/student/AllMembers";
+import StudentSettings from "../pages/student/StudentSettings"; // ← የተማሪ እና ሜንተር የጋራ ሴቲንግ ፋይል
 
 // Layouts & Mentor Pages
 import MentorLayout from "../layouts/MentorLayout";
+import MentorDashboard from "../pages/mentor/MentorDashboard"; // ← አዲሱ የሜንቶር ዳሽቦርድ
 import MentorAllMember from "../pages/mentor/MentorAllMember";
 import MentorSubmissions from "../pages/mentor/MentorSubmissions";
 import MentorAttendance from "../pages/mentor/MentorAttendance";
@@ -49,7 +51,7 @@ import ProgressManagement from "../pages/admin/ProgressManagement";
 import AssignmentsManagement from "../pages/admin/AssignmentsManagement";
 import SubmissionsManagement from "../pages/admin/SubmissionsManagement";
 import AnnouncementsManagement from "../pages/admin/AnnouncementsManagement";
-import SettingsManagement from "../pages/admin/SettingsManagement";
+import SettingsManagement from "../pages/admin/SettingsManagement"; // ← የአድሚን ብቻ የቁጥጥር ፓነል ሴቲንግ
 
 // Placeholder for remaining under-construction pages
 const PagePlaceholder = ({ title }) => (
@@ -188,7 +190,7 @@ export default function AppRoutes() {
             <Route path="assignments" element={<StudentAssignments />} />
             <Route path="submissions" element={<StudentSubmissions />} />
             <Route path="announcements" element={<StudentAnnouncements />} />
-            <Route path="settings" element={<SettingsManagement />} />
+            <Route path="settings" element={<StudentSettings />} />
             <Route path="members" element={<AllMembers />} />
           </Route>
         </Route>
@@ -196,22 +198,15 @@ export default function AppRoutes() {
         {/* Protected Mentor Portal */}
         <Route element={<ProtectedRoute allowedRoles={["mentor"]} />}>
           <Route path="/mentor" element={<MentorLayout />}>
-            <Route index element={<Navigate to="attendance" replace />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<MentorDashboard />} />
             <Route path="students" element={<MentorAllMember />} />
             <Route path="attendance" element={<MentorAttendance />} />
             <Route path="assignments" element={<MentorAssignments />} />
             <Route path="submissions" element={<MentorSubmissions />} />
             <Route path="announcements" element={<MentorAnnouncements />} />
             <Route path="progress" element={<MentorProgress />} />
-            <Route
-              path="dashboard"
-              element={<PagePlaceholder title="Dashboard Overview" />}
-            />
-            <Route
-              path="students"
-              element={<PagePlaceholder title="My Students" />}
-            />
-            <Route path="settings" element={<SettingsManagement />} />
+            <Route path="settings" element={<StudentSettings />} />
           </Route>
         </Route>
 

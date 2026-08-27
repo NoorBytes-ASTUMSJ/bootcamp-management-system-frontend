@@ -113,43 +113,47 @@ export default function StudentSubmissions() {
         return {
           icon: <FiUpload className="w-3.5 h-3.5" />,
           label: "Action Required",
-          classes: "bg-surface-muted text-text-primary border-border",
+          classes: "bg-surface-subtle text-text-primary border-border",
         };
       case "reviewed":
         return {
           icon: <FiCheckCircle className="w-3.5 h-3.5" />,
           label: "Reviewed",
-          classes: "bg-success/10 text-success border-success/20",
+          classes: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
         };
       case "resubmission_requested":
         return {
           icon: <FiAlertTriangle className="w-3.5 h-3.5" />,
           label: "Resubmission Requested",
-          classes: "bg-warning/10 text-warning border-warning/20",
+          classes: "bg-amber-500/10 text-amber-500 border-amber-500/20",
         };
       case "submitted":
         return {
           icon: <FiClock className="w-3.5 h-3.5" />,
           label: "Submitted",
-          classes: "bg-info/10 text-info border-info/20",
+          classes: "bg-blue-500/10 text-blue-500 border-blue-500/20",
         };
       default:
         return {
           icon: <FiClock className="w-3.5 h-3.5" />,
           label: "Pending",
-          classes: "bg-surface-muted text-text-muted border-border",
+          classes: "bg-surface-subtle text-text-muted border-border",
         };
     }
   };
 
+  // Shared modern card style
+  const cardStyle =
+    "bg-surface border border-border rounded-2xl p-6 sm:p-7 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+
   return (
-    <div className="mx-auto w-full max-w-300 space-y-8 animate-in fade-in duration-500 pb-10">
+    <div className="mx-auto w-full max-w-7xl space-y-8 animate-in fade-in duration-500 pb-12 px-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-[28px] font-bold text-text-primary tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
             Submissions
           </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-1">
+          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
             View your assignment submissions, grades, and feedback.
           </p>
         </div>
@@ -165,35 +169,35 @@ export default function StudentSubmissions() {
           return (
             <div
               key={item.id}
-              className={`bg-surface border ${item.status === "unsubmitted" ? "border-primary/30 shadow-md" : "border-border shadow-sm"} rounded-xl p-6 sm:p-7 flex flex-col gap-5 transition-all hover:shadow-md`}
+              className={`${cardStyle} ${item.status === "unsubmitted" ? "border-primary/40 shadow-md" : ""} flex flex-col gap-5`}
             >
               <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div className="space-y-1.5">
-                  <h2 className="text-lg sm:text-xl font-bold text-text-primary">
+                  <h2 className="text-base sm:text-lg font-bold text-text-primary tracking-tight">
                     {item.assignmentTitle}
                   </h2>
-                  <div className="flex items-center gap-1.5 text-xs text-text-muted font-medium">
-                    <FiCalendar className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5 text-xs text-text-muted font-mono">
+                    <FiCalendar className="w-3.5 h-3.5 text-primary" />
                     Submitted: {item.submittedDate}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-center">
                   <span
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold border ${statusConfig.classes}`}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wide border ${statusConfig.classes}`}
                   >
                     {statusConfig.icon}
                     {statusConfig.label}
                   </span>
 
                   <div className="text-right">
-                    <div className="text-xl sm:text-2xl font-black text-text-primary leading-none">
+                    <div className="text-xl sm:text-2xl font-black text-text-primary leading-none font-mono">
                       {item.score !== null ? item.score : "--"}
-                      <span className="text-sm font-medium text-text-muted">
+                      <span className="text-xs font-semibold text-text-muted">
                         /{item.maxScore}
                       </span>
                     </div>
-                    <div className="text-[10px] sm:text-xs text-text-muted font-medium mt-0.5 uppercase tracking-wider">
+                    <div className="text-[10px] sm:text-xs text-text-muted font-mono font-bold mt-0.5 uppercase tracking-wider">
                       {item.status === "reviewed" ? "Score" : "Pending"}
                     </div>
                   </div>
@@ -203,7 +207,7 @@ export default function StudentSubmissions() {
               {(item.description || item.attachmentName) && (
                 <div className="py-4 border-t border-b border-border/60 space-y-3">
                   {item.description && (
-                    <p className="text-sm text-text-secondary leading-relaxed">
+                    <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
                       {item.description}
                     </p>
                   )}
@@ -211,7 +215,7 @@ export default function StudentSubmissions() {
                     <a
                       href={item.attachmentUrl}
                       download
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-subtle border border-border rounded-lg text-xs font-medium text-text-primary hover:bg-border-subtle hover:text-primary transition-colors w-fit"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-subtle border border-border rounded-xl text-xs font-medium text-text-primary hover:border-primary transition-colors w-fit shadow-2xs"
                     >
                       <FiPaperclip className="w-3.5 h-3.5 text-text-muted" />
                       {item.attachmentName}
@@ -223,7 +227,7 @@ export default function StudentSubmissions() {
 
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-1">
                 <p
-                  className={`text-sm leading-relaxed max-w-2xl ${item.status === "unsubmitted" || item.status === "submitted" ? "text-text-muted" : "italic text-text-secondary font-serif"}`}
+                  className={`text-xs sm:text-sm leading-relaxed max-w-2xl ${item.status === "unsubmitted" || item.status === "submitted" ? "text-text-muted" : "italic text-text-secondary font-serif"}`}
                 >
                   {item.status === "unsubmitted" || item.status === "submitted"
                     ? item.feedback
@@ -234,7 +238,7 @@ export default function StudentSubmissions() {
                   {isPendingSubmission ? (
                     <button
                       onClick={() => openSubmitModal(item)}
-                      className="w-full sm:w-auto px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover font-bold text-xs sm:text-sm rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover active:scale-[0.99] font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-primary/20 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <FiUpload className="w-4 h-4" />
                       {item.status === "unsubmitted"
@@ -242,7 +246,7 @@ export default function StudentSubmissions() {
                         : "Resubmit Now"}
                     </button>
                   ) : (
-                    <button className="w-full sm:w-auto px-5 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-bold text-xs sm:text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-border focus:ring-offset-2">
+                    <button className="w-full sm:w-auto px-5 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-bold text-xs sm:text-sm rounded-xl transition-colors shadow-xs cursor-pointer">
                       {item.status === "reviewed"
                         ? "View Details"
                         : "View Submission"}
@@ -256,34 +260,34 @@ export default function StudentSubmissions() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
           <div className="bg-surface border border-border shadow-2xl rounded-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-6 border-b border-border">
+            <div className="flex justify-between items-center px-6 py-4 border-b border-border bg-surface-subtle">
               <div>
-                <h3 className="text-lg font-bold text-text-primary">
+                <h3 className="text-base font-bold text-text-primary">
                   {activeAssignment?.status === "unsubmitted"
                     ? "Submit Assignment"
                     : "Resubmit Assignment"}
                 </h3>
-                <p className="text-xs text-text-muted mt-1">
+                <p className="text-xs text-text-muted mt-0.5 font-mono">
                   {activeAssignment?.assignmentTitle}
                 </p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-text-muted hover:text-text-primary transition-colors p-1"
+                className="text-text-muted hover:text-text-primary transition-colors p-2 rounded-xl hover:bg-surface border border-transparent hover:border-border cursor-pointer"
               >
                 <FiX className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-text-primary uppercase tracking-wider">
-                  GitHub Repository URL <span className="text-error">*</span>
+                <label className="text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1.5 block">
+                  GitHub Repository URL <span className="text-primary">*</span>
                 </label>
                 <div className="relative">
-                  <FiGithub className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <FiGithub className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
                   <input
                     required
                     type="url"
@@ -291,33 +295,33 @@ export default function StudentSubmissions() {
                     value={formData.githubUrl}
                     onChange={handleInputChange}
                     placeholder="https://github.com/username/repo"
-                    className="w-full pl-9 pr-4 py-2.5 bg-surface-subtle border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow"
+                    className="w-full pl-10 pr-4 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-text-primary uppercase tracking-wider">
+                <label className="text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1.5 block">
                   Live Demo URL{" "}
-                  <span className="text-text-muted font-normal transform-none">
+                  <span className="text-text-muted font-normal">
                     (Optional)
                   </span>
                 </label>
                 <div className="relative">
-                  <FiLink className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <FiLink className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
                   <input
                     type="url"
                     name="liveDemoUrl"
                     value={formData.liveDemoUrl}
                     onChange={handleInputChange}
                     placeholder="https://my-project.vercel.app"
-                    className="w-full pl-9 pr-4 py-2.5 bg-surface-subtle border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow"
+                    className="w-full pl-10 pr-4 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-text-primary uppercase tracking-wider">
+                <label className="text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1.5 block">
                   Submission Notes
                 </label>
                 <textarea
@@ -326,22 +330,22 @@ export default function StudentSubmissions() {
                   onChange={handleInputChange}
                   rows="3"
                   placeholder="Any context or notes for your mentor..."
-                  className="w-full p-3 bg-surface-subtle border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow resize-none"
+                  className="w-full p-3.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary focus:border-primary transition outline-none resize-none shadow-2xs"
                 ></textarea>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-border">
+              <div className="flex gap-2.5 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-bold text-sm rounded-lg transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-semibold text-xs rounded-xl transition-colors shadow-xs cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover font-bold text-sm rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover active:scale-[0.99] font-semibold text-xs rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
                 >
                   {isSubmitting ? (
                     <>
