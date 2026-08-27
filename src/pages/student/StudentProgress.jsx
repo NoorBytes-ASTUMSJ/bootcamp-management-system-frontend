@@ -1,489 +1,733 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+
 import {
-  FiCalendar,
-  FiTrendingUp,
-  FiBookOpen,
-  FiCheckCircle,
-  FiClock,
-  FiAward,
-  FiMoreVertical,
-  FiArrowRight,
-} from "react-icons/fi";
-import { FaHtml5, FaReact, FaNodeJs } from "react-icons/fa";
-import { IoLogoJavascript } from "react-icons/io5";
-import { SiMongodb } from "react-icons/si";
+  getStudentProgress,
+  updateStudentProgressStatus,
+} from "../../services/progressService";
 
-const progressOverview = [
-  {
-    id: 1,
-    label: "Overall Progress",
-    value: "68%",
-    subtext: "+8% from last week",
-    icon: FiTrendingUp,
-    color: "text-primary",
-    bg: "bg-primary/10 border border-primary/20",
-  },
-  {
-    id: 2,
-    label: "Completed Topics",
-    value: "16",
-    subtext: "16 / 24 total",
-    icon: FiBookOpen,
-    color: "text-blue-500",
-    bg: "bg-blue-500/10 border border-blue-500/20",
-  },
-  {
-    id: 3,
-    label: "Quizzes Completed",
-    value: "12",
-    subtext: "80% average score",
-    icon: FiCheckCircle,
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10 border border-emerald-500/20",
-  },
-  {
-    id: 4,
-    label: "Total Learning Time",
-    value: "42h 30m",
-    subtext: "+5h from last week",
-    icon: FiClock,
-    color: "text-amber-500",
-    bg: "bg-amber-500/10 border border-amber-500/20",
-  },
-  {
-    id: 5,
-    label: "Current Streak",
-    value: "7 days",
-    subtext: "Keep it up! 🔥",
-    icon: FiAward,
-    color: "text-purple-500",
-    bg: "bg-purple-500/10 border border-purple-500/20",
-  },
-];
+import {
+  Search,
+  X,
+  Loader2,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  HelpCircle,
+  ExternalLink,
+  BookOpen,
+  Lock,
+  Users,
+  TrendingUp,
+  ListChecks,
+  UserCircle2,
+} from "lucide-react";
 
-const topicProgressData = [
-  {
-    id: 1,
-    topic: "HTML / CSS",
-    progress: 100,
-    status: "Completed",
-    date: "Jun 5, 2025",
-    icon: FaHtml5,
-    iconColor: "text-amber-500",
-    iconBg: "bg-amber-500/10 border border-amber-500/20",
-  },
-  {
-    id: 2,
-    topic: "JavaScript",
-    progress: 72,
-    status: "In Progress",
-    date: "Jun 4, 2025",
-    icon: IoLogoJavascript,
-    iconColor: "text-blue-500",
-    iconBg: "bg-blue-500/10 border border-blue-500/20",
-  },
-  {
-    id: 3,
-    topic: "React",
-    progress: 45,
-    status: "Needs Improvement",
-    date: "Jun 3, 2025",
-    icon: FaReact,
-    iconColor: "text-cyan-500",
-    iconBg: "bg-cyan-500/10 border border-cyan-500/20",
-  },
-  {
-    id: 4,
-    topic: "Node.js",
-    progress: 60,
-    status: "In Progress",
-    date: "Jun 2, 2025",
-    icon: FaNodeJs,
-    iconColor: "text-emerald-500",
-    iconBg: "bg-emerald-500/10 border border-emerald-500/20",
-  },
-  {
-    id: 5,
-    topic: "MongoDB",
-    progress: 50,
-    status: "In Progress",
-    date: "May 30, 2025",
-    icon: SiMongodb,
-    iconColor: "text-emerald-500",
-    iconBg: "bg-emerald-500/10 border border-emerald-500/20",
-  },
-];
+export default function StudentProgress() {
+  const [data, setData] = useState(null);
 
-const getStatusBadgeStyles = (status) => {
-  switch (status) {
-    case "Completed":
-      return "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
-    case "In Progress":
-      return "bg-blue-500/10 text-blue-500 border border-blue-500/20";
-    case "Needs Improvement":
-      return "bg-amber-500/10 text-amber-500 border border-amber-500/20";
-    default:
-      return "bg-surface-subtle text-text-muted border border-border";
+  const [loading, setLoading] = useState(true);
+
+  const [saving, setSaving] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedColumnCell, setSelectedColumnCell] = useState(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setLoading(true);
+
+    const result = await getStudentProgress();
+
+    setData(result);
+
+    setLoading(false);
   }
-};
 
-const StudentProgress = () => {
-  // Shared modern card style
-  const cardStyle =
-    "bg-surface border border-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
+  const studentsList = data?.students || [];
 
+  const calculateStudentTotal = (student) => {
+    const topicsMap = student.progressMap || {};
+
+    let totalScore = 0;
+    let count = 0;
+
+    Object.keys(topicsMap).forEach((topicKey) => {
+      const items = Array.isArray(topicsMap[topicKey])
+        ? topicsMap[topicKey]
+        : [];
+
+      items.forEach((item) => {
+        count++;
+
+        const status = item.status || "Not Started";
+
+        if (status === "Completed") {
+          totalScore += 100;
+        } else if (status === "In Progress" || status === "Needs Help") {
+          totalScore += 50;
+        }
+      });
+    });
+
+    if (count === 0) {
+      return 0;
+    }
+
+    return Math.round(totalScore / count);
+  };
+
+  const calculateAdminOnlyTotal = (student) => {
+    const topicsMap = student.progressMap || {};
+
+    let totalScore = 0;
+    let count = 0;
+
+    Object.keys(topicsMap).forEach((topicKey) => {
+      const items = Array.isArray(topicsMap[topicKey])
+        ? topicsMap[topicKey]
+        : [];
+
+      items.forEach((item) => {
+        if (item.releasedBy !== "admin") {
+          return;
+        }
+
+        count++;
+
+        const status = item.status || "Not Started";
+
+        if (status === "Completed") {
+          totalScore += 100;
+        } else if (status === "In Progress" || status === "Needs Help") {
+          totalScore += 50;
+        }
+      });
+    });
+
+    if (count === 0) {
+      return 0;
+    }
+
+    return Math.round(totalScore / count);
+  };
+
+  const dynamicColumnsMap = new Map();
+
+  studentsList.forEach((st) => {
+    if (!st.progressMap) {
+      return;
+    }
+
+    Object.keys(st.progressMap).forEach((topicKey) => {
+      const items = st.progressMap[topicKey] || [];
+
+      items.forEach((item) => {
+        const colKey = item.id || `${topicKey}-${item.title}`.toLowerCase();
+
+        if (!dynamicColumnsMap.has(colKey)) {
+          dynamicColumnsMap.set(colKey, {
+            key: colKey,
+            topicKey,
+            itemId: item.id,
+            title: item.title || "Untitled Task",
+            resourceType: item.resourceType || "Documentation",
+            resourceLink: item.resourceLink || "",
+            week: item.week || "1",
+            instructions: item.instructions || "No instructions provided.",
+            releasedBy: item.releasedBy || "admin",
+            creatorName: item.creatorName || "System",
+          });
+        }
+      });
+    });
+  });
+
+  const progressColumns = Array.from(dynamicColumnsMap.values());
+
+  const filteredStudents = studentsList.filter((st) => {
+    const query = searchTerm.toLowerCase().trim();
+
+    if (!query) {
+      return true;
+    }
+
+    return (st.name || "").toLowerCase().includes(query);
+  });
+
+  const summaryStats = useMemo(() => {
+    const selfStudent = studentsList.find((st) => st.isSelf);
+    const myProgress = selfStudent ? calculateStudentTotal(selfStudent) : 0;
+    const myAdminProgress = selfStudent
+      ? calculateAdminOnlyTotal(selfStudent)
+      : 0;
+
+    let needsHelpCount = 0;
+
+    studentsList.forEach((st) => {
+      Object.values(st.progressMap || {}).forEach((items) => {
+        (Array.isArray(items) ? items : []).forEach((item) => {
+          if (item.status === "Needs Help") {
+            needsHelpCount++;
+          }
+        });
+      });
+    });
+
+    return {
+      myProgress,
+      myAdminProgress,
+      studentCount: studentsList.length,
+      taskCount: progressColumns.length,
+      needsHelpCount,
+    };
+  }, [studentsList, progressColumns]);
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "Completed":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
+            <CheckCircle2 size={11} />
+            Completed
+          </span>
+        );
+
+      case "In Progress":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-800/60">
+            <Clock size={11} />
+            In Progress
+          </span>
+        );
+
+      case "Needs Help":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60">
+            <HelpCircle size={11} />
+            Needs Help
+          </span>
+        );
+
+      case "Not Started":
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800/80 text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700">
+            <AlertCircle size={11} />
+            Not Started
+          </span>
+        );
+    }
+  };
+  const handleUpdateStatus = async (itemId, newStatus) => {
+    if (saving || !itemId) {
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      await updateStudentProgressStatus(itemId, newStatus);
+
+      const refreshed = await getStudentProgress();
+
+      setData(refreshed);
+
+      if (selectedColumnCell) {
+        const refreshedStudent = refreshed.students.find(
+          (s) => s.isSelf,
+        );
+
+        const refreshedItems =
+          (refreshedStudent?.progressMap || {})[
+            selectedColumnCell.topicKey
+          ] || [];
+
+        const updatedStudentsInModal = selectedColumnCell.studentsData.map(
+          (sObj) => {
+            if (sObj.student.isSelf) {
+              const updatedItems = refreshedItems.filter(
+                (i) => i.id === itemId,
+              );
+
+              return {
+                ...sObj,
+                student: refreshedStudent || sObj.student,
+                items: updatedItems,
+              };
+            }
+
+            return sObj;
+          },
+        );
+
+        setSelectedColumnCell({
+          ...selectedColumnCell,
+          studentsData: updatedStudentsInModal,
+        });
+      }
+    } catch (err) {
+      console.error("Update status error:", err);
+
+      alert("Failed to update status. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openProgressColumn = (col) => {
+    if (!col.itemId) {
+      return;
+    }
+
+    const studentsDataForColumn = filteredStudents.map((st) => {
+      const itemsMap = st.progressMap || {};
+
+      const topicItems = itemsMap[col.topicKey] || [];
+
+      const matchedItems = topicItems.filter((i) => i.id === col.itemId);
+
+      return {
+        student: st,
+        items: matchedItems,
+      };
+    });
+
+    setSelectedColumnCell({
+      columnKey: col.key,
+      topicKey: col.topicKey,
+      itemId: col.itemId,
+      title: col.title,
+      resourceType: col.resourceType,
+      resourceLink: col.resourceLink,
+      week: col.week,
+      instructions: col.instructions,
+      releasedBy: col.releasedBy,
+      creatorName: col.creatorName,
+      studentsData: studentsDataForColumn,
+    });
+  };
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 pb-12 space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
-            Progress Overview
-          </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-0.5">
-            Track your learning progress across all topics and skills.
-          </p>
-        </div>
-        <div className="relative">
-          <button className="flex justify-center items-center gap-2 px-4 py-2.5 bg-surface border border-border rounded-xl text-xs sm:text-sm font-semibold text-text-primary shadow-2xs hover:bg-surface-subtle hover:border-primary/40 transition-colors whitespace-nowrap cursor-pointer">
-            <FiCalendar className="w-4 h-4 text-text-muted" />
-            This Week
-            <svg
-              className="w-4 h-4 text-text-muted ml-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
-        </div>
-      </div>
+    <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+          {loading ? (
+            <div className="flex items-center justify-center py-28 gap-2 text-xs text-neutral-500">
+              <Loader2 className="animate-spin text-[#B91C1C]" size={20} />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {progressOverview.map((stat) => (
-          <div
-            key={stat.id}
-            className={`${cardStyle} p-5 flex flex-col justify-between`}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2.5 rounded-xl ${stat.bg} shadow-2xs`}>
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
-              </div>
-              <span className="text-xs font-bold text-text-muted uppercase tracking-wider">
-                {stat.label}
-              </span>
+              <span>Loading batch progress...</span>
             </div>
-            <div className="mt-auto">
-              <h3 className="text-2xl font-black text-text-primary tracking-tight font-mono">
-                {stat.value}
-              </h3>
-              <p
-                className={`text-[11px] mt-1 font-mono font-semibold ${stat.subtext.includes("+") ? "text-emerald-500" : "text-text-muted"}`}
-              >
-                {stat.subtext}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ) : (
+            <>
+              {/* Header */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
+                    My Progress
+                  </h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className={`${cardStyle} lg:col-span-2 flex flex-col`}>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
-              Progress Over Time
-            </h2>
-            <Link
-              to="#"
-              className="text-xs sm:text-sm font-bold text-primary hover:underline flex items-center gap-1"
-            >
-              View Full Report <FiArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="flex-1 relative w-full min-h-50 mt-4">
-            <div className="absolute inset-0 flex flex-col justify-between text-[11px] font-mono text-text-muted/50 pb-6">
-              <div className="border-b border-border/60 w-full flex items-end pb-1">
-                100%
-              </div>
-              <div className="border-b border-border/60 w-full flex items-end pb-1">
-                75%
-              </div>
-              <div className="border-b border-border/60 w-full flex items-end pb-1">
-                50%
-              </div>
-              <div className="border-b border-border/60 w-full flex items-end pb-1">
-                25%
-              </div>
-              <div className="border-b border-border/60 w-full flex items-end pb-1">
-                0%
-              </div>
-            </div>
-            <svg
-              className="absolute inset-0 w-full h-[calc(100%-1.5rem)]"
-              preserveAspectRatio="none"
-              viewBox="0 0 100 100"
-            >
-              <defs>
-                <linearGradient
-                  id="gradientLine"
-                  x1="0%"
-                  y1="0%"
-                  x2="0%"
-                  y2="100%"
-                >
-                  <stop
-                    offset="0%"
-                    stopColor="var(--primary)"
-                    stopOpacity="0.25"
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor="var(--primary)"
-                    stopOpacity="0"
-                  />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0,70 L20,60 L40,55 L60,45 L80,47 L100,35 L100,100 L0,100 Z"
-                fill="url(#gradientLine)"
-              />
-              <path
-                d="M0,70 L20,60 L40,55 L60,45 L80,47 L100,35"
-                fill="none"
-                stroke="var(--primary)"
-                strokeWidth="2.5"
-              />
-              <circle cx="0" cy="70" r="2" fill="var(--primary)" />
-              <circle cx="20" cy="60" r="2" fill="var(--primary)" />
-              <circle cx="40" cy="55" r="2" fill="var(--primary)" />
-              <circle cx="60" cy="45" r="2" fill="var(--primary)" />
-              <circle cx="80" cy="47" r="2" fill="var(--primary)" />
-              <circle cx="100" cy="35" r="2" fill="var(--primary)" />
-            </svg>
-            <div className="absolute bottom-0 left-0 w-full flex justify-between text-[11px] font-mono text-text-muted px-1">
-              <span>May 7</span>
-              <span>May 14</span>
-              <span>May 21</span>
-              <span>May 28</span>
-              <span>Jun 4</span>
-              <span>This Week</span>
-            </div>
-          </div>
-        </div>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                    See how your whole batch is tracking. You can only
+                    update your own task statuses.
+                  </p>
+                </div>
 
-        <div className={cardStyle}>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
-              Skills Breakdown
-            </h2>
-            <Link
-              to="#"
-              className="text-xs sm:text-sm font-bold text-primary hover:underline flex items-center gap-1"
-            >
-              View Skills <FiArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="relative w-40 h-40 mb-6">
-              <svg
-                viewBox="0 0 36 36"
-                className="w-full h-full transform -rotate-90"
-              >
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="transparent"
-                  stroke="var(--surface-subtle)"
-                  strokeWidth="3.5"
-                ></circle>
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="transparent"
-                  stroke="var(--primary)"
-                  strokeWidth="3.5"
-                  strokeDasharray="30 70"
-                  strokeDashoffset="0"
-                ></circle>
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="transparent"
-                  stroke="var(--info)"
-                  strokeWidth="3.5"
-                  strokeDasharray="20 80"
-                  strokeDashoffset="-30"
-                ></circle>
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="transparent"
-                  stroke="var(--success)"
-                  strokeWidth="3.5"
-                  strokeDasharray="15 85"
-                  strokeDashoffset="-50"
-                ></circle>
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="transparent"
-                  stroke="var(--warning)"
-                  strokeWidth="3.5"
-                  strokeDasharray="15 85"
-                  strokeDashoffset="-65"
-                ></circle>
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="transparent"
-                  stroke="var(--secondary-foreground)"
-                  strokeWidth="3.5"
-                  strokeDasharray="20 80"
-                  strokeDashoffset="-80"
-                ></circle>
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-text-primary font-mono">
-                  68%
-                </span>
-                <span className="text-[10px] font-mono font-bold text-text-muted uppercase">
-                  Overall
+                <span className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 shadow-2xs">
+                  Batch: {data?.batchName || "N/A"}
                 </span>
               </div>
-            </div>
 
-            <div className="w-full space-y-3">
-              {[
-                { label: "HTML / CSS", bgClass: "bg-primary", val: "100%" },
-                { label: "JavaScript", bgClass: "bg-blue-500", val: "72%" },
-                { label: "React", bgClass: "bg-emerald-500", val: "45%" },
-                { label: "Node.js", bgClass: "bg-amber-500", val: "60%" },
-                {
-                  label: "MongoDB",
-                  bgClass: "bg-purple-500",
-                  val: "50%",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between text-xs"
-                >
-                  <div className="flex items-center gap-2 w-28">
-                    <div
-                      className={`w-2 h-2 rounded-full ${item.bgClass}`}
-                    ></div>
-                    <span className="text-text-primary font-semibold">
-                      {item.label}
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      My Progress
                     </span>
+                    <div className="w-7 h-7 rounded-lg bg-[#B91C1C]/10 flex items-center justify-center text-[#B91C1C]">
+                      <UserCircle2 size={13} />
+                    </div>
                   </div>
-                  <div className="flex-1 mx-3 h-2 bg-surface-subtle rounded-full overflow-hidden border border-border/60">
-                    <div
-                      className={`h-full ${item.bgClass} rounded-full`}
-                      style={{ width: item.val }}
-                    ></div>
+                  <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                    {summaryStats.myProgress}%
+                  </p>
+                  <p className="text-[10px] text-neutral-400 mt-0.5">
+                    admin + your mentor's tasks
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      My Progress (Admin)
+                    </span>
+                    <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
+                      <TrendingUp size={13} />
+                    </div>
                   </div>
-                  <span className="text-text-primary font-bold w-10 text-right font-mono">
-                    {item.val}
+                  <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                    {summaryStats.myAdminProgress}%
+                  </p>
+                  <p className="text-[10px] text-neutral-400 mt-0.5">
+                    admin-released tasks only
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      Batchmates
+                    </span>
+                    <div className="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-300">
+                      <Users size={13} />
+                    </div>
+                  </div>
+                  <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                    {summaryStats.studentCount}
+                  </p>
+                  <p className="text-[10px] text-neutral-400 mt-0.5">
+                    in your batch
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      Tasks Visible
+                    </span>
+                    <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
+                      <ListChecks size={13} />
+                    </div>
+                  </div>
+                  <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                    {summaryStats.taskCount}
+                  </p>
+                  <p className="text-[10px] text-neutral-400 mt-0.5">
+                    released to you
+                  </p>
+                </div>
+              </div>
+
+              {/* Search */}
+              <div className="bg-white dark:bg-[#151921] p-3.5 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs max-w-sm">
+                <div className="relative">
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Search by student name..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 rounded-lg text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C]"
+                  />
+                </div>
+              </div>
+
+              {/* Main Table */}
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-sm">
+                <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
+                    Cohort Matrix ({filteredStudents.length} Students)
+                  </h3>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/80 dark:bg-neutral-800/40 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+                        <th className="py-3.5 px-5">Student Name</th>
+
+                        <th className="py-3.5 px-4">Overall</th>
+
+                        {progressColumns.length === 0 ? (
+                          <th className="py-3.5 px-5 text-neutral-400 italic font-normal">
+                            No progress tasks released for your batch yet
+                          </th>
+                        ) : (
+                          progressColumns.map((col) => (
+                            <th
+                              key={col.key}
+                              onClick={() => openProgressColumn(col)}
+                              className="py-3.5 px-4 text-center cursor-pointer hover:bg-neutral-100/80 dark:hover:bg-neutral-800 transition-colors group"
+                              title="Click to view full task details"
+                            >
+                              <span className="underline decoration-neutral-300 dark:decoration-neutral-700 underline-offset-2 group-hover:text-[#B91C1C]">
+                                {col.title}
+                              </span>
+
+                              <span className="block text-[9px] text-neutral-400 font-normal normal-case mt-0.5">
+                                Week {col.week} • {col.resourceType}
+                              </span>
+                            </th>
+                          ))
+                        )}
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
+                      {filteredStudents.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={2 + Math.max(1, progressColumns.length)}
+                            className="text-center py-12 text-neutral-400 text-xs"
+                          >
+                            No students match your search.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredStudents.map((st) => (
+                          <tr
+                            key={st.id}
+                            className={`hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40 transition-colors ${
+                              st.isSelf
+                                ? "bg-rose-50/40 dark:bg-rose-950/10"
+                                : ""
+                            }`}
+                          >
+                            <td className="py-3.5 px-5 font-semibold text-neutral-900 dark:text-neutral-100">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300 shadow-2xs">
+                                  {st.initials ||
+                                    st.name?.split(" ").map((n) => n[0]).join("")}
+                                </div>
+
+                                <div>
+                                  <p className="font-semibold text-neutral-900 dark:text-white flex items-center gap-1.5">
+                                    {st.name}
+                                    {st.isSelf && (
+                                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#B91C1C] text-white">
+                                        You
+                                      </span>
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="py-3.5 px-4 font-black text-[#B91C1C]">
+                              {calculateStudentTotal(st)}%
+                            </td>
+
+                            {progressColumns.length === 0 ? (
+                              <td className="py-3.5 px-5 text-neutral-400">
+                                -
+                              </td>
+                            ) : (
+                              progressColumns.map((col) => {
+                                const topicItems =
+                                  (st.progressMap || {})[col.topicKey] || [];
+
+                                const matchingItem = topicItems.find(
+                                  (i) => i.id === col.itemId,
+                                );
+
+                                const cellStatus = matchingItem
+                                  ? matchingItem.status
+                                  : "Not Started";
+
+                                return (
+                                  <td
+                                    key={col.key}
+                                    onClick={() => openProgressColumn(col)}
+                                    className="py-3.5 px-4 text-center cursor-pointer hover:bg-neutral-100/60 dark:hover:bg-neutral-800/70 transition-colors"
+                                  >
+                                    {getStatusBadge(cellStatus)}
+                                  </td>
+                                );
+                              })
+                            )}
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+
+      {selectedColumnCell && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-4">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 uppercase tracking-wider mb-1">
+                  <BookOpen size={11} />
+                  Week {selectedColumnCell.week} •{" "}
+                  {selectedColumnCell.resourceType}
+                </span>
+
+                <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
+                  {selectedColumnCell.title}
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedColumnCell(null)}
+                className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Task Information */}
+            <div className="p-4 rounded-xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/50 space-y-3 text-xs">
+              <h4 className="font-bold text-neutral-700 dark:text-neutral-200 uppercase tracking-wider text-[10px]">
+                Task & Resource Information
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <span className="text-neutral-400 block text-[10px]">
+                    Released By
+                  </span>
+
+                  <span className="font-semibold text-neutral-800 dark:text-neutral-200 capitalize">
+                    {selectedColumnCell.releasedBy} (
+                    {selectedColumnCell.creatorName || "System"})
                   </span>
                 </div>
-              ))}
+
+                <div>
+                  <span className="text-neutral-400 block text-[10px]">
+                    Resource Type
+                  </span>
+
+                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                    {selectedColumnCell.resourceType}
+                  </span>
+                </div>
+              </div>
+
+              {selectedColumnCell.resourceLink && (
+                <div>
+                  <span className="text-neutral-400 block text-[10px] mb-0.5">
+                    Resource Link / URL
+                  </span>
+
+                  <a
+                    href={selectedColumnCell.resourceLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold hover:underline break-all"
+                  >
+                    <span>{selectedColumnCell.resourceLink}</span>
+
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+              )}
+
+              <div>
+                <span className="text-neutral-400 block text-[10px] mb-0.5">
+                  Instructions & Guidelines
+                </span>
+
+                <p className="text-neutral-700 dark:text-neutral-300 bg-white dark:bg-[#151921] p-3 rounded-lg border border-neutral-200/60 dark:border-neutral-800/80 whitespace-pre-wrap">
+                  {selectedColumnCell.instructions}
+                </p>
+              </div>
+            </div>
+
+            {/* Student Status */}
+            <div className="space-y-3">
+              <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Batch Status Breakdown
+              </p>
+
+              <div className="max-h-[35vh] overflow-y-auto pr-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 rounded-xl bg-neutral-50/50 dark:bg-neutral-900/40">
+                {selectedColumnCell.studentsData.map(({ student, items }) => {
+                  const item = items[0];
+
+                  return (
+                    <div
+                      key={student.id}
+                      className={`p-3.5 flex items-center justify-between gap-4 ${
+                        student.isSelf
+                          ? "bg-rose-50/40 dark:bg-rose-950/10"
+                          : ""
+                      }`}
+                    >
+                      <div>
+                        <p className="font-semibold text-neutral-900 dark:text-white text-xs flex items-center gap-1.5">
+                          {student.name}
+                          {student.isSelf && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#B91C1C] text-white">
+                              You
+                            </span>
+                          )}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {item ? (
+                          <>
+                            {getStatusBadge(item.status)}
+
+                            {student.isSelf ? (
+                              <select
+                                value={item.status}
+                                disabled={saving}
+                                onChange={(e) =>
+                                  handleUpdateStatus(item.id, e.target.value)
+                                }
+                                className="px-2.5 py-1 rounded-md text-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 cursor-pointer focus:outline-none focus:border-[#B91C1C] disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <option value="Not Started">
+                                  Not Started
+                                </option>
+
+                                <option value="In Progress">
+                                  In Progress
+                                </option>
+
+                                <option value="Needs Help">Needs Help</option>
+
+                                <option value="Completed">Completed</option>
+                              </select>
+                            ) : (
+                              <Lock
+                                size={13}
+                                className="text-neutral-300 dark:text-neutral-700"
+                                title="You can only update your own status"
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-[11px] text-neutral-400 italic">
+                            Not assigned
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedColumnCell(null)}
+                className="px-4 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="bg-surface rounded-2xl border border-border shadow-sm flex flex-col mb-10 w-full overflow-hidden hover:border-primary/40 transition-all duration-200">
-        <div className="p-5 sm:p-6 border-b border-border flex justify-between items-center bg-surface-subtle/50">
-          <h2 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
-            Topic Progress
-          </h2>
-          <Link
-            to="#"
-            className="text-xs sm:text-sm font-bold text-primary hover:underline flex items-center gap-1"
-          >
-            View All Topics <FiArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse min-w-200">
-            <thead>
-              <tr className="border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-mono font-bold bg-surface-subtle">
-                <th className="py-3.5 px-6 w-1/3">Topic</th>
-                <th className="py-3.5 px-6 w-1/3">Status</th>
-                <th className="py-3.5 px-6 w-1/4">Last Activity</th>
-                <th className="py-3.5 px-6 w-10"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60 text-xs sm:text-sm">
-              {topicProgressData.map((topic) => (
-                <tr
-                  key={topic.id}
-                  className="hover:bg-surface-subtle/50 transition-colors group"
-                >
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-2xs ${topic.iconBg}`}
-                      >
-                        <topic.icon className={`w-5 h-5 ${topic.iconColor}`} />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-xs sm:text-sm font-bold text-text-primary mb-2">
-                          {topic.topic}
-                        </h4>
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 h-2 bg-surface-subtle rounded-full max-w-30 overflow-hidden border border-border/60">
-                            <div
-                              className="h-full bg-primary rounded-full"
-                              style={{ width: `${topic.progress}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs font-bold text-text-primary font-mono">
-                            {topic.progress}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${getStatusBadgeStyles(topic.status)}`}
-                    >
-                      {topic.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className="text-xs sm:text-sm text-text-muted font-mono">
-                      {topic.date}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-right">
-                    <button className="text-text-muted hover:text-text-primary p-2 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-border">
-                      <FiMoreVertical className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
     </div>
   );
-};
-
-export default StudentProgress;
+}
