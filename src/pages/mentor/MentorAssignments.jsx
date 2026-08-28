@@ -3,7 +3,6 @@ import {
   FiPlus,
   FiClipboard,
   FiCalendar,
-  FiUsers,
   FiTrash2,
   FiX,
   FiEdit2,
@@ -43,7 +42,17 @@ export default function MentorAssignments() {
     setLoading(true);
     try {
       const response = await API.get("/assignments/mentor");
-      const rawAssignments = response.data.data.assignments;
+
+      let rawAssignments = [];
+      if (Array.isArray(response.data?.data?.assignments)) {
+        rawAssignments = response.data.data.assignments;
+      } else if (Array.isArray(response.data?.data)) {
+        rawAssignments = response.data.data;
+      } else if (Array.isArray(response.data?.assignments)) {
+        rawAssignments = response.data.assignments;
+      } else if (Array.isArray(response.data)) {
+        rawAssignments = response.data;
+      }
 
       const formatted = rawAssignments.map((a) => ({
         id: a._id,
@@ -58,8 +67,6 @@ export default function MentorAssignments() {
           hour: "numeric",
           minute: "2-digit",
         }),
-        totalSubmissions: a.submissionsCount || 0,
-        totalStudents: a.totalStudents || 0,
         maxScore: a.maxScore || 100,
         resourceLink: a.fileUrl || "",
         fileName: a.fileName || "",
@@ -128,8 +135,7 @@ export default function MentorAssignments() {
       fetchMentorAssignments();
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.message ||
-          "Failed to save assignment. Please check your connection or file size (Max 2MB).",
+        error.response?.data?.message || "Failed to save assignment.",
       );
     } finally {
       setIsSubmitting(false);
@@ -163,118 +169,126 @@ export default function MentorAssignments() {
     return true;
   });
 
+  const getFileUrl = (url) => {
+    if (!url) return "#";
+    if (url.startsWith("http")) return url;
+    const baseUrl = API.defaults.baseURL?.replace("/api", "") || "";
+    return `${baseUrl}${url}`;
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full min-h-100">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center h-full min-h-[60vh]">
+        <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 pb-10">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700 pb-12 px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight">
             Assignments
           </h1>
-          <p className="text-sm text-text-muted mt-1">
+          <p className="text-sm text-text-muted">
             Manage your assignments and view global tasks for your students.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3.5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary font-medium cursor-pointer"
-          >
-            <option value="ALL">All Types</option>
-            <option value="Global">Global Assignments</option>
-            <option value="Mentor Assigned">My Assignments</option>
-          </select>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative group flex-1 sm:flex-none min-w-[160px]">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full appearance-none px-4 py-3 bg-surface/80 backdrop-blur-sm border border-border/60 rounded-xl text-sm font-bold text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 cursor-pointer transition-all shadow-sm"
+            >
+              <option value="ALL">All Types</option>
+              <option value="Global">Global Assignments</option>
+              <option value="Mentor Assigned">My Assignments</option>
+            </select>
+          </div>
 
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-bold text-sm rounded-lg hover:bg-primary-hover transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-bold text-sm rounded-xl hover:bg-primary-hover transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-primary/20 whitespace-nowrap"
           >
             <FiPlus className="w-4 h-4" />
-            Create Assignment
+            Create New
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredAssignments.map((item) => (
           <div
             key={item.id}
-            className="bg-surface border border-border shadow-sm rounded-xl p-6 flex flex-col justify-between space-y-4"
+            className="group relative overflow-hidden flex flex-col rounded-2xl border border-border/60 bg-surface/80 backdrop-blur-sm p-6 shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/40"
           >
-            <div>
-              <div className="flex items-start justify-between gap-2">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 transition-opacity group-hover:opacity-100 opacity-0 duration-500"></div>
+
+            <div className="relative z-10 flex-1 flex flex-col">
+              <div className="flex items-start justify-between gap-3">
                 <span
-                  className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold border ${
+                  className={`inline-flex px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-sm ${
                     item.scope === "global"
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
-                      : "bg-primary/10 text-primary border-primary/20"
+                      ? "bg-blue-500/10 text-blue-600 border-blue-500/20 shadow-sm shadow-blue-500/5"
+                      : "bg-primary/10 text-primary border-primary/20 shadow-sm shadow-primary/5"
                   }`}
                 >
-                  {item.scope === "global"
-                    ? "Global Assignment"
-                    : "Mentor Assigned"}
+                  {item.scope === "global" ? "Global Task" : "Your Assignment"}
                 </span>
 
                 {item.scope !== "global" && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenEdit(item)}
-                      className="p-1.5 text-text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                      className="p-2 bg-surface text-text-muted border border-border/50 hover:border-primary/50 hover:text-primary hover:bg-primary/5 rounded-lg transition-all shadow-sm hover:shadow-md"
                     >
-                      <FiEdit2 className="w-4 h-4" />
+                      <FiEdit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => promptDelete(item.id)}
-                      className="p-1.5 text-text-muted hover:text-error hover:bg-error/10 rounded-lg transition-colors"
+                      className="p-2 bg-surface text-text-muted border border-border/50 hover:border-rose-500/50 hover:text-rose-600 hover:bg-rose-500/5 rounded-lg transition-all shadow-sm hover:shadow-md"
                     >
-                      <FiTrash2 className="w-4 h-4" />
+                      <FiTrash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 )}
               </div>
 
-              <h3 className="text-base sm:text-lg font-bold text-text-primary mt-3 tracking-tight">
-                {item.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-text-muted mt-1 line-clamp-2">
-                {item.description}
-              </p>
+              <div className="mt-5 mb-6">
+                <h3 className="text-lg font-black text-text-primary tracking-tight group-hover:text-primary transition-colors line-clamp-2">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-text-muted mt-2 line-clamp-2 leading-relaxed">
+                  {item.description}
+                </p>
 
-              {item.fileName && (
-                <div className="mt-3 flex items-center gap-1.5 text-xs text-primary font-medium">
-                  <FiPaperclip className="w-3.5 h-3.5" />
-                  <span className="truncate">{item.fileName}</span>
-                </div>
-              )}
+                {item.fileName && (
+                  <a
+                    href={getFileUrl(item.resourceLink)}
+                    download={item.fileName}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center gap-2 px-3 py-2 bg-surface-subtle/50 hover:bg-primary/5 border border-border/50 hover:border-primary/30 rounded-lg text-xs text-primary font-bold transition-all w-fit max-w-full"
+                  >
+                    <FiPaperclip className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{item.fileName}</span>
+                  </a>
+                )}
+              </div>
             </div>
 
-            <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted font-mono">
-              <div className="flex items-center gap-1.5">
-                <FiCalendar className="w-4 h-4 text-primary" />
-                <span>
-                  Due:{" "}
-                  <strong className="text-text-primary">
-                    {item.deadlineFormatted}
-                  </strong>
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <FiUsers className="w-4 h-4 text-primary" />
-                <span>
-                  Submissions:{" "}
-                  <strong className="text-text-primary">
-                    {item.totalSubmissions} / {item.totalStudents}
-                  </strong>
-                </span>
+            <div className="relative z-10 pt-5 border-t border-border/50 flex items-center justify-between mt-auto">
+              <div>
+                <div className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider mb-1">
+                  Due Date
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-text-primary">
+                  <FiCalendar className="w-3.5 h-3.5 text-primary" />
+                  {item.deadlineFormatted}
+                </div>
               </div>
             </div>
           </div>
@@ -282,168 +296,204 @@ export default function MentorAssignments() {
       </div>
 
       {filteredAssignments.length === 0 && (
-        <div className="bg-surface border border-border rounded-xl p-12 text-center text-text-muted">
-          <FiClipboard className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No assignments found.</p>
+        <div className="bg-surface/50 backdrop-blur-sm border border-border/60 rounded-2xl p-16 text-center text-text-muted flex flex-col items-center justify-center">
+          <div className="w-16 h-16 bg-surface-subtle rounded-2xl flex items-center justify-center mb-4 border border-border/50 shadow-inner">
+            <FiClipboard className="w-8 h-8 opacity-50" />
+          </div>
+          <p className="font-bold text-text-primary">No assignments found</p>
+          <p className="text-sm mt-1">
+            Try adjusting your filters or create a new one.
+          </p>
         </div>
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-surface border border-border rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-subtle/30">
-              <h3 className="text-lg font-bold text-text-primary">
-                {isEditMode ? "Edit Assignment" : "Create New Assignment"}
-              </h3>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl text-text-muted hover:bg-surface hover:text-text-primary transition-colors cursor-pointer border border-transparent hover:border-border"
-              >
-                <FiX className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              {errorMessage && (
-                <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-lg flex items-center gap-2 text-xs text-red-700 dark:text-red-300">
-                  <FiAlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-                  Assignment Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. State Management in React"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary hover:shadow-[0_0_0_1px_rgba(234,88,12,0.25)] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none duration-150 shadow-2xs"
-                />
+        <>
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-300"
+            onClick={() => setIsModalOpen(false)}
+          ></div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in zoom-in-95 duration-300 pointer-events-none">
+            <div className="bg-surface/95 backdrop-blur-xl border border-border/60 rounded-2xl shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] pointer-events-auto overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-surface/80 backdrop-blur-xl z-20">
+                <h3 className="text-lg font-black text-text-primary tracking-tight">
+                  {isEditMode ? "Edit Assignment" : "Create New Assignment"}
+                </h3>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="p-2 rounded-xl text-text-muted hover:bg-surface-subtle hover:text-text-primary transition-all cursor-pointer border border-transparent hover:border-border/50"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-                  Deadline (Date & Time) *
-                </label>
-                <Input
-                  type="datetime-local"
-                  required
-                  value={newDeadline}
-                  onChange={(e) => setNewDeadline(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                  style={{ colorScheme: "light" }}
-                />
+              <div className="overflow-y-auto p-6 scroll-smooth">
+                <form
+                  id="assignmentForm"
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
+                >
+                  {errorMessage && (
+                    <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-xl flex items-center gap-3 text-sm font-bold text-red-600 dark:text-red-400">
+                      <FiAlertCircle className="w-5 h-5 shrink-0" />
+                      <span>{errorMessage}</span>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold text-text-muted uppercase tracking-widest mb-2">
+                      Assignment Title <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. State Management in React"
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      className="w-full px-4 py-3 bg-surface-subtle/50 border border-border/60 rounded-xl text-sm font-bold text-text-primary focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold text-text-muted uppercase tracking-widest mb-2">
+                      Deadline (Date & Time){" "}
+                      <span className="text-rose-500">*</span>
+                    </label>
+                    <Input
+                      type="datetime-local"
+                      required
+                      value={newDeadline}
+                      onChange={(e) => setNewDeadline(e.target.value)}
+                      className="flex h-12 w-full rounded-xl border border-border/60 bg-surface-subtle/50 px-4 py-3 text-sm font-bold text-text-primary shadow-sm focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all"
+                      style={{ colorScheme: "light" }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold text-text-muted uppercase tracking-widest mb-2">
+                        Max Score <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        value={newMaxScore}
+                        onChange={(e) => setNewMaxScore(e.target.value)}
+                        className="w-full px-4 py-3 bg-surface-subtle/50 border border-border/60 rounded-xl text-sm font-bold text-text-primary focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold text-text-muted uppercase tracking-widest mb-2">
+                        PDF Attachment{" "}
+                        <span className="lowercase font-normal">(Max 2MB)</span>
+                      </label>
+                      <div className="relative overflow-hidden w-full px-3 py-2 bg-surface-subtle/50 border border-border/60 rounded-xl text-sm focus-within:ring-4 focus-within:ring-primary/10 focus-within:border-primary transition-all shadow-sm">
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => setSelectedFile(e.target.files[0])}
+                          className="w-full text-xs font-bold text-text-muted file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-primary file:text-primary-foreground hover:file:bg-primary-hover cursor-pointer outline-none transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold text-text-muted uppercase tracking-widest mb-2">
+                      Resource Link{" "}
+                      <span className="lowercase font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://github.com/..."
+                      value={newResourceLink}
+                      onChange={(e) => setNewResourceLink(e.target.value)}
+                      className="w-full px-4 py-3 bg-surface-subtle/50 border border-border/60 rounded-xl text-sm font-bold text-text-primary focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold text-text-muted uppercase tracking-widest mb-2">
+                      Description & Instructions
+                    </label>
+                    <textarea
+                      rows="4"
+                      placeholder="Provide detailed instructions or requirements for your students..."
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      className="w-full p-4 bg-surface-subtle/50 border border-border/60 rounded-xl text-sm text-text-primary focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm leading-relaxed resize-y"
+                    ></textarea>
+                  </div>
+                </form>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-                    Max Score
-                  </label>
-                  <input
-                    type="number"
-                    value={newMaxScore}
-                    onChange={(e) => setNewMaxScore(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-                    PDF Attachment (Max 2MB)
-                  </label>
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={(e) => setSelectedFile(e.target.files[0])}
-                    className="w-full text-xs text-text-muted file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-                  Resource Link (Optional)
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://github.com/..."
-                  value={newResourceLink}
-                  onChange={(e) => setNewResourceLink(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1.5">
-                  Description & Instructions
-                </label>
-                <textarea
-                  rows="3"
-                  placeholder="Provide instructions or requirements for your students..."
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary focus:border-primary transition outline-none resize-none shadow-2xs"
-                ></textarea>
-              </div>
-
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-border">
+              <div className="p-6 border-t border-border/50 bg-surface/80 backdrop-blur-xl flex justify-end gap-3 z-20">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 border border-border bg-surface text-text-primary hover:bg-surface-subtle font-semibold text-xs rounded-xl transition-colors shadow-xs cursor-pointer"
+                  className="px-6 py-3 border border-border/80 bg-surface text-text-primary hover:bg-surface-subtle font-bold text-sm rounded-xl transition-all duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
+                  form="assignmentForm"
                   disabled={isSubmitting}
-                  className="px-5 py-2 bg-primary text-primary-foreground font-bold text-sm rounded-lg hover:bg-primary-hover transition-colors shadow-sm disabled:opacity-50"
+                  className="px-6 py-3 bg-primary text-primary-foreground font-bold text-sm rounded-xl hover:bg-primary-hover transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-md"
                 >
                   {isSubmitting
                     ? "Saving..."
                     : isEditMode
                       ? "Save Changes"
-                      : "Publish to Assigned Students"}
+                      : "Publish Assignment"}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {deleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-surface border border-border rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
-            <h3 className="text-base font-bold text-text-primary">
-              Delete Assignment
-            </h3>
-            <p className="text-xs text-text-muted">
-              Are you sure you want to delete this assignment? This action
-              cannot be undone and removes all associated submissions.
-            </p>
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setDeleteModalOpen(false)}
-                className="px-3 py-1.5 border border-border text-text-secondary text-xs font-bold rounded-lg hover:bg-surface-subtle transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={confirmDelete}
-                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm disabled:opacity-50"
-              >
-                {isDeleting ? "Deleting..." : "Delete"}
-              </button>
+        <>
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 animate-in fade-in duration-300"
+            onClick={() => setDeleteModalOpen(false)}
+          ></div>
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-in zoom-in-95 duration-300 pointer-events-none">
+            <div className="bg-surface/95 backdrop-blur-xl border border-border/60 rounded-2xl shadow-2xl w-full max-w-sm p-7 space-y-5 pointer-events-auto">
+              <div className="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500 mb-2">
+                <FiAlertCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-text-primary tracking-tight mb-2">
+                  Delete Assignment?
+                </h3>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  Are you sure you want to delete this assignment? This action
+                  cannot be undone and will permanently remove all associated
+                  student submissions.
+                </p>
+              </div>
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setDeleteModalOpen(false)}
+                  className="px-4 py-2 border border-border/80 text-text-secondary bg-surface text-sm font-bold rounded-xl hover:bg-surface-subtle transition-all duration-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-md shadow-rose-600/20 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50"
+                >
+                  {isDeleting ? "Deleting..." : "Yes, Delete"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
