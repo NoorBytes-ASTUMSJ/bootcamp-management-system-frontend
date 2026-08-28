@@ -1,35 +1,65 @@
-import emailjs from "@emailjs/browser";
+const SERVICE_ID = "service_dnydl1r";
+const TEMPLATE_ID = "template_tyv8akj";
+const PUBLIC_KEY = "Tk6pBxXbnfW3diLSj";
 
 export const sendConfirmationEmail = async ({
   recipientName,
   recipientEmail,
-  role, // "Student" or "Mentor"
-  track, // "Full-Stack Development", "Competitive Programming", etc.
+  role,
+  track,
 }) => {
-  const SERVICE_ID = "service_dnydl1r";
-  const TEMPLATE_ID = "template_tyv8akj";
-  const PUBLIC_KEY = "Tk6pBxXbnfW3diLSj";
+  if (!recipientEmail) {
+    console.warn("sendConfirmationEmail: recipientEmail is missing.");
+    return false;
+  }
 
-  const templateParams = {
-    to_name: recipientName,
-    to_email: recipientEmail,
-    role_type: role,
-    track_name: track || "General Track",
-    current_year: new Date().getFullYear(),
-    announcement_link: `${window.location.origin}/announcements`,
+  const payload = {
+    service_id: SERVICE_ID,
+    template_id: TEMPLATE_ID,
+    user_id: PUBLIC_KEY,
+    template_params: {
+      to_email: recipientEmail.trim(),
+      to_name: recipientName?.trim() || "Participant",
+      role_type: role || "Student",
+      track_name: track || "General Track",
+      current_year: new Date().getFullYear(),
+      announcement_link:
+        "https://bootcamp-management-system-frontend.vercel.app/announcements",
+    },
   };
 
+  console.log("📧 Sending registration email...");
+  console.log("📧 Email:", recipientEmail);
+  console.log("📧 Role:", role);
+  console.log("📧 Track:", track);
+
   try {
-    const response = await emailjs.send(
-      SERVICE_ID,
-      TEMPLATE_ID,
-      templateParams,
-      PUBLIC_KEY,
+    const response = await fetch(
+      "https://api.emailjs.com/api/v1.0/email/send",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      },
     );
-    console.log("Registration email sent successfully:", response.status);
+
+    const responseText = await response.text();
+
+    console.log("📧 EmailJS Status:", response.status);
+    console.log("📧 EmailJS Response:", responseText);
+
+    if (!response.ok) {
+      console.error("❌ EmailJS failed:", response.status, responseText);
+      return false;
+    }
+
+    console.log("✅ Registration email sent successfully!");
+
     return true;
   } catch (error) {
-    console.error("Failed to send registration email:", error);
+    console.error("❌ EmailJS network error:", error);
     return false;
   }
 };

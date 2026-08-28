@@ -38,11 +38,9 @@ export default function StudentRegister({
   const [isOpen, setIsOpen] = useState(true);
   const [checkingStatus, setCheckingStatus] = useState(true);
 
-  // Toggle visibility states for password fields
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Real-time Global Registration Status Listener
   useEffect(() => {
     const unsubscribe = subscribeToRegistrationStatus((data) => {
       if (data.isStudentRegOpen !== undefined) {
@@ -73,7 +71,7 @@ export default function StudentRegister({
     leetcode: "",
     phone: "",
     studentId: "",
-    universityName: "Adama Science and Technology University",
+    university: "Adama Science and Technology University",
     telegramUsername: "",
     dailyAvailableHours: "",
     availabilityDescription: "",
@@ -132,8 +130,9 @@ export default function StudentRegister({
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
-      studentId: formData.studentId,
-      universityName: formData.universityName,
+      universityId: formData.studentId,
+      university:
+        formData.university || "Adama Science and Technology University",
       telegramUsername: formData.telegramUsername,
       password: formData.password,
       role: "user",
@@ -152,7 +151,8 @@ export default function StudentRegister({
     try {
       const response = await API.post("/auth/register/student", payload);
 
-      sendConfirmationEmail({
+      // 1. ኢሜይሉ እስኪላክ ድረስ መጠበቅ (await)
+      await sendConfirmationEmail({
         recipientName: formData.fullName,
         recipientEmail: formData.email,
         role: "Student",
@@ -205,7 +205,6 @@ export default function StudentRegister({
   const secondaryBtnStyle =
     "w-full py-2.5 px-4 rounded-xl bg-surface border border-border hover:bg-surface-subtle hover:border-primary/40 active:scale-[0.99] text-text-primary text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer disabled:opacity-60 text-center flex items-center justify-center select-none";
 
-  // If Closed: Show Friendly Notice Card
   if (!checkingStatus && !isOpen) {
     return (
       <RegistrationClosedCard
@@ -219,7 +218,6 @@ export default function StudentRegister({
   return (
     <FormCard>
       <div className="w-full">
-        {/* Top Header */}
         <div className="flex items-center justify-between mb-2">
           <button
             type="button"
@@ -235,7 +233,6 @@ export default function StudentRegister({
           </span>
         </div>
 
-        {/* Brand Logo Header */}
         <div className="flex justify-center mb-3">
           <div className="w-12 h-12 rounded-2xl bg-surface border border-border/80 shadow-xs p-1 overflow-hidden">
             <img
@@ -675,10 +672,10 @@ export default function StudentRegister({
                     />
                     <input
                       type="text"
-                      name="universityName"
+                      name="university"
                       required
                       placeholder="Adama Science and Technology University"
-                      value={formData.universityName}
+                      value={formData.university}
                       onChange={handleChange}
                       className={inputWithIconStyle}
                     />
