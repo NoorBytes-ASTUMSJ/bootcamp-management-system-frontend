@@ -235,11 +235,14 @@ export default function SubmissionsManagement({
                     >
                       <option value="ALL">Select Assignment...</option>
                       {Array.isArray(globalAssignments) &&
-                        globalAssignments.map((a) => (
-                          <option key={a._id} value={a._id}>
-                            {a.title} {a.batch?.name ? `(${a.batch.name})` : ""}
-                          </option>
-                        ))}
+                        globalAssignments
+                          .filter((a) => a.scope === "global" || !a.scope)
+                          .map((a) => (
+                            <option key={a._id} value={a._id}>
+                              {a.title}{" "}
+                              {a.batch?.name ? `(${a.batch.name})` : ""}
+                            </option>
+                          ))}
                     </select>
                     <ChevronDown
                       size={12}

@@ -14,6 +14,7 @@ import {
   Loader2,
   Paperclip,
   Calendar,
+  User,
 } from "lucide-react";
 
 export default function StudentAssignments() {
@@ -40,38 +41,53 @@ export default function StudentAssignments() {
     setLoading(true);
     try {
       const response = await API.get("/submissions/me");
-      const data = response.data?.data?.submissions || [];
 
-      const formatted = data.map((sub) => ({
-        id: sub._id,
-        assignmentTitle: sub.assignment?.title || "Untitled Assignment",
-        description: sub.assignment?.description || "",
-        batchName: sub.assignment?.batch?.name || "",
-        deadline: sub.assignment?.deadline,
-        deadlineFormatted: sub.assignment?.deadline
-          ? new Date(sub.assignment.deadline).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "No Deadline",
-        fileName: sub.assignment?.fileName || "",
-        fileUrl: sub.assignment?.fileUrl || "",
-        status: sub.status,
-        score: sub.score,
-        maxScore: sub.assignment?.maxScore || 100,
-        feedback: sub.feedback || "",
-        githubUrl: sub.githubUrl || "",
-        demoUrl: sub.liveDemoUrl || "",
-        submittedAt: sub.submittedAt
-          ? new Date(sub.submittedAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })
-          : null,
-      }));
+      let rawData = [];
+      if (Array.isArray(response.data?.data?.submissions)) {
+        rawData = response.data.data.submissions;
+      } else if (Array.isArray(response.data?.data)) {
+        rawData = response.data.data;
+      } else if (Array.isArray(response.data?.submissions)) {
+        rawData = response.data.submissions;
+      } else if (Array.isArray(response.data)) {
+        rawData = response.data;
+      }
+
+      const formatted = rawData.map((sub) => {
+        const assignment = sub.assignment || {};
+        return {
+          id: sub._id,
+          assignmentTitle: assignment.title || "Untitled Assignment",
+          description: assignment.description || "",
+          batchName: assignment.batch?.name || "",
+          scope: assignment.scope || "global",
+          creatorName: assignment.createdBy?.fullName || "Admin",
+          deadline: assignment.deadline,
+          deadlineFormatted: assignment.deadline
+            ? new Date(assignment.deadline).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "No Deadline",
+          fileName: assignment.fileName || "",
+          fileUrl: assignment.fileUrl || "",
+          status: sub.status,
+          score: sub.score,
+          maxScore: assignment.maxScore || 100,
+          feedback: sub.feedback || "",
+          githubUrl: sub.githubUrl || "",
+          demoUrl: sub.liveDemoUrl || "",
+          submittedAt: sub.submittedAt
+            ? new Date(sub.submittedAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })
+            : null,
+        };
+      });
       setSubmissions(formatted);
     } catch (error) {
       console.error("Failed to fetch submissions");
@@ -117,6 +133,16 @@ export default function StudentAssignments() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Bulletproof PDF URL generator
+  const getFileUrl = (url) => {
+    if (!url) return "#";
+    if (url.startsWith("http")) return url;
+    // Fallback to localhost if defaults fail to grab it
+    const baseUrl =
+      API.defaults.baseURL?.replace("/api", "") || "http://localhost:5000";
+    return `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
   };
 
   const metrics = {
@@ -193,9 +219,6 @@ export default function StudentAssignments() {
     );
   }
 
-  const cardStyle =
-    "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4";
-
   return (
     <div className="w-full font-sans bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100 transition-colors">
       <main className="px-8 py-6 space-y-6 max-w-7xl mx-auto">
@@ -267,8 +290,8 @@ export default function StudentAssignments() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm overflow-hidden">
-          <div className="border-b border-neutral-200/80 dark:border-neutral-800/80 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white/50 dark:bg-transparent rounded-2xl shadow-sm overflow-hidden">
+          <div className="border-b border-neutral-200/80 dark:border-neutral-800/80 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#151921] rounded-t-2xl">
             <div className="flex gap-2 sm:gap-6 overflow-x-auto px-2">
               {["All", "Action Required", "Pending Review", "Completed"].map(
                 (tab) => (
@@ -300,9 +323,9 @@ export default function StudentAssignments() {
             </div>
           </div>
 
-          <div className="divide-y divide-neutral-100 dark:divide-neutral-800/80">
+          <div className="flex flex-col gap-4 mt-6">
             {filteredSubmissions.length === 0 ? (
-              <div className="p-12 text-center text-neutral-400">
+              <div className="p-12 text-center text-neutral-400 bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80">
                 <FileText className="w-8 h-8 mx-auto mb-3 opacity-50" />
                 <p className="text-sm font-medium">
                   No assignments found in this tab.
@@ -319,12 +342,28 @@ export default function StudentAssignments() {
                 return (
                   <div
                     key={sub.id}
-                    className="p-6 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors"
+                    className="p-6 bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 rounded-2xl shadow-sm hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700 transition-all"
                   >
                     <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                       <div className="flex-1 space-y-4">
                         <div>
-                          <div className="flex items-center gap-2 mb-1.5">
+                          <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                            <span
+                              className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+                                sub.scope === "global"
+                                  ? "bg-blue-50/50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800/50"
+                                  : "bg-purple-50/50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:border-purple-800/50"
+                              }`}
+                            >
+                              {sub.scope === "global" ? (
+                                "Global Task"
+                              ) : (
+                                <span className="flex items-center gap-1">
+                                  <User className="w-3 h-3" /> Assigned by{" "}
+                                  {sub.creatorName}
+                                </span>
+                              )}
+                            </span>
                             <span
                               className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusConfig.classes}`}
                             >
@@ -332,7 +371,7 @@ export default function StudentAssignments() {
                               {statusConfig.label}
                             </span>
                             {sub.batchName && (
-                              <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                              <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider ml-1">
                                 • {sub.batchName}
                               </span>
                             )}
@@ -347,7 +386,7 @@ export default function StudentAssignments() {
                         </div>
 
                         {sub.description && (
-                          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-3xl">
+                          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-3xl bg-neutral-50/50 dark:bg-neutral-800/30 p-3 rounded-xl border border-neutral-100 dark:border-neutral-800">
                             {sub.description}
                           </p>
                         )}
@@ -355,13 +394,10 @@ export default function StudentAssignments() {
                         {sub.fileUrl && (
                           <div>
                             <a
-                              href={
-                                API.defaults.baseURL.replace("/api", "") +
-                                sub.fileUrl
-                              }
+                              href={getFileUrl(sub.fileUrl)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors border border-neutral-200/50 dark:border-neutral-700/50 w-fit"
+                              className="inline-flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 rounded-xl transition-colors border border-neutral-200/50 dark:border-neutral-700/50 w-fit shadow-sm"
                             >
                               <Paperclip className="w-3.5 h-3.5" />
                               {sub.fileName || "Download Attachment"}
