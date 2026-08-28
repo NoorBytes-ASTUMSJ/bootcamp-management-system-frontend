@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FiFileText,
   FiClock,
@@ -24,11 +24,7 @@ export default function MentorSubmissions() {
     status: "Reviewed",
   });
 
-  useEffect(() => {
-    fetchMentorSubmissions();
-  }, []);
-
-  const fetchMentorSubmissions = async () => {
+  const fetchMentorSubmissions = useCallback(async () => {
     setLoading(true);
     try {
       const response = await API.get("/submissions/mentor");
@@ -69,7 +65,11 @@ export default function MentorSubmissions() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchMentorSubmissions();
+  }, [fetchMentorSubmissions]);
 
   const openReviewPanel = (submission) => {
     setSelectedSubmission(submission);
@@ -121,7 +121,6 @@ export default function MentorSubmissions() {
     }
   };
 
-<<<<<<< HEAD
   const totalCount = submissions.length;
   const pendingCount = submissions.filter(
     (s) => s.status === "Pending Review",
@@ -129,11 +128,9 @@ export default function MentorSubmissions() {
   const reviewedCount = submissions.filter(
     (s) => s.status === "Reviewed",
   ).length;
-=======
-  // Shared modern card style
+
   const cardStyle =
     "bg-surface border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4";
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
 
   if (loading) {
     return (
@@ -164,14 +161,10 @@ export default function MentorSubmissions() {
               Total Submissions
             </div>
             <div className="text-2xl font-black text-text-primary leading-none">
-<<<<<<< HEAD
               {totalCount}
-=======
-              28
             </div>
             <div className="text-[11px] text-text-muted mt-1">
               All time submissions
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
             </div>
           </div>
         </div>
@@ -185,14 +178,10 @@ export default function MentorSubmissions() {
               Pending Review
             </div>
             <div className="text-2xl font-black text-text-primary leading-none">
-<<<<<<< HEAD
               {pendingCount}
-=======
-              8
             </div>
             <div className="text-[11px] text-text-muted mt-1">
               Awaiting your review
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
             </div>
           </div>
         </div>
@@ -206,22 +195,15 @@ export default function MentorSubmissions() {
               Reviewed
             </div>
             <div className="text-2xl font-black text-text-primary leading-none">
-<<<<<<< HEAD
               {reviewedCount}
-=======
-              20
             </div>
             <div className="text-[11px] text-text-muted mt-1">
               Completed reviews
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
             </div>
           </div>
         </div>
       </div>
 
-<<<<<<< HEAD
-      <div className="bg-surface border border-border shadow-sm rounded-xl overflow-hidden flex flex-col">
-=======
       <div className="bg-surface border border-border shadow-sm rounded-2xl overflow-hidden flex flex-col hover:border-primary/40 transition-all duration-200">
         <div className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row gap-4 justify-between items-center bg-surface-subtle/50">
           <div className="relative w-full sm:w-80">
@@ -254,7 +236,6 @@ export default function MentorSubmissions() {
           </div>
         </div>
 
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
@@ -316,16 +297,6 @@ export default function MentorSubmissions() {
                     </div>
                   </td>
                   <td className="py-3 px-5 text-right">
-<<<<<<< HEAD
-                    <button
-                      onClick={() => openReviewPanel(sub)}
-                      className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors border focus:outline-none ${sub.status === "Pending Review" ? "bg-primary text-primary-foreground hover:bg-primary-hover border-primary" : "bg-surface text-text-primary hover:bg-surface-subtle border-border"}`}
-                    >
-                      {sub.status === "Pending Review"
-                        ? "Review"
-                        : "View Review"}
-                    </button>
-=======
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => openReviewPanel(sub)}
@@ -339,15 +310,12 @@ export default function MentorSubmissions() {
                         <FiMoreVertical className="w-4 h-4" />
                       </button>
                     </div>
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-<<<<<<< HEAD
-=======
 
         <div className="p-4 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-subtle/50 text-xs">
           <div className="text-text-muted">
@@ -379,7 +347,6 @@ export default function MentorSubmissions() {
             </button>
           </div>
         </div>
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
       </div>
 
       {selectedSubmission && (
@@ -389,24 +356,14 @@ export default function MentorSubmissions() {
             onClick={closeReviewPanel}
           ></div>
 
-<<<<<<< HEAD
-          <div className="fixed inset-y-0 right-0 w-full max-w-lg bg-surface border-l border-border shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto">
-            <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface">
-              <h2 className="text-lg font-bold text-text-primary">
-=======
           <div className="fixed inset-y-0 right-0 w-full max-w-120 bg-surface border-l border-border shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface z-10">
               <h2 className="text-base font-bold text-text-primary">
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                 Review Submission
               </h2>
               <button
                 onClick={closeReviewPanel}
-<<<<<<< HEAD
-                className="text-text-muted hover:text-text-primary transition-colors p-1 rounded-md"
-=======
                 className="text-text-muted hover:text-text-primary transition-colors p-2 rounded-xl hover:bg-surface-subtle cursor-pointer border border-transparent hover:border-border"
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               >
                 <FiX className="w-5 h-5" />
               </button>
@@ -429,12 +386,9 @@ export default function MentorSubmissions() {
                     </div>
                   </div>
                 </div>
-<<<<<<< HEAD
-=======
                 <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wide rounded-full border border-emerald-500/20">
                   On Track
                 </span>
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               </div>
 
               <div className="space-y-4">
@@ -451,15 +405,9 @@ export default function MentorSubmissions() {
                       {selectedSubmission.assignment}
                     </div>
                   </div>
-<<<<<<< HEAD
-                  <div>
-                    <div className="text-xs text-text-muted mb-1">
-                      Submitted
-=======
                   <div className="p-3.5 rounded-xl border border-border bg-surface-subtle shadow-2xs">
                     <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                       Submitted Date
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </div>
                     <div className="text-xs sm:text-sm font-bold text-text-primary font-mono">
                       {selectedSubmission.submittedDate}{" "}
@@ -468,27 +416,6 @@ export default function MentorSubmissions() {
                   </div>
                 </div>
 
-<<<<<<< HEAD
-                {selectedSubmission.githubUrl && (
-                  <div>
-                    <div className="text-xs text-text-muted mb-1">
-                      GitHub Repository URL
-                    </div>
-                    <a
-                      href={selectedSubmission.githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-between p-3 bg-surface-subtle border border-border rounded-lg hover:border-primary transition-colors group text-primary"
-                    >
-                      <div className="flex items-center gap-3 truncate">
-                        <FiGithub className="shrink-0 w-4 h-4" />
-                        <span className="text-sm font-medium truncate">
-                          {selectedSubmission.githubUrl}
-                        </span>
-                      </div>
-                      <FiExternalLink className="shrink-0 w-4 h-4 ml-3 text-text-muted group-hover:text-primary" />
-                    </a>
-=======
                 <div>
                   <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                     GitHub Repository URL
@@ -512,24 +439,13 @@ export default function MentorSubmissions() {
                 <div>
                   <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                     Live Demo URL (Optional)
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                   </div>
-                )}
-
-                {selectedSubmission.liveDemoUrl && (
-                  <div>
-                    <div className="text-xs text-text-muted mb-1">
-                      Live Demo URL
-                    </div>
+                  {selectedSubmission.liveDemoUrl ? (
                     <a
                       href={selectedSubmission.liveDemoUrl}
                       target="_blank"
                       rel="noreferrer"
-<<<<<<< HEAD
-                      className="flex items-center justify-between p-3 bg-surface-subtle border border-border rounded-lg hover:border-primary transition-colors group text-primary"
-=======
                       className="flex items-center justify-between p-3.5 bg-surface-subtle border border-border rounded-xl hover:border-primary transition-colors group shadow-2xs"
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     >
                       <div className="flex items-center gap-3 truncate">
                         <FiExternalLink className="shrink-0 w-4 h-4" />
@@ -539,27 +455,18 @@ export default function MentorSubmissions() {
                       </div>
                       <FiExternalLink className="shrink-0 w-4 h-4 ml-3 text-text-muted group-hover:text-primary" />
                     </a>
-<<<<<<< HEAD
-                  </div>
-                )}
-=======
                   ) : (
                     <div className="p-3.5 bg-surface-subtle border border-border border-dashed rounded-xl text-xs text-text-muted italic">
                       No live demo provided.
                     </div>
                   )}
                 </div>
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
 
                 <div>
                   <div className="text-[10px] font-mono font-bold text-text-muted uppercase mb-1">
                     Student Notes
                   </div>
-<<<<<<< HEAD
-                  <div className="p-4 bg-surface-subtle border border-border rounded-lg text-sm text-text-secondary leading-relaxed">
-=======
                   <div className="p-4 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-secondary leading-relaxed min-h-20 shadow-2xs">
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     {selectedSubmission.studentNotes || (
                       <span className="italic text-text-muted">
                         No notes provided.
@@ -576,13 +483,8 @@ export default function MentorSubmissions() {
 
                 <form onSubmit={handleSaveReview} className="space-y-4">
                   <div>
-<<<<<<< HEAD
-                    <label className="text-xs font-bold text-text-primary mb-1.5 block">
-                      Score (out of 100) *
-=======
                     <label className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider mb-1.5 block">
                       Score (out of 100) <span className="text-primary">*</span>
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </label>
                     <input
                       type="number"
@@ -592,22 +494,13 @@ export default function MentorSubmissions() {
                       required
                       min="0"
                       max="100"
-<<<<<<< HEAD
-                      className="w-24 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary"
-=======
                       className="w-24 px-3.5 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary font-mono placeholder:text-text-muted/50 hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none shadow-2xs"
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     />
                   </div>
 
                   <div>
-<<<<<<< HEAD
-                    <label className="text-xs font-bold text-text-primary mb-1.5 block">
-                      Feedback *
-=======
                     <label className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider mb-1.5 block">
                       Feedback <span className="text-primary">*</span>
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </label>
                     <textarea
                       name="feedback"
@@ -615,34 +508,21 @@ export default function MentorSubmissions() {
                       onChange={handleReviewChange}
                       required
                       rows="4"
-<<<<<<< HEAD
-                      className="w-full p-3 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary resize-y"
-=======
                       placeholder="Write your feedback here..."
                       className="w-full p-3.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 hover:border-primary focus:border-primary transition outline-none resize-y shadow-2xs"
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     ></textarea>
                   </div>
 
                   <div>
-<<<<<<< HEAD
-                    <label className="text-xs font-bold text-text-primary mb-1.5 block">
-                      Review Status *
-=======
                     <label className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider mb-1.5 block">
                       Review Status <span className="text-primary">*</span>
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                     </label>
                     <div className="relative">
                       <select
                         name="status"
                         value={reviewForm.status}
                         onChange={handleReviewChange}
-<<<<<<< HEAD
-                        className="w-full appearance-none pl-3 pr-8 py-2.5 bg-surface border border-border rounded-lg text-sm text-text-primary font-medium focus:outline-none focus:border-primary cursor-pointer"
-=======
                         className="w-full appearance-none pl-3.5 pr-10 py-2.5 bg-surface-subtle border border-border rounded-xl text-xs sm:text-sm text-text-primary font-semibold hover:border-primary focus:border-primary transition outline-none shadow-2xs cursor-pointer"
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
                       >
                         <option value="Reviewed">Reviewed</option>
                         <option value="Resubmission Requested">
@@ -660,20 +540,12 @@ export default function MentorSubmissions() {
               <button
                 type="button"
                 onClick={closeReviewPanel}
-<<<<<<< HEAD
-                className="px-5 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-bold text-sm rounded-lg transition-colors"
-=======
                 className="px-4 py-2.5 bg-surface text-text-primary border border-border hover:bg-surface-subtle font-semibold text-xs rounded-xl transition-colors shadow-xs cursor-pointer"
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               >
                 Cancel
               </button>
               <button
                 type="button"
-<<<<<<< HEAD
-                onClick={handleSaveReview}
-                className="px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover font-bold text-sm rounded-lg transition-colors shadow-sm"
-=======
                 onClick={(e) => {
                   setReviewForm((prev) => ({
                     ...prev,
@@ -689,7 +561,6 @@ export default function MentorSubmissions() {
                 type="submit"
                 onClick={handleSaveReview}
                 className="px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary-hover font-semibold text-xs rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
->>>>>>> eab9157771d080b4f06b8939e423d35737885c86
               >
                 Save Review
               </button>
