@@ -5,21 +5,23 @@ function getProgressTaskId(item) {
 }
 
 
-export async function getProgressOverview(batchId = "") {
+export async function getProgressOverview(batchId = "", extraParams = {}) {
   try {
-    const params = batchId && batchId !== "ALL" ? { batchId } : {};
-
+    const params = {
+      ...(batchId && batchId !== "ALL" ? { batchId } : {}),
+      ...extraParams,
+    };
     // Get dashboard students
     const response = await API.get("/progress/dashboard", {
-      params,
+      params: { ...params, scope: "global" }, // <-- Explicitly enforce scope global
     });
 
     const responseData = response.data?.data || response.data;
     const dashboardRows = responseData?.students || responseData || [];
+    
     const progressResponse = await API.get("/progress/all", { params }).catch(
       (err) => {
         console.warn("Failed to fetch raw progress items:", err);
-
         return null;
       },
     );
@@ -30,18 +32,21 @@ export async function getProgressOverview(batchId = "") {
       progressResponse?.data ||
       [];
 
-    console.log("ALL PROGRESS ITEMS FROM BACKEND:", allProgressItems);
-
     // Map dashboard rows
     const students = dashboardRows.map((row) => {
       const studentId = row.memberId;
 
-      // Find progress records for this student
+      // Find progress records for this student AND FILTER OUT mentor items (keep only global/admin)
       const studentItems = allProgressItems.filter((item) => {
         const itemStudentId =
           item?.student?._id || item?.student?.id || item?.student;
 
-        return String(itemStudentId) === String(studentId);
+        const matchesStudent = String(itemStudentId) === String(studentId);
+        
+        // CRITICAL CHECK: Only allow global (admin-released) items
+        const isGlobalTask = item?.scope === "global" || item?.releasedBy?.role === "admin" || !item?.releasedBy?.role;
+
+        return matchesStudent && isGlobalTask;
       });
 
       const progressMap = {};
@@ -54,8 +59,6 @@ export async function getProgressOverview(batchId = "") {
         }
 
         const progressId = getProgressTaskId(item);
-        console.log("Progress item:", item);
-        console.log("Resolved ProgressTask ID:", progressId);
         progressMap[key].push({
           id: progressId,
           title: item.title || "Untitled Task",
@@ -72,11 +75,11 @@ export async function getProgressOverview(batchId = "") {
 
       // Student initials
       const nameParts = (row.studentName || "Student").split(" ");
-
       const initials =
         nameParts.length > 1
           ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
           : (row.studentName?.[0] || "S").toUpperCase();
+
       return {
         id: row.memberId,
         initials,
@@ -85,7 +88,7 @@ export async function getProgressOverview(batchId = "") {
         batchId: row.batchId,
         batch: row.batchName,
         mentor: row.mentorName,
-        progress: row.overallProgress,
+        progress: row.overallProgress, // This comes straight from the backend calculation which is already filtered by scope="global"
         status: row.status,
         gender: row.gender,
         university: row.university,
@@ -98,17 +101,12 @@ export async function getProgressOverview(batchId = "") {
       students,
     };
   } catch (err) {
-    console.warn(
-      "Backend progress dashboard fetch failed. Using empty state.",
-      err,
-    );
-
+    console.warn("Backend progress dashboard fetch failed. Using empty state.", err);
     return {
       students: [],
     };
   }
 }
-
 export async function getStudentProgress() {
   try {
     const response = await API.get("/progress/my-progress");

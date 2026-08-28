@@ -11,6 +11,8 @@ import {
   FiCalendar,
   FiLock,
 } from "react-icons/fi";
+import API from "../../services/api";
+import { getProgressOverview } from "../../services/progressService";
 import {
   getMentorBatchMembers,
   getMyStudentDetail,
@@ -57,6 +59,169 @@ export default function AllMembers() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
 
+  // ==================================================
+  // REAL PROGRESS / ATTENDANCE METRICS
+  // ==================================================
+
+  const [progressMap, setProgressMap] = useState({}); // memberId -> progress %
+  const [attendanceMap, setAttendanceMap] = useState({}); // memberId -> { percentage, totalSessions }
+
+  // ==================================================
+  // LOAD PROGRESS
+  // ==================================================
+  // Same computation as StudentsDashboard.jsx / ProgressManagement.jsx:
+  // getProgressOverview() + Completed=100 / In Progress|Needs Help=50 / else 0,
+  // averaged per student. Unlike the admin Students page, nothing here is
+  // filtered out by releasedBy, so a mentor sees combined progress
+  // (admin-released + their own assigned tasks) — matching how
+  // ProgressManagement.jsx already treats the mentor role.
+
+  const loadProgressMap = async () => {
+    try {
+      const overview = await getProgressOverview("", {
+        scopeToAssigned: "false",
+      });
+      const list = overview?.students || [];
+
+      const map = {};
+
+      list.forEach((student) => {
+        const topicsMap = student.progressMap || {};
+
+        let totalScore = 0;
+        let count = 0;
+
+        Object.keys(topicsMap).forEach((topicKey) => {
+          const items = Array.isArray(topicsMap[topicKey])
+            ? topicsMap[topicKey]
+            : [topicsMap[topicKey]];
+
+          items.forEach((item) => {
+            count++;
+
+            const status = item.status || "Not Started";
+
+            if (status === "Completed") {
+              totalScore += 100;
+            } else if (status === "In Progress" || status === "Needs Help") {
+              totalScore += 50;
+            }
+          });
+        });
+
+        // student.id === Member._id, same key space as member._id below
+        map[student.id] = count > 0 ? Math.round(totalScore / count) : 0;
+      });
+
+      setProgressMap(map);
+    } catch (error) {
+      console.error("Failed to load progress overview:", error);
+      setProgressMap({});
+    }
+  };
+
+  // ==================================================
+  // LOAD ATTENDANCE
+  // ==================================================
+  // Scoring: present=1, late=0.5, excused=0.25, absent=0. All four
+  // statuses count toward the session denominator. Defaults to 100%
+  // when a member has no gradeable sessions. Matches
+  // getBatchAttendanceStats() in attendance.service.js and the same
+  // client-side calc in StudentsDashboard.jsx.
+
+  const loadAttendanceMap = async (membersList) => {
+    try {
+      const batchIds = Array.from(
+        new Set(
+          membersList
+            .map((member) => {
+              const batch = member?.user?.batch;
+              return batch && typeof batch === "object" ? batch._id : null;
+            })
+            .filter(Boolean),
+        ),
+      );
+
+      if (batchIds.length === 0) {
+        setAttendanceMap({});
+        return;
+      }
+
+      const responses = await Promise.all(
+        batchIds.map((batchId) =>
+          API.get("/attendance", {
+            params: { batchId, scopeToAssigned: "false" },
+          }).catch((error) => {
+            console.error(
+              `Failed to load attendance for batch ${batchId}:`,
+              error,
+            );
+            return null;
+          }),
+        ),
+      );
+
+      const allRecords = responses.flatMap((response) => {
+        if (!response) return [];
+
+        const records =
+          response.data?.data?.attendance ||
+          response.data?.attendance ||
+          response.data?.data ||
+          [];
+
+        return Array.isArray(records) ? records : [];
+      });
+
+      const grouped = {};
+
+      allRecords.forEach((record) => {
+        const memberId =
+          typeof record.member === "object"
+            ? record.member?._id
+            : record.member;
+
+        if (!memberId) return;
+
+        if (!grouped[memberId]) {
+          grouped[memberId] = { score: 0, validSessions: 0 };
+        }
+
+        if (record.status === "present") {
+          grouped[memberId].score += 1;
+          grouped[memberId].validSessions += 1;
+        } else if (record.status === "late") {
+          grouped[memberId].score += 0.5;
+          grouped[memberId].validSessions += 1;
+        } else if (record.status === "excused") {
+          grouped[memberId].score += 0.25;
+          grouped[memberId].validSessions += 1;
+        } else if (record.status === "absent") {
+          grouped[memberId].validSessions += 1;
+        }
+      });
+
+      const map = {};
+
+      Object.keys(grouped).forEach((memberId) => {
+        const { score, validSessions } = grouped[memberId];
+
+        map[memberId] = {
+          percentage:
+            validSessions === 0
+              ? 100
+              : Math.round((score / validSessions) * 100),
+          totalSessions: validSessions,
+        };
+      });
+
+      setAttendanceMap(map);
+    } catch (error) {
+      console.error("Failed to load attendance map:", error);
+      setAttendanceMap({});
+    }
+  };
+
   // Fetch mentor batch members on mount
   useEffect(() => {
     const fetchMembers = async () => {
@@ -66,6 +231,8 @@ export default function AllMembers() {
 
         const data = await getMentorBatchMembers();
         setMembers(data);
+
+        await Promise.all([loadProgressMap(), loadAttendanceMap(data)]);
       } catch (err) {
         console.error("Failed to load mentor batch members:", err);
         setError("Failed to load batch members.");
@@ -315,6 +482,9 @@ export default function AllMembers() {
                   const belongsToMe = isMyStudent(member);
                   const uniAcronym = getUniversityAcronym(user.university);
 
+                  const attendanceInfo = attendanceMap[member._id];
+                  const progressValue = progressMap[member._id];
+
                   return (
                     <tr
                       key={member._id}
@@ -343,7 +513,9 @@ export default function AllMembers() {
 
                       <td className="px-4 py-3">
                         <span className="text-xs sm:text-sm font-semibold text-text-primary font-mono">
-                          {member.attendance ?? "0%"}
+                          {attendanceInfo
+                            ? `${attendanceInfo.percentage}%`
+                            : "N/A"}
                         </span>
                       </td>
 
@@ -353,12 +525,18 @@ export default function AllMembers() {
                             <div
                               className="h-full bg-primary rounded-full transition-all duration-500"
                               style={{
-                                width: `${member.progress ?? 0}%`,
+                                width: `${
+                                  typeof progressValue === "number"
+                                    ? progressValue
+                                    : 0
+                                }%`,
                               }}
                             />
                           </div>
                           <span className="text-xs text-text-muted font-mono font-semibold">
-                            {member.progress ?? 0}%
+                            {typeof progressValue === "number"
+                              ? `${progressValue}%`
+                              : "N/A"}
                           </span>
                         </div>
                       </td>
