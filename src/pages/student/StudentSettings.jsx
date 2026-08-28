@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import {
   getUserProfile,
@@ -20,7 +21,8 @@ import {
 } from "lucide-react";
 
 export default function StudentSettings({ onLogout }) {
-  const { user: authUser } = useAuth();
+  const navigate = useNavigate();
+  const { user: authUser, logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -86,16 +88,50 @@ export default function StudentSettings({ onLogout }) {
       return;
     }
 
-    setSavingPassword(true);
-    await changeUserPassword(passwordData);
-    setSavingPassword(false);
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setPasswordMsg({ type: "success", text: "Password changed successfully!" });
-    setTimeout(() => setPasswordMsg({ type: "", text: "" }), 3000);
+    try {
+      setSavingPassword(true);
+      await changeUserPassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setPasswordMsg({
+        type: "success",
+        text: "Password changed successfully!",
+      });
+      setTimeout(() => setPasswordMsg({ type: "", text: "" }), 3000);
+    } catch (err) {
+      const errMsg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Failed to update password. Please check your current password.";
+      setPasswordMsg({ type: "error", text: errMsg });
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const handleLogoutClick = () => {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (!confirmLogout) return;
+
+    if (typeof onLogout === "function") {
+      onLogout();
+    } else if (logout) {
+      logout();
+      navigate("/login", { replace: true });
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      sessionStorage.clear();
+      navigate("/login", { replace: true });
+    }
   };
 
   const hasMinLen = passwordData.newPassword.length >= 8;
@@ -438,8 +474,8 @@ export default function StudentSettings({ onLogout }) {
 
                 <button
                   type="button"
-                  onClick={onLogout}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-md border border-neutral-200/80 dark:border-neutral-700 text-xs font-medium text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer shadow-xs"
+                  onClick={handleLogoutClick}
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-md border border-neutral-200/80 dark:border-neutral-700 text-xs font-medium text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer shadow-xs transition-colors"
                 >
                   <LogOut size={13} />
                   <span>Logout</span>
