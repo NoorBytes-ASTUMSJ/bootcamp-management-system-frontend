@@ -16,6 +16,7 @@ import {
   Loader2,
   BookOpen,
   Briefcase,
+  Link2,
   Eye,
   EyeOff,
 } from "lucide-react";
@@ -35,11 +36,9 @@ export default function MentorRegister({
   const [isOpen, setIsOpen] = useState(true);
   const [checkingStatus, setCheckingStatus] = useState(true);
 
-  // Toggle visibility states for password fields
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Real-time Global Registration Status Listener
   useEffect(() => {
     const unsubscribe = subscribeToRegistrationStatus((data) => {
       if (data.isMentorRegOpen !== undefined) {
@@ -66,9 +65,10 @@ export default function MentorRegister({
     department: "",
     customDepartment: "",
     mentorshipTrack: "",
+    github: "",
     phone: "",
     studentId: "",
-    universityName: "Adama Science and Technology University",
+    university: "Adama Science and Technology University",
     telegramUsername: "",
     relevantExperience: "",
     motivation: "",
@@ -125,8 +125,9 @@ export default function MentorRegister({
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
-      studentId: formData.studentId,
-      universityName: formData.universityName,
+      universityId: formData.studentId,
+      university:
+        formData.university || "Adama Science and Technology University",
       telegramUsername: formData.telegramUsername,
       password: formData.password,
       role: "user",
@@ -134,6 +135,7 @@ export default function MentorRegister({
       gender: formData.gender,
       year: formData.academicYear,
       department: finalDepartment,
+      github: formData.github,
       expertise: formData.mentorshipTrack,
       experience: formData.relevantExperience,
       motivation: formData.motivation,
@@ -142,7 +144,8 @@ export default function MentorRegister({
     try {
       const response = await API.post("/auth/register/mentor", payload);
 
-      sendConfirmationEmail({
+      // 1. ኢሜይሉ እስኪላክ ድረስ መጠበቅ (await)
+      await sendConfirmationEmail({
         recipientName: formData.fullName,
         recipientEmail: formData.email,
         role: "Mentor",
@@ -198,7 +201,6 @@ export default function MentorRegister({
   const secondaryBtnStyle =
     "w-full py-2.5 px-4 rounded-xl bg-surface border border-border hover:bg-surface-subtle hover:border-primary/40 active:scale-[0.99] text-text-primary text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer disabled:opacity-60 text-center flex items-center justify-center select-none";
 
-  // If Closed: Show Friendly Notice Card
   if (!checkingStatus && !isOpen) {
     return (
       <RegistrationClosedCard
@@ -212,7 +214,6 @@ export default function MentorRegister({
   return (
     <FormCard>
       <div className="w-full">
-        {/* Top Header */}
         <div className="flex items-center justify-between mb-2">
           <button
             type="button"
@@ -228,7 +229,6 @@ export default function MentorRegister({
           </span>
         </div>
 
-        {/* Brand Logo Header */}
         <div className="flex justify-center mb-3">
           <div className="w-12 h-12 rounded-2xl bg-surface border border-border/80 shadow-xs p-1 overflow-hidden">
             <img
@@ -541,6 +541,27 @@ export default function MentorRegister({
                     </select>
                   </div>
                 </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
+                    GitHub URL <span className="text-primary">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Link2
+                      size={15}
+                      className="absolute left-3.5 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="url"
+                      name="github"
+                      required
+                      placeholder="https://github.com/username"
+                      value={formData.github}
+                      onChange={handleChange}
+                      className={inputWithIconStyle}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center gap-3 mt-5">
@@ -628,10 +649,10 @@ export default function MentorRegister({
                     />
                     <input
                       type="text"
-                      name="universityName"
+                      name="university"
                       required
                       placeholder="Adama Science and Technology University"
-                      value={formData.universityName}
+                      value={formData.university}
                       onChange={handleChange}
                       className={inputWithIconStyle}
                     />

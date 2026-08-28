@@ -43,8 +43,6 @@ export default function AllUsersManagement() {
 
   const availableUniversities = ["ASTU", "AAU", "JU", "HU"];
 
-  // Keep a ref to the currently selected user so fetchUsers can read it
-  // without needing selectedUser in its dependency array (avoids infinite loop).
   const selectedUserRef = useRef(null);
 
   useEffect(() => {
@@ -53,111 +51,136 @@ export default function AllUsersManagement() {
 
   const fetchBatches = useCallback(async () => {
     setBatchesLoading(true);
-
     try {
       const data = await getBatches();
-      setAvailableBatches(Array.isArray(data) ? data : []);
+      const batchesList = Array.isArray(data) ? data : [];
+      setAvailableBatches(batchesList);
+      return batchesList;
     } catch (error) {
       console.error("Failed to fetch batches:", error);
       setAvailableBatches([]);
+      return [];
     } finally {
       setBatchesLoading(false);
     }
   }, []);
 
-  const fetchUsers = useCallback(async () => {
-    setLoading(true);
+  const fetchUsers = useCallback(
+    async (batchesOverride = null) => {
+      setLoading(true);
 
-    try {
-      const rawData = await getAllUsers({
-        search: searchTerm.trim(),
-        role: roleFilter,
-        university: universityFilter,
-        gender: genderFilter,
-        batch: batchFilter,
-      });
+      try {
+        const rawData = await getAllUsers({
+          search: searchTerm.trim(),
+          role: roleFilter,
+          university: universityFilter,
+          gender: genderFilter,
+          batch: batchFilter,
+        });
 
-      const formatted = rawData.map((u) => {
-        const initials = u.fullName
-          ? u.fullName
-              .split(" ")
-              .map((name) => name[0])
-              .join("")
-              .toUpperCase()
-              .slice(0, 2)
-          : "U";
+        const activeBatchList = batchesOverride || availableBatches;
 
-        return {
-          id: u._id,
-          userId: u.universityId || u._id?.slice(-6).toUpperCase() || "N/A",
-          name: u.fullName || "Unnamed User",
-          email: u.email || "N/A",
-          phone: u.phone || "N/A",
-          initials,
-          gender: u.gender
-            ? u.gender.charAt(0).toUpperCase() + u.gender.slice(1)
-            : "N/A",
-          university: u.university || "N/A",
-          universityId: u.universityId || "N/A",
-          telegramUsername: u.telegramUsername || "N/A",
-          batch: u.batch?.name || "N/A",
-          batchId: u.batch?._id || u.batch || null,
-          year: u.year || "N/A",
-          department: u.department || "N/A",
-          role: u.role ? u.role.toLowerCase() : "user",
-          applicationType: u.applicationType || "student",
-          github: u.github || "",
-          codeforces: u.codeforces || "",
-          leetcode: u.leetcode || "",
-          dailyAvailableHours: u.dailyAvailableHours ?? "N/A",
-          availabilityDescription: u.availabilityDescription || "N/A",
-          motivation: u.motivation || "N/A",
-          experience: u.experience || "N/A",
-          expertise: u.expertise || "N/A",
-          registeredDate: u.createdAt
-            ? new Date(u.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
-            : "N/A",
-          updatedDate: u.updatedAt
-            ? new Date(u.updatedAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
-            : "N/A",
-          rawUser: u,
-        };
-      });
+        const formatted = rawData.map((u) => {
+          const initials = u.fullName
+            ? u.fullName
+                .split(" ")
+                .map((name) => name[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)
+            : "U";
 
-      setUsers(formatted);
+          // 1. የባች ስምን በሁሉም አማራጭ ፈልጎ ማግኘት
+          const rawBatchId =
+            u.batch?._id || (typeof u.batch === "string" ? u.batch : null);
+          const matchedBatch = activeBatchList.find(
+            (b) => String(b._id) === String(rawBatchId),
+          );
 
-      // Use the ref instead of selectedUser state so this callback doesn't
-      // need to depend on selectedUser (which changed on every fetch and
-      // caused an infinite refetch loop).
-      const current = selectedUserRef.current;
+          const resolvedBatchName =
+            u.batch?.name ||
+            matchedBatch?.name ||
+            (activeBatchList.length > 0 ? activeBatchList[0]?.name : "N/A");
 
-      if (current) {
-        const updatedSelectedUser = formatted.find(
-          (user) => user.id === current.id,
-        );
+          return {
+            id: u._id,
+            userId: u.universityId || u._id?.slice(-6).toUpperCase() || "N/A",
+            name: u.fullName || "Unnamed User",
+            email: u.email || "N/A",
+            phone: u.phone || "N/A",
+            initials,
+            gender: u.gender
+              ? u.gender.charAt(0).toUpperCase() + u.gender.slice(1)
+              : "N/A",
+            university: u.university || "N/A",
+            universityId: u.universityId || "N/A",
+            telegramUsername: u.telegramUsername || "N/A",
+            batch: resolvedBatchName,
+            batchId: rawBatchId || (activeBatchList[0]?._id ?? null),
+            year: u.year || "N/A",
+            department: u.department || "N/A",
+            role: u.role ? u.role.toLowerCase() : "user",
+            applicationType: u.applicationType || "student",
+            github: u.github || "",
+            codeforces: u.codeforces || "",
+            leetcode: u.leetcode || "",
+            dailyAvailableHours: u.dailyAvailableHours ?? "N/A",
+            availabilityDescription: u.availabilityDescription || "N/A",
+            motivation: u.motivation || "N/A",
+            experience: u.experience || "N/A",
+            expertise: u.expertise || "N/A",
+            registeredDate: u.createdAt
+              ? new Date(u.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "N/A",
+            updatedDate: u.updatedAt
+              ? new Date(u.updatedAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "N/A",
+            rawUser: u,
+          };
+        });
 
-        if (updatedSelectedUser) {
-          setSelectedUser(updatedSelectedUser);
+        setUsers(formatted);
+
+        const current = selectedUserRef.current;
+        if (current) {
+          const updatedSelectedUser = formatted.find(
+            (user) => user.id === current.id,
+          );
+          if (updatedSelectedUser) {
+            setSelectedUser(updatedSelectedUser);
+          }
         }
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+        setUsers([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
-      setUsers([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm, roleFilter, universityFilter, genderFilter, batchFilter]);
+    },
+    [
+      searchTerm,
+      roleFilter,
+      universityFilter,
+      genderFilter,
+      batchFilter,
+      availableBatches,
+    ],
+  );
 
   useEffect(() => {
-    fetchBatches();
+    const initializeData = async () => {
+      const fetchedBatches = await fetchBatches();
+      fetchUsers(fetchedBatches);
+    };
+    initializeData();
   }, [fetchBatches]);
 
   useEffect(() => {
@@ -174,9 +197,6 @@ export default function AllUsersManagement() {
     setEditing(false);
   };
 
-  // Accepts the user directly instead of relying on selectedUser state,
-  // so it can be called immediately (e.g. from a table row button) without
-  // hitting a stale-closure problem from async setState.
   const handleEditUser = (user = selectedUser) => {
     if (!user) return;
 
@@ -268,6 +288,11 @@ export default function AllUsersManagement() {
 
       const updatedUser = await updateUserApi(selectedUser.id, updates);
 
+      const matchedBatch = availableBatches.find(
+        (b) =>
+          String(b._id) === String(updatedUser.batch?._id || updatedUser.batch),
+      );
+
       const formattedUser = {
         id: updatedUser._id,
         userId:
@@ -292,7 +317,7 @@ export default function AllUsersManagement() {
         university: updatedUser.university || "N/A",
         universityId: updatedUser.universityId || "N/A",
         telegramUsername: updatedUser.telegramUsername || "N/A",
-        batch: updatedUser.batch?.name || "N/A",
+        batch: updatedUser.batch?.name || matchedBatch?.name || "N/A",
         batchId: updatedUser.batch?._id || updatedUser.batch || null,
         year: updatedUser.year || "N/A",
         department: updatedUser.department || "N/A",
@@ -440,11 +465,9 @@ export default function AllUsersManagement() {
   );
 
   const totalUsersCount = users.length;
-
   const membersCount = users.filter((user) =>
     ["student", "mentor", "admin"].includes(user.role),
   ).length;
-
   const standardUsersCount = users.filter(
     (user) => user.role === "user",
   ).length;
@@ -480,7 +503,7 @@ export default function AllUsersManagement() {
               </div>
 
               <button
-                onClick={fetchUsers}
+                onClick={() => fetchUsers()}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/80 transition-colors cursor-pointer shadow-xs hover:border-[#B91C1C]/40"
               >
                 <RefreshCw
@@ -491,7 +514,7 @@ export default function AllUsersManagement() {
               </button>
             </div>
 
-            {/* Stat Cards with Modern UI Hover Effect (Border Light, Shadow, Smooth Up & Down Motion) */}
+            {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 shadow-md shadow-neutral-200/50 dark:shadow-none transition-all duration-300 hover:border-[#B91C1C]/50 hover:-translate-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
@@ -577,7 +600,6 @@ export default function AllUsersManagement() {
                       className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium shadow-xs"
                     >
                       <option value="ALL">All Universities</option>
-
                       {availableUniversities.map((uni) => (
                         <option key={uni} value={uni}>
                           {uni}
@@ -601,7 +623,6 @@ export default function AllUsersManagement() {
                       <option value="ALL">
                         {batchesLoading ? "Loading..." : "All Batches"}
                       </option>
-
                       {availableBatches.map((batch) => (
                         <option key={batch._id} value={batch._id}>
                           {batch.name}
@@ -703,7 +724,6 @@ export default function AllUsersManagement() {
 
                               <td className="py-3.5 px-4 font-medium text-neutral-700 dark:text-neutral-300">
                                 {user.university}
-
                                 <span className="text-[10px] text-neutral-400">
                                   {" "}
                                   ({user.universityId})
@@ -763,7 +783,6 @@ export default function AllUsersManagement() {
                       <span className="text-xs font-bold text-neutral-900 dark:text-white">
                         User Details
                       </span>
-
                       {getStatusBadge(selectedUser.role)}
                     </div>
 
@@ -820,7 +839,6 @@ export default function AllUsersManagement() {
 
                       <div className="grid grid-cols-2 gap-3">
                         <InputField label="EMAIL" field="email" type="email" />
-
                         <InputField label="PHONE" field="phone" />
                       </div>
 
@@ -852,7 +870,6 @@ export default function AllUsersManagement() {
                           <option value="">
                             {batchesLoading ? "Loading batches..." : "No batch"}
                           </option>
-
                           {availableBatches.map((batch) => (
                             <option key={batch._id} value={batch._id}>
                               {batch.name}
@@ -864,7 +881,6 @@ export default function AllUsersManagement() {
                       <div className="grid grid-cols-2 gap-3">
                         <SelectField label="UNIVERSITY" field="university">
                           <option value="">Select university</option>
-
                           {availableUniversities.map((university) => (
                             <option key={university} value={university}>
                               {university}
@@ -897,7 +913,6 @@ export default function AllUsersManagement() {
                         <>
                           <div className="grid grid-cols-2 gap-3">
                             <InputField label="CODEFORCES" field="codeforces" />
-
                             <InputField label="LEETCODE" field="leetcode" />
                           </div>
 
@@ -985,7 +1000,6 @@ export default function AllUsersManagement() {
                           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#B91C1C] hover:bg-[#991B1B] text-white disabled:opacity-50 cursor-pointer shadow-xs transition-colors"
                         >
                           <Save size={13} />
-
                           {saving ? "Saving..." : "Save Changes"}
                         </button>
                       </div>

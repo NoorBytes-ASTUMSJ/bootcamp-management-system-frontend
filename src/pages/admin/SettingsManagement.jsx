@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import {
   getUserProfile,
@@ -33,7 +34,8 @@ import {
 } from "lucide-react";
 
 export default function AdminSettings({ onLogout }) {
-  const { user: authUser } = useAuth();
+  const navigate = useNavigate();
+  const { user: authUser, logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -133,11 +135,16 @@ export default function AdminSettings({ onLogout }) {
     e.preventDefault();
     setSavingProfile(true);
     setProfileMsg("");
-    await updateUserProfile(formData);
-    setProfile((prev) => ({ ...prev, ...formData }));
-    setSavingProfile(false);
-    setProfileMsg("Profile updated successfully!");
-    setTimeout(() => setProfileMsg(""), 3000);
+    try {
+      await updateUserProfile(formData);
+      setProfile((prev) => ({ ...prev, ...formData }));
+      setProfileMsg("Profile updated successfully!");
+    } catch (err) {
+      setProfileMsg("Failed to update profile.");
+    } finally {
+      setSavingProfile(false);
+      setTimeout(() => setProfileMsg(""), 3000);
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -161,16 +168,50 @@ export default function AdminSettings({ onLogout }) {
       return;
     }
 
-    setSavingPassword(true);
-    await changeUserPassword(passwordData);
-    setSavingPassword(false);
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setPasswordMsg({ type: "success", text: "Password changed successfully!" });
-    setTimeout(() => setPasswordMsg({ type: "", text: "" }), 3000);
+    try {
+      setSavingPassword(true);
+      await changeUserPassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setPasswordMsg({
+        type: "success",
+        text: "Password changed successfully!",
+      });
+      setTimeout(() => setPasswordMsg({ type: "", text: "" }), 3000);
+    } catch (err) {
+      const errMsg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Failed to change password. Please check your current password.";
+      setPasswordMsg({ type: "error", text: errMsg });
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const handleLogoutClick = () => {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (!confirmLogout) return;
+
+    if (typeof onLogout === "function") {
+      onLogout();
+    } else if (logout) {
+      logout();
+      navigate("/login", { replace: true });
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      sessionStorage.clear();
+      navigate("/login", { replace: true });
+    }
   };
 
   const hasMinLen = passwordData.newPassword.length >= 8;
@@ -640,7 +681,7 @@ export default function AdminSettings({ onLogout }) {
 
                 <button
                   type="button"
-                  onClick={onLogout}
+                  onClick={handleLogoutClick}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200/80 dark:border-neutral-700 text-xs font-medium text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer shadow-xs transition-colors"
                 >
                   <LogOut size={13} />

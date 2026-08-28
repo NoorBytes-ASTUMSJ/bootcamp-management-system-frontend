@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FiSearch, FiUsers, FiStar } from "react-icons/fi";
+import API from "../../services/api";
+import { getStudentProgress } from "../../services/progressService";
 import { getMyBatchMembers } from "../../services/studentService";
 
 // Helper to get the logged-in user ID from localStorage
@@ -38,6 +40,101 @@ export default function AllMembers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // ==================================================
+  // REAL PROGRESS / ATTENDANCE METRICS
+  // ==================================================
+
+  const [progressMap, setProgressMap] = useState({}); // memberId -> progress %
+  const [attendanceMap, setAttendanceMap] = useState({}); // memberId -> { percentage, totalSessions }
+
+  // ==================================================
+  // LOAD PROGRESS
+  // ==================================================
+  // getStudentProgress() (GET /progress/my-progress) also returns an
+  // overallProgress field, but that's computed server-side by
+  // calculateStudentStats() which only gives credit for "completed"
+  // status (0 credit for "in_progress"/"needs_help"). That's a
+  // different formula than the rest of the app uses, so instead we
+  // recompute from the same per-topic progressMap using the identical
+  // Completed=100 / In Progress|Needs Help=50 / else 0 scoring as
+  // StudentsDashboard.jsx and the mentor's AllMembers.jsx.
+
+  const loadProgressMap = async () => {
+    try {
+      const overview = await getStudentProgress();
+      const list = overview?.students || [];
+
+      const map = {};
+
+      list.forEach((student) => {
+        const topicsMap = student.progressMap || {};
+
+        let totalScore = 0;
+        let count = 0;
+
+        Object.keys(topicsMap).forEach((topicKey) => {
+          const items = Array.isArray(topicsMap[topicKey])
+            ? topicsMap[topicKey]
+            : [topicsMap[topicKey]];
+
+          items.forEach((item) => {
+            count++;
+
+            const status = item.status || "Not Started";
+
+            if (status === "Completed") {
+              totalScore += 100;
+            } else if (status === "In Progress" || status === "Needs Help") {
+              totalScore += 50;
+            }
+          });
+        });
+
+        map[student.id] = count > 0 ? Math.round(totalScore / count) : 0;
+      });
+
+      setProgressMap(map);
+    } catch (error) {
+      console.error("Failed to load progress overview:", error);
+      setProgressMap({});
+    }
+  };
+
+  // ==================================================
+  // LOAD ATTENDANCE
+  // ==================================================
+  // Backed by the new GET /attendance/my-batch endpoint (student-only,
+  // scoped server-side to the caller's own batch), which returns
+  // { memberId, percentage, totalSessions } per batch member.
+
+  const loadAttendanceMap = async () => {
+    try {
+      const response = await API.get("/attendance/my-batch");
+
+      const records =
+        response.data?.data?.attendance ||
+        response.data?.attendance ||
+        response.data?.data ||
+        [];
+
+      const map = {};
+
+      (Array.isArray(records) ? records : []).forEach((record) => {
+        if (!record?.memberId) return;
+
+        map[record.memberId] = {
+          percentage: record.percentage,
+          totalSessions: record.totalSessions,
+        };
+      });
+
+      setAttendanceMap(map);
+    } catch (error) {
+      console.error("Failed to load batch attendance:", error);
+      setAttendanceMap({});
+    }
+  };
+
   // No backend filtering exists yet, so we always fetch the full batch
   // roster once and do "My Group" filtering client-side below.
   useEffect(() => {
@@ -49,6 +146,8 @@ export default function AllMembers() {
         const data = await getMyBatchMembers();
 
         setMembers(data);
+
+        await Promise.all([loadProgressMap(), loadAttendanceMap()]);
       } catch (err) {
         console.error("Failed to load batch members:", err);
         setError("Failed to load batch members.");
@@ -255,6 +354,9 @@ export default function AllMembers() {
                   const name = user.fullName || "Unknown";
                   const uniAcronym = getUniversityAcronym(user.university);
 
+                  const attendanceInfo = attendanceMap[member._id];
+                  const progressValue = progressMap[member._id];
+
                   return (
                     <tr
                       key={member._id}
@@ -281,7 +383,9 @@ export default function AllMembers() {
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-xs sm:text-sm font-semibold text-text-primary font-mono">
-                          {member.attendance ?? "0%"}
+                          {attendanceInfo
+                            ? `${attendanceInfo.percentage}%`
+                            : "N/A"}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -290,12 +394,18 @@ export default function AllMembers() {
                             <div
                               className="h-full bg-primary rounded-full transition-all duration-500"
                               style={{
-                                width: `${member.progress ?? 0}%`,
+                                width: `${
+                                  typeof progressValue === "number"
+                                    ? progressValue
+                                    : 0
+                                }%`,
                               }}
                             />
                           </div>
                           <span className="text-xs text-text-muted font-mono font-semibold">
-                            {member.progress ?? 0}%
+                            {typeof progressValue === "number"
+                              ? `${progressValue}%`
+                              : "N/A"}
                           </span>
                         </div>
                       </td>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FiFileText,
   FiClock,
@@ -24,11 +24,7 @@ export default function MentorSubmissions() {
     status: "Reviewed",
   });
 
-  useEffect(() => {
-    fetchMentorSubmissions();
-  }, []);
-
-  const fetchMentorSubmissions = async () => {
+  const fetchMentorSubmissions = useCallback(async () => {
     setLoading(true);
     try {
       const response = await API.get("/submissions/mentor");
@@ -69,7 +65,11 @@ export default function MentorSubmissions() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchMentorSubmissions();
+  }, [fetchMentorSubmissions]);
 
   const openReviewPanel = (submission) => {
     setSelectedSubmission(submission);

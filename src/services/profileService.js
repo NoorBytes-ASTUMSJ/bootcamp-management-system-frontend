@@ -1,86 +1,85 @@
+import API from "./api";
+
 const DEFAULT_USER_PROFILE = {
-  fullName: "Miftahudin Mohammed",
-  email: "miftahudin.mohammed@astu.edu.et",
-  phone: "+251 912 345 678",
+  fullName: "User",
+  email: "",
+  phone: "",
   gender: "Male",
   academicYear: "3rd Year",
   department: "Computer Science and Engineering",
-  bio: "Passionate about building real-world applications, competitive programming, and helping others learn.",
-  role: "Admin",
+  bio: "",
+  role: "User",
   accountStatus: "Active",
-  joinedDate: "July 15, 2024",
-  lastLogin: "Aug 21, 2026, 10:30 PM",
-  userId: "ADM-2024-0012",
+  joinedDate: "N/A",
+  lastLogin: "N/A",
+  userId: "",
   avatarUrl: null,
 };
 
+/**
+ * Logged-in የተጠቃሚውን መረጃ ከ /api/users/me ያመጣል
+ */
 export async function getUserProfile() {
   try {
-    const response = await fetch("/api/v1/users/me");
-    const contentType = response.headers.get("content-type");
-    if (
-      response.ok &&
-      contentType &&
-      contentType.includes("application/json")
-    ) {
-      const data = await response.json();
-      return { ...DEFAULT_USER_PROFILE, ...(data.user || data) };
+    const response = await API.get("/users/me");
+    if (response.data && response.data.data) {
+      const userData = response.data.data.user || response.data.data;
+      return { ...DEFAULT_USER_PROFILE, ...userData };
     }
   } catch (err) {
-    console.info(
-      "Profile API offline. Loaded standard authenticated profile data.",
+    console.warn(
+      "Could not fetch profile from server, using local fallback.",
+      err.message,
     );
   }
 
-  // Fallback to local session storage if available
-  const storedUser = localStorage.getItem("currentUser");
+  // Fallback to local storage
+  const storedUser = localStorage.getItem("user");
   if (storedUser) {
     try {
       const parsed = JSON.parse(storedUser);
       return { ...DEFAULT_USER_PROFILE, ...parsed };
     } catch {
-      // ignore JSON parse errors and return defaults
+      // ignore parse errors
     }
   }
 
   return DEFAULT_USER_PROFILE;
 }
 
+/**
+ * የተጠቃሚውን Profile መረጃ በ PATCH /api/users/me ያድሳል
+ */
 export async function updateUserProfile(payload) {
   try {
-    const response = await fetch("/api/v1/users/me", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return { success: true, data };
-    }
-  } catch (err) {
-    console.info("Profile update simulated locally.");
-  }
+    const response = await API.patch("/users/me", payload);
+    const updatedUser =
+      response.data?.data?.user || response.data?.data || payload;
 
-  // Update local storage
-  const stored = localStorage.getItem("currentUser");
-  const base = stored ? JSON.parse(stored) : DEFAULT_USER_PROFILE;
-  const updated = { ...base, ...payload };
-  localStorage.setItem("currentUser", JSON.stringify(updated));
-  return { success: true, data: updated };
+    // የሎካል ዳታውን አዘምን
+    const stored = localStorage.getItem("user");
+    const base = stored ? JSON.parse(stored) : {};
+    localStorage.setItem("user", JSON.stringify({ ...base, ...updatedUser }));
+
+    return { success: true, data: updatedUser };
+  } catch (err) {
+    console.error("Profile update failed:", err);
+    throw err;
+  }
 }
 
-export async function changeUserPassword(passwords) {
+/**
+ * የይለፍ ቃል በ PATCH /api/users/me/password ይቀይራል
+ */
+export async function changeUserPassword({ currentPassword, newPassword }) {
   try {
-    const response = await fetch("/api/v1/users/change-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(passwords),
+    const response = await API.patch("/users/me/password", {
+      currentPassword,
+      newPassword,
     });
-    if (response.ok) {
-      return { success: true };
-    }
+    return response.data;
   } catch (err) {
-    console.info("Password update simulated locally.");
+    console.error("Password change failed:", err);
+    throw err;
   }
-  return { success: true };
 }
