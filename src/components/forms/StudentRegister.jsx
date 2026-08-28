@@ -35,6 +35,13 @@ export default function StudentRegister({
     github: "",
     codeforces: "",
     leetcode: "",
+<<<<<<< Updated upstream
+=======
+    phone: "",
+    universityId: "",
+    universityName: "Adama Science and Technology University",
+    telegramUsername: "",
+>>>>>>> Stashed changes
     dailyAvailableHours: "",
     availabilityDescription: "",
     motivation: "",
@@ -77,6 +84,12 @@ export default function StudentRegister({
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
+<<<<<<< Updated upstream
+=======
+      universityId: formData.studentId,
+      universityName: formData.universityName,
+      telegramUsername: formData.telegramUsername,
+>>>>>>> Stashed changes
       password: formData.password,
       role: "user",
       applicationType: "student",

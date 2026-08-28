@@ -1,7 +1,11 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 
 import API from "../../services/api";
+<<<<<<< Updated upstream
 
+=======
+import { getProgressOverview } from "../../services/progressService";
+>>>>>>> Stashed changes
 import {
   Users,
   Plus,
@@ -61,6 +65,13 @@ export default function StudentsDashboard() {
   });
 
   // ==================================================
+  // REAL PROGRESS / ATTENDANCE METRICS
+  // ==================================================
+
+  const [progressMap, setProgressMap] = useState({}); // memberId -> admin-only progress %
+  const [attendanceMap, setAttendanceMap] = useState({}); // memberId -> { percentage, totalSessions }
+
+  // ==================================================
   // USER SEARCH DROPDOWN
   // ==================================================
 
@@ -79,6 +90,163 @@ export default function StudentsDashboard() {
   const [mentorOptionsLoading, setMentorOptionsLoading] = useState(false);
 
   // ==================================================
+  // LOAD PROGRESS (admin-released only)
+  // ==================================================
+  // Reuses the same getProgressOverview() service and the same "skip
+  // items released by a mentor" logic as calculateStudentTotal() in
+  // ProgressManagement.jsx, which already displays this correctly.
+  // Each item in student.progressMap carries item.releasedBy ("admin"
+  // or "mentor"), so we just score the admin ones the same way the
+  // matrix view does: Completed=100, In Progress/Needs Help=50, else 0.
+
+  const loadProgressMap = async () => {
+    try {
+      const overview = await getProgressOverview();
+      const list = overview?.students || [];
+
+      const map = {};
+
+      list.forEach((student) => {
+        const topicsMap = student.progressMap || {};
+
+        let totalScore = 0;
+        let count = 0;
+
+        Object.keys(topicsMap).forEach((topicKey) => {
+          const items = Array.isArray(topicsMap[topicKey])
+            ? topicsMap[topicKey]
+            : [topicsMap[topicKey]];
+
+          items.forEach((item) => {
+            // Admin-only: skip anything a mentor released
+            if (item.releasedBy === "mentor") return;
+
+            count++;
+
+            const status = item.status || "Not Started";
+
+            if (status === "Completed") {
+              totalScore += 100;
+            } else if (status === "In Progress" || status === "Needs Help") {
+              totalScore += 50;
+            }
+          });
+        });
+
+        // student.id === Member._id, same key space as StudentsDashboard's student._id
+        map[student.id] = count > 0 ? Math.round(totalScore / count) : 0;
+      });
+
+      setProgressMap(map);
+    } catch (error) {
+      console.error("Failed to load progress overview:", error);
+      setProgressMap({});
+    }
+  };
+
+  // ==================================================
+  // LOAD ATTENDANCE (computed client-side per batch)
+  // ==================================================
+
+  const loadAttendanceMap = async (studentsList) => {
+    try {
+      const batchIds = Array.from(
+        new Set(
+          studentsList
+            .map((student) => {
+              const batch = student?.user?.batch ?? student?.batch;
+              return batch && typeof batch === "object" ? batch._id : null;
+            })
+            .filter(Boolean),
+        ),
+      );
+
+      if (batchIds.length === 0) {
+        setAttendanceMap({});
+        return;
+      }
+
+      const responses = await Promise.all(
+        batchIds.map((batchId) =>
+          API.get("/attendance", {
+            params: { batchId, includeAllSessionTypes: "true" },
+          }).catch((error) => {
+            console.error(
+              `Failed to load attendance for batch ${batchId}:`,
+              error,
+            );
+            return null;
+          }),
+        ),
+      );
+
+      const allRecords = responses.flatMap((response) => {
+        if (!response) return [];
+
+        const records =
+          response.data?.data?.attendance ||
+          response.data?.attendance ||
+          response.data?.data ||
+          [];
+
+        return Array.isArray(records) ? records : [];
+      });
+
+      // Scoring: present=1, late=0.5, excused=0.25, absent=0. All four
+      // statuses count toward the session denominator. A student with
+      // no gradeable sessions defaults to 100%. Matches
+      // getBatchAttendanceStats() in attendance.service.js.
+
+      const grouped = {};
+
+      allRecords.forEach((record) => {
+        const memberId =
+          typeof record.member === "object"
+            ? record.member?._id
+            : record.member;
+
+        if (!memberId) return;
+
+        if (!grouped[memberId]) {
+          grouped[memberId] = { score: 0, validSessions: 0 };
+        }
+
+        if (record.status === "present") {
+          grouped[memberId].score += 1;
+          grouped[memberId].validSessions += 1;
+        } else if (record.status === "late") {
+          grouped[memberId].score += 0.5;
+          grouped[memberId].validSessions += 1;
+        } else if (record.status === "excused") {
+          grouped[memberId].score += 0.25;
+          grouped[memberId].validSessions += 1;
+        } else if (record.status === "absent") {
+          grouped[memberId].validSessions += 1;
+        }
+      });
+
+      const map = {};
+
+      Object.keys(grouped).forEach((memberId) => {
+        const { score, validSessions } = grouped[memberId];
+
+        map[memberId] = {
+          percentage:
+            validSessions === 0
+              ? 100
+              : Math.round((score / validSessions) * 100),
+          totalSessions: validSessions,
+        };
+      });
+
+      setAttendanceMap(map);
+    } catch (error) {
+      console.error("Failed to load attendance map:", error);
+      setAttendanceMap({});
+    }
+  };
+
+  // ==================================================
   // LOAD STUDENTS
   // ==================================================
 
@@ -94,7 +262,10 @@ export default function StudentsDashboard() {
         response.data?.data ||
         [];
 
-      setStudents(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) ? data : [];
+      setStudents(list);
+
+      await Promise.all([loadProgressMap(), loadAttendanceMap(list)]);
     } catch (error) {
       console.error("Failed to load students:", error);
       setStudents([]);
@@ -826,6 +997,9 @@ export default function StudentsDashboard() {
 
                             const batchName = getBatchName(student);
 
+                            const attendanceInfo = attendanceMap[student._id];
+                            const progressValue = progressMap[student._id];
+
                             return (
                               <tr
                                 key={student._id}
@@ -864,12 +1038,76 @@ export default function StudentsDashboard() {
                                   {batchName || "N/A"}
                                 </td>
 
+<<<<<<< Updated upstream
                                 <td className="py-3 px-4 text-neutral-400">
                                   N/A
                                 </td>
 
                                 <td className="py-3 px-4 text-neutral-400">
                                   N/A
+=======
+                                <td className="py-4 px-5">
+                                  {attendanceInfo ? (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-14 h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+                                        <div
+                                          className={`h-full rounded-full ${
+                                            attendanceInfo.percentage >= 75
+                                              ? "bg-emerald-500"
+                                              : attendanceInfo.percentage >=
+                                                  50
+                                                ? "bg-amber-500"
+                                                : "bg-red-500"
+                                          }`}
+                                          style={{
+                                            width: `${Math.min(
+                                              attendanceInfo.percentage,
+                                              100,
+                                            )}%`,
+                                          }}
+                                        />
+                                      </div>
+                                      <span className="text-neutral-600 dark:text-neutral-300 text-[11px] font-medium tabular-nums">
+                                        {attendanceInfo.percentage}%
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-neutral-400">
+                                      N/A
+                                    </span>
+                                  )}
+                                </td>
+
+                                <td className="py-4 px-5">
+                                  {typeof progressValue === "number" ? (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-14 h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+                                        <div
+                                          className={`h-full rounded-full ${
+                                            progressValue >= 75
+                                              ? "bg-emerald-500"
+                                              : progressValue >= 50
+                                                ? "bg-amber-500"
+                                                : "bg-red-500"
+                                          }`}
+                                          style={{
+                                            width: `${Math.min(
+                                              progressValue,
+                                              100,
+                                            )}%`,
+                                          }}
+                                        />
+                                      </div>
+                                      <span className="text-neutral-600 dark:text-neutral-300 text-[11px] font-medium tabular-nums">
+                                        {progressValue}%
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-neutral-400">
+                                      N/A
+                                    </span>
+                                  )}
+>>>>>>> Stashed changes
                                 </td>
 
                                 <td className="py-3 px-4 text-neutral-600 dark:text-neutral-300">
@@ -1051,6 +1289,47 @@ export default function StudentsDashboard() {
                             </span>
                           </div>
 
+                        </div>
+                      </div>
+
+                      {/* PERFORMANCE */}
+
+                      <div className="space-y-2.5 pt-3 border-t border-neutral-100 dark:border-neutral-800">
+                        <span className="text-[9px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
+                          PERFORMANCE
+                        </span>
+
+                        <div className="grid grid-cols-2 gap-2.5">
+                          <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
+                            <span className="text-[9px] text-neutral-400 block mb-0.5">
+                              Admin Progress
+                            </span>
+
+                            <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
+                              {typeof progressMap[selectedStudent._id] ===
+                              "number"
+                                ? `${progressMap[selectedStudent._id]}%`
+                                : "N/A"}
+                            </span>
+                          </div>
+
+                          <div className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
+                            <span className="text-[9px] text-neutral-400 block mb-0.5">
+                              Attendance
+                            </span>
+
+                            <span className="text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
+                              {attendanceMap[selectedStudent._id]
+                                ? `${
+                                    attendanceMap[selectedStudent._id]
+                                      .percentage
+                                  }% (${
+                                    attendanceMap[selectedStudent._id]
+                                      .totalSessions
+                                  } sessions)`
+                                : "N/A"}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
