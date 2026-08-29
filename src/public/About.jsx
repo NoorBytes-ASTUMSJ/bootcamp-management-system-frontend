@@ -78,7 +78,7 @@ export default function About({
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text-primary transition-colors flex flex-col font-sans selection:bg-primary/20 selection:text-primary">
+    <div className="min-h-screen bg-background text-text-primary transition-colors selection:bg-primary/20 selection:text-primary">
       <Navbar
         currentView="about"
         onNavigatePage={onNavigatePage}
