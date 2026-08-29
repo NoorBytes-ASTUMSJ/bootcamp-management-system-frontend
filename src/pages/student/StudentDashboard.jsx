@@ -753,13 +753,19 @@ export default function StudentDashboard() {
           sub.score !== undefined,
       );
 
+      // Average grade is measured against every assignment the student has
+      // (rawData.length — one submission record exists per assignment,
+      // confirmed by the `pending` filter above matching on "not_started"),
+      // not just the ones that happen to be graded. An unsubmitted or
+      // ungraded assignment counts as 0 toward the average instead of being
+      // silently excluded from the denominator.
       const averageGrade =
-        graded.length > 0
+        rawData.length > 0
           ? Math.round(
               graded.reduce((sum, sub) => {
                 const maxScore = sub.assignment?.maxScore || 100;
                 return sum + (sub.score / maxScore) * 100;
-              }, 0) / graded.length,
+              }, 0) / rawData.length,
             )
           : 0;
 
@@ -772,17 +778,16 @@ export default function StudentDashboard() {
         .filter((sub) => sub.assignment?.deadline)
         .sort(
           (a, b) =>
-            new Date(a.assignment.deadline) -
-            new Date(b.assignment.deadline),
+            new Date(a.assignment.deadline) - new Date(b.assignment.deadline),
         )
         .slice(0, 5)
         .map((sub) => ({
           id: sub._id,
           title: sub.assignment?.title || "Untitled Assignment",
-          date: new Date(sub.assignment.deadline).toLocaleDateString(
-            "en-US",
-            { month: "short", day: "numeric" },
-          ),
+          date: new Date(sub.assignment.deadline).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
           description: sub.assignment?.description || "",
           status:
             sub.status === "needs_resubmission"
@@ -795,8 +800,7 @@ export default function StudentDashboard() {
       const feedbackItems = rawData
         .filter((sub) => sub.feedback && sub.feedback.trim().length > 0)
         .sort(
-          (a, b) =>
-            new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0),
+          (a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0),
         )
         .slice(0, 5)
         .map((sub) => ({

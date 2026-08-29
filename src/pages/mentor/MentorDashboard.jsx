@@ -20,6 +20,7 @@ import {
   getMentorBatchMembers,
   getMyStudentDetail,
 } from "../../services/studentService";
+import { useAuth } from "../../context/AuthContext";
 
 // Helper to get the logged-in user ID from localStorage
 function getCurrentUserId() {
@@ -44,6 +45,10 @@ function getCurrentUser() {
   }
 }
 
+// Resolves a single canonical batch ID to scope all dashboard data to —
+// prefers the batch of the mentor's own assigned students (guaranteed
+// correct), falling back to the most common batch present in the full
+// roster if the mentor has no assigned students yet.
 function resolveMentorBatchId(members, mentorId) {
   const myMembers = members.filter((member) => {
     const mentor = member.assignedMentor;
@@ -87,6 +92,9 @@ const scoreTopics = (topicsMap) => {
   return count > 0 ? Math.round(totalScore / count) : 0;
 };
 
+// ==================================================
+// SECTION HEADER (same pattern as StudentDashboard.jsx)
+// ==================================================
 
 function SectionHeader({ title, actionText, actionLink }) {
   return (
@@ -106,6 +114,9 @@ function SectionHeader({ title, actionText, actionLink }) {
   );
 }
 
+// ==================================================
+// LEADERBOARD CARD (same pattern as StudentDashboard.jsx)
+// ==================================================
 
 function LeaderboardCard({ title, icon: Icon, entries, accent }) {
   return (
@@ -153,13 +164,14 @@ function LeaderboardCard({ title, icon: Icon, entries, accent }) {
 }
 
 export default function MentorDashboard() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const [batchMembers, setBatchMembers] = useState([]);
-  const [progressMap, setProgressMap] = useState({}); 
-  const [attendanceMap, setAttendanceMap] = useState({}); 
-  const [gradesMap, setGradesMap] = useState({}); 
+  const [progressMap, setProgressMap] = useState({}); // memberId -> %
+  const [attendanceMap, setAttendanceMap] = useState({}); // memberId -> { percentage, totalSessions }
+  const [gradesMap, setGradesMap] = useState({}); // memberId -> { percentage, gradedCount }
 
   const [leaderboard, setLeaderboard] = useState({
     attendance: [],
@@ -177,7 +189,18 @@ export default function MentorDashboard() {
 
   const currentUserId = useMemo(() => getCurrentUserId(), []);
   const currentUser = useMemo(() => getCurrentUser(), []);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
   const mentorFirstName =
+    user?.name?.split(" ")[0] ||
+    user?.firstName ||
+    user?.fullName?.split(" ")[0] ||
     currentUser?.firstName ||
     currentUser?.fullName?.split(" ")[0] ||
     "Mentor";
@@ -195,6 +218,9 @@ export default function MentorDashboard() {
     });
   }, [batchMembers, currentUserId]);
 
+  // ==================================================
+  // AT-RISK DETECTION (attendance < 75% or progress < 50%)
+  // ==================================================
 
   const atRiskStudents = useMemo(() => {
     return myGroupMembers
@@ -221,6 +247,9 @@ export default function MentorDashboard() {
       .filter((s) => s.issues.length > 0);
   }, [myGroupMembers, attendanceMap, progressMap]);
 
+  // ==================================================
+  // AGGREGATE STATS (my group only)
+  // ==================================================
 
   const groupStats = useMemo(() => {
     const attendanceValues = myGroupMembers
@@ -256,6 +285,9 @@ export default function MentorDashboard() {
     };
   }, [myGroupMembers, attendanceMap, progressMap, pendingGrading, atRiskStudents]);
 
+  // Sorted "progress by student" list for the group (replaces the old
+  // fake per-module breakdown — Assignment has no `topic` field in the
+  // schema, so a real per-module split isn't derivable).
   const progressByStudent = useMemo(() => {
     return myGroupMembers
       .map((m) => ({
@@ -265,6 +297,11 @@ export default function MentorDashboard() {
       }))
       .sort((a, b) => b.percentage - a.percentage);
   }, [myGroupMembers, progressMap]);
+
+  // ==================================================
+  // LOAD BATCH DATA (progress, attendance, grades) + leaderboard —
+  // scoped to a single resolved mentorBatchId, never the whole roster
+  // ==================================================
 
   const loadBatchData = async (mentorBatchId) => {
     try {
@@ -300,6 +337,13 @@ export default function MentorDashboard() {
         nameById[s.id] = { name: s.name, initials: s.initials };
       });
 
+      // getProgressOverview(mentorBatchId) is the one endpoint confirmed to
+      // filter correctly server-side, so its student IDs are the source of
+      // truth for "who is actually in this batch." /attendance and
+      // /submissions/my-batch-grades don't reliably honor batchId, so every
+      // record they return gets checked against this set below — anything
+      // outside it belongs to another batch and must be dropped before
+      // ranking, or it leaks into the leaderboard.
       const batchMemberIds = new Set(students.map((s) => s.id));
 
       // ---- Progress ----
@@ -438,6 +482,9 @@ export default function MentorDashboard() {
       setPendingGrading([]);
     }
   };
+
+  // Scoped to the mentor's resolved batch so announcements match the
+  // batch shown everywhere else on this dashboard, not a global feed.
   const loadAnnouncements = async (mentorBatchId) => {
     try {
       const response = await API.get("/announcements", {
@@ -568,7 +615,7 @@ export default function MentorDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
-            Welcome back, {mentorFirstName}
+            {getGreeting()}, {mentorFirstName}
             <span className="text-primary">.</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-0.5">
@@ -897,6 +944,9 @@ export default function MentorDashboard() {
           </div>
         </div>
 
+        {/* Recent Announcements — batch-scoped, with a "View All" link
+            navigating to the full announcements page (same pattern as
+            StudentDashboard.jsx's SectionHeader) */}
         <div className={cardStyle}>
           <SectionHeader
             title="Recent Announcements"
