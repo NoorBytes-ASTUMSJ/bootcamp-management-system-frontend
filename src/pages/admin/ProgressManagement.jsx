@@ -86,6 +86,7 @@ export default function ProgressManagement({
   useEffect(() => {
     loadData();
   }, []);
+
   async function loadData() {
     setLoading(true);
 
@@ -274,8 +275,6 @@ export default function ProgressManagement({
     };
   }, [filteredStudents, progressColumns, userRole]);
 
- 
-
   const getStatusBadge = (status) => {
     switch (status) {
       case "Completed":
@@ -357,7 +356,6 @@ export default function ProgressManagement({
       setSaving(false);
     }
   };
-
 
   const openEditModal = () => {
     if (!selectedColumnCell) {
@@ -451,7 +449,6 @@ export default function ProgressManagement({
       setSaving(false);
     }
   };
-
 
   const handleUpdateItemStatus = async (
     studentId,
@@ -600,12 +597,10 @@ export default function ProgressManagement({
     });
   };
 
- 
-
   return (
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100">
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-28 gap-2 text-xs text-neutral-500">
               <Loader2 className="animate-spin text-[#B91C1C]" size={20} />
@@ -636,7 +631,7 @@ export default function ProgressManagement({
                       <select
                         value={batchFilter}
                         onChange={(e) => setBatchFilter(e.target.value)}
-                        className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] font-medium shadow-2xs cursor-pointer"
+                        className="appearance-none pl-3 pr-8 py-2 rounded-xl text-xs bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/50 font-medium shadow-2xs transition-all duration-200 cursor-pointer"
                       >
                         <option value="ALL">-- Select Batch --</option>
 
@@ -658,7 +653,7 @@ export default function ProgressManagement({
                     <button
                       type="button"
                       onClick={() => setIsCreateOpen(true)}
-                      className="flex items-center gap-1.5 px-3.5 py-2 bg-[#B91C1C] hover:bg-[#991b1b] text-white rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer"
+                      className="flex items-center gap-1.5 px-3.5 py-2 bg-[#B91C1C] hover:bg-[#991b1b] text-white rounded-xl text-xs font-bold shadow-sm transition-all duration-200 hover:shadow-md hover:shadow-red-500/20 active:scale-98 cursor-pointer"
                     >
                       <Plus size={14} />
 
@@ -668,16 +663,16 @@ export default function ProgressManagement({
                 </div>
               </div>
 
-             
+              {/* Summary Cards with Hover Lift, Shadow Glow, and Accents */}
               {batchFilter !== "ALL" && (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-                  <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-[#B91C1C]/50 hover:shadow-lg hover:shadow-red-500/5">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                         Students
                       </span>
-                      <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
-                        <Users size={13} />
+                      <div className="w-8 h-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
+                        <Users size={14} />
                       </div>
                     </div>
                     <p className="text-2xl font-black text-neutral-900 dark:text-white">
@@ -688,16 +683,16 @@ export default function ProgressManagement({
                     </p>
                   </div>
 
-                  <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-[#B91C1C]/50 hover:shadow-lg hover:shadow-red-500/5">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                         Avg. Progress
                       </span>
-                      <div className="w-7 h-7 rounded-lg bg-[#B91C1C]/10 flex items-center justify-center text-[#B91C1C]">
-                        <TrendingUp size={13} />
+                      <div className="w-8 h-8 rounded-xl bg-[#B91C1C]/10 flex items-center justify-center text-[#B91C1C]">
+                        <TrendingUp size={14} />
                       </div>
                     </div>
-                    <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                    <p className="text-2xl font-black text-[#B91C1C]">
                       {summaryStats.averageProgress}%
                     </p>
                     <p className="text-[10px] text-neutral-400 mt-0.5">
@@ -705,13 +700,13 @@ export default function ProgressManagement({
                     </p>
                   </div>
 
-                  <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/5">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                         Tasks Released
                       </span>
-                      <div className="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-300">
-                        <ListChecks size={13} />
+                      <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-300">
+                        <ListChecks size={14} />
                       </div>
                     </div>
                     <p className="text-2xl font-black text-neutral-900 dark:text-white">
@@ -722,16 +717,16 @@ export default function ProgressManagement({
                     </p>
                   </div>
 
-                  <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                  <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-rose-500/50 hover:shadow-lg hover:shadow-rose-500/5">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                         Needs Help
                       </span>
-                      <div className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-300">
-                        <HelpCircle size={13} />
+                      <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-300">
+                        <HelpCircle size={14} />
                       </div>
                     </div>
-                    <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                    <p className="text-2xl font-black text-rose-600 dark:text-rose-400">
                       {summaryStats.needsHelpCount}
                     </p>
                     <p className="text-[10px] text-neutral-400 mt-0.5">
@@ -743,11 +738,11 @@ export default function ProgressManagement({
 
               {/* Filters */}
               {batchFilter !== "ALL" && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white dark:bg-[#151921] p-3.5 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white dark:bg-[#151921] p-3.5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
                   <div className="relative">
                     <Search
                       size={14}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
 
                     <input
@@ -755,7 +750,7 @@ export default function ProgressManagement({
                       placeholder="Search by student name or track..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-lg text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C]"
+                      className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                     />
                   </div>
 
@@ -763,7 +758,7 @@ export default function ProgressManagement({
                     <select
                       value={universityFilter}
                       onChange={(e) => setUniversityFilter(e.target.value)}
-                      className="w-full appearance-none px-3 py-2 rounded-lg text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] font-medium cursor-pointer"
+                      className="w-full appearance-none px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors font-medium cursor-pointer"
                     >
                       <option value="ALL">All Universities</option>
 
@@ -776,7 +771,7 @@ export default function ProgressManagement({
 
                     <ChevronDown
                       size={13}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
 
@@ -784,7 +779,7 @@ export default function ProgressManagement({
                     <select
                       value={genderFilter}
                       onChange={(e) => setGenderFilter(e.target.value)}
-                      className="w-full appearance-none px-3 py-2 rounded-lg text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] font-medium cursor-pointer"
+                      className="w-full appearance-none px-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors font-medium cursor-pointer"
                     >
                       <option value="ALL">All Genders</option>
 
@@ -797,14 +792,14 @@ export default function ProgressManagement({
 
                     <ChevronDown
                       size={13}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                     />
                   </div>
                 </div>
               )}
 
               {/* Main Table */}
-              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-sm">
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-sm transition-all duration-200">
                 <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
                   <h3 className="font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
                     {batchFilter === "ALL"
@@ -826,7 +821,7 @@ export default function ProgressManagement({
                 <div className="overflow-x-auto">
                   {batchFilter === "ALL" ? (
                     <div className="flex flex-col items-center justify-center py-24 text-center px-4 space-y-3">
-                      <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 shadow-inner">
+                      <div className="w-12 h-12 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 shadow-inner">
                         <Filter size={20} />
                       </div>
 
@@ -859,7 +854,7 @@ export default function ProgressManagement({
                                 className="py-3.5 px-4 text-center cursor-pointer hover:bg-neutral-100/80 dark:hover:bg-neutral-800 transition-colors group"
                                 title="Click to view full task details & student statuses"
                               >
-                                <span className="underline decoration-neutral-300 dark:decoration-neutral-700 underline-offset-2 group-hover:text-[#B91C1C]">
+                                <span className="underline decoration-neutral-300 dark:decoration-neutral-700 underline-offset-2 group-hover:text-[#B91C1C] transition-colors">
                                   {col.title}
                                 </span>
 
@@ -894,7 +889,7 @@ export default function ProgressManagement({
                               >
                                 <td className="py-3.5 px-5 font-semibold text-neutral-900 dark:text-neutral-100">
                                   <div className="flex items-center gap-2.5">
-                                    <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300 shadow-2xs">
+                                    <div className="w-8 h-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300 shadow-2xs">
                                       {st.initials ||
                                         st.name
                                           ?.split(" ")
@@ -961,10 +956,10 @@ export default function ProgressManagement({
         </main>
       </div>
 
-
+      {/* Column Details Modal */}
       {selectedColumnCell && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#151921] rounded-3xl border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-4">
               <div>
@@ -982,14 +977,14 @@ export default function ProgressManagement({
               <button
                 type="button"
                 onClick={() => setSelectedColumnCell(null)}
-                className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer"
+                className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
             </div>
 
             {/* Task Information */}
-            <div className="p-4 rounded-xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/50 space-y-3 text-xs">
+            <div className="p-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/50 space-y-3 text-xs">
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-neutral-700 dark:text-neutral-200 uppercase tracking-wider text-[10px]">
                   Task & Resource Information
@@ -1000,7 +995,7 @@ export default function ProgressManagement({
                     type="button"
                     disabled={saving || !selectedColumnCell.itemId}
                     onClick={openEditModal}
-                    className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Pencil size={11} />
                     <span>Edit</span>
@@ -1055,7 +1050,7 @@ export default function ProgressManagement({
                   Instructions & Guidelines
                 </span>
 
-                <p className="text-neutral-700 dark:text-neutral-300 bg-white dark:bg-[#151921] p-3 rounded-lg border border-neutral-200/60 dark:border-neutral-800/80 whitespace-pre-wrap">
+                <p className="text-neutral-700 dark:text-neutral-300 bg-white dark:bg-[#151921] p-3 rounded-xl border border-neutral-200/60 dark:border-neutral-800/80 whitespace-pre-wrap">
                   {selectedColumnCell.instructions ||
                     "No instructions provided."}
                 </p>
@@ -1076,7 +1071,6 @@ export default function ProgressManagement({
                     onClick={() => {
                       if (!selectedColumnCell.itemId) {
                         alert("Cannot delete: task ID is missing.");
-
                         return;
                       }
 
@@ -1091,16 +1085,15 @@ export default function ProgressManagement({
                         );
                       }
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Trash2 size={13} />
-
                     <span>Delete Column Task</span>
                   </button>
                 )}
               </div>
 
-              <div className="max-h-[35vh] overflow-y-auto pr-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 rounded-xl bg-neutral-50/50 dark:bg-neutral-900/40">
+              <div className="max-h-[35vh] overflow-y-auto pr-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/40">
                 {selectedColumnCell.studentsData.map(({ student, items }) => {
                   const item = items[0];
 
@@ -1138,7 +1131,7 @@ export default function ProgressManagement({
                                       e.target.value,
                                     )
                                   }
-                                  className="px-2.5 py-1 rounded-md text-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 cursor-pointer focus:outline-none focus:border-[#B91C1C] disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="px-2.5 py-1 rounded-lg text-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 cursor-pointer focus:outline-none focus:border-[#B91C1C] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <option value="Not Started">
                                     Not Started
@@ -1171,7 +1164,7 @@ export default function ProgressManagement({
               <button
                 type="button"
                 onClick={() => setSelectedColumnCell(null)}
-                className="px-4 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -1180,9 +1173,10 @@ export default function ProgressManagement({
         </div>
       )}
 
+      {/* Create Modal */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-white dark:bg-[#151921] rounded-3xl border border-neutral-200 dark:border-neutral-800 w-full max-w-md p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
               <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
                 Create New Progress Task
@@ -1191,7 +1185,7 @@ export default function ProgressManagement({
               <button
                 type="button"
                 onClick={() => setIsCreateOpen(false)}
-                className="text-neutral-400 hover:text-neutral-700 cursor-pointer"
+                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -1217,7 +1211,7 @@ export default function ProgressManagement({
                       title: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
 
@@ -1237,7 +1231,7 @@ export default function ProgressManagement({
                       topic: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
 
@@ -1256,7 +1250,7 @@ export default function ProgressManagement({
                         batch: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   >
                     <option value="">-- Select Target Batch --</option>
 
@@ -1283,7 +1277,7 @@ export default function ProgressManagement({
                         resourceType: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   >
                     <option value="Documentation">Documentation</option>
 
@@ -1309,7 +1303,7 @@ export default function ProgressManagement({
                         week: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   />
                 </div>
               </div>
@@ -1329,7 +1323,7 @@ export default function ProgressManagement({
                       resourceLink: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
 
@@ -1348,7 +1342,7 @@ export default function ProgressManagement({
                       instructions: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors resize-none"
                 />
               </div>
 
@@ -1356,7 +1350,7 @@ export default function ProgressManagement({
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-3.5 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1364,7 +1358,7 @@ export default function ProgressManagement({
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-[#B91C1C] hover:bg-[#991b1b] text-white font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991b1b] text-white font-bold shadow-sm transition-all hover:shadow-md hover:shadow-red-500/20 active:scale-98 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? "Saving..." : "Create Task"}
                 </button>
@@ -1374,9 +1368,10 @@ export default function ProgressManagement({
         </div>
       )}
 
+      {/* Edit Modal */}
       {isEditOpen && (
         <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-white dark:bg-[#151921] rounded-3xl border border-neutral-200 dark:border-neutral-800 w-full max-w-md p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
               <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
                 Edit Progress Task
@@ -1385,7 +1380,7 @@ export default function ProgressManagement({
               <button
                 type="button"
                 onClick={() => setIsEditOpen(false)}
-                className="text-neutral-400 hover:text-neutral-700 cursor-pointer"
+                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -1411,7 +1406,7 @@ export default function ProgressManagement({
                       title: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
 
@@ -1433,7 +1428,7 @@ export default function ProgressManagement({
                       topic: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-500 cursor-not-allowed"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-500 cursor-not-allowed"
                 />
               </div>
 
@@ -1451,7 +1446,7 @@ export default function ProgressManagement({
                         resourceType: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   >
                     <option value="Documentation">Documentation</option>
 
@@ -1477,7 +1472,7 @@ export default function ProgressManagement({
                         week: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   />
                 </div>
               </div>
@@ -1497,7 +1492,7 @@ export default function ProgressManagement({
                       resourceLink: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
 
@@ -1516,7 +1511,7 @@ export default function ProgressManagement({
                       instructions: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors resize-none"
                 />
               </div>
 
@@ -1524,7 +1519,7 @@ export default function ProgressManagement({
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-3.5 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1532,7 +1527,7 @@ export default function ProgressManagement({
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-[#B91C1C] hover:bg-[#991b1b] text-white font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991b1b] text-white font-bold shadow-sm transition-all hover:shadow-md hover:shadow-red-500/20 active:scale-98 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? "Saving..." : "Save Changes"}
                 </button>
