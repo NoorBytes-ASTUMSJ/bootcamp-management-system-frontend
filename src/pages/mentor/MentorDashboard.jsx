@@ -855,7 +855,7 @@ export default function MentorDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className={cardStyle}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm sm:text-base font-bold text-text-primary flex items-center gap-2 text-rose-500">
+            <h2 className="text-sm sm:text-base font-bold text-text-primary flex items-center gap-2">
               <AlertTriangle size={18} />
               Students Needing Attention
             </h2>

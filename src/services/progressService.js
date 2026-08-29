@@ -4,7 +4,6 @@ function getProgressTaskId(item) {
   return item?.id || item?._id || item?.task?._id || item?.task?.id || null;
 }
 
-
 export async function getProgressOverview(batchId = "", extraParams = {}) {
   try {
     const params = {
@@ -18,7 +17,7 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
 
     const responseData = response.data?.data || response.data;
     const dashboardRows = responseData?.students || responseData || [];
-    
+
     const progressResponse = await API.get("/progress/all", { params }).catch(
       (err) => {
         console.warn("Failed to fetch raw progress items:", err);
@@ -42,9 +41,12 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
           item?.student?._id || item?.student?.id || item?.student;
 
         const matchesStudent = String(itemStudentId) === String(studentId);
-        
+
         // CRITICAL CHECK: Only allow global (admin-released) items
-        const isGlobalTask = item?.scope === "global" || item?.releasedBy?.role === "admin" || !item?.releasedBy?.role;
+        const isGlobalTask =
+          item?.scope === "global" ||
+          item?.releasedBy?.role === "admin" ||
+          !item?.releasedBy?.role;
 
         return matchesStudent && isGlobalTask;
       });
@@ -101,7 +103,10 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
       students,
     };
   } catch (err) {
-    console.warn("Backend progress dashboard fetch failed. Using empty state.", err);
+    console.warn(
+      "Backend progress dashboard fetch failed. Using empty state.",
+      err,
+    );
     return {
       students: [],
     };
@@ -162,7 +167,6 @@ export async function getStudentProgress() {
   }
 }
 
-
 function mapBackendStatusToUI(backendStatus) {
   switch (backendStatus) {
     case "completed":
@@ -197,7 +201,6 @@ function mapUIStatusToBackend(uiStatus) {
   }
 }
 
-
 export async function createProgressItem(payload) {
   try {
     const response = await API.post("/progress", {
@@ -218,7 +221,6 @@ export async function createProgressItem(payload) {
     throw err;
   }
 }
-
 
 export async function updateProgressItem(progressId, payload = {}) {
   if (!progressId || progressId === "undefined" || progressId === "null") {
@@ -265,7 +267,6 @@ export async function updateProgressItem(progressId, payload = {}) {
   }
 }
 
-
 export async function updateStudentProgressStatus(progressId, status) {
   if (!progressId || progressId === "undefined" || progressId === "null") {
     console.error(
@@ -290,7 +291,6 @@ export async function updateStudentProgressStatus(progressId, status) {
     throw err;
   }
 }
-
 
 export async function deleteProgressItem(progressId) {
   console.log("deleteProgressItem received ID:", progressId);

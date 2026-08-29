@@ -11,8 +11,9 @@ import {
 } from "react-icons/fi";
 import { FaHtml5, FaReact, FaNodeJs } from "react-icons/fa";
 import { IoLogoJavascript } from "react-icons/io5";
-import API from "../../services/api"; // Your configured axios instance
+import API from "../../services/api";
 import { getStudentProgress } from "../../services/progressService";
+import { useAuth } from "../../context/AuthContext";
 
 const TOPIC_ICON_MAP = {
   "html / css": {
@@ -99,10 +100,6 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-// ==================================================
-// ATTENDANCE QUICK STATS (calendar removed — this now spans full width)
-// ==================================================
-
 function AttendanceQuickStats({ records }) {
   const stats = useMemo(() => {
     const counts = { present: 0, absent: 0, late: 0, excused: 0 };
@@ -111,8 +108,9 @@ function AttendanceQuickStats({ records }) {
       if (counts[r.status] !== undefined) counts[r.status] += 1;
     });
 
-    const gradeableSessions = counts.present + counts.late + counts.absent + counts.excused;
-    const score = counts.present + counts.late * 0.5 +counts.excused*0.25;
+    const gradeableSessions =
+      counts.present + counts.late + counts.absent + counts.excused;
+    const score = counts.present + counts.late * 0.5 + counts.excused * 0.25;
     const pct =
       gradeableSessions > 0
         ? Math.round((score / gradeableSessions) * 100)
@@ -177,10 +175,6 @@ function AttendanceQuickStats({ records }) {
     </div>
   );
 }
-
-// ==================================================
-// ACTIVITY TIMELINE (announcements + deadlines + feedback, merged)
-// ==================================================
 
 function ActivityTimeline({ announcements, deadlines, feedback }) {
   const items = useMemo(() => {
@@ -249,7 +243,9 @@ function ActivityTimeline({ announcements, deadlines, feedback }) {
               )}
             </div>
 
-            <div className={`flex-1 min-w-0 ${idx < items.length - 1 ? "pb-5" : ""}`}>
+            <div
+              className={`flex-1 min-w-0 ${idx < items.length - 1 ? "pb-5" : ""}`}
+            >
               <div className="flex items-start justify-between gap-2">
                 <h4 className="text-xs font-bold text-text-primary">
                   {item.title}
@@ -270,10 +266,6 @@ function ActivityTimeline({ announcements, deadlines, feedback }) {
     </div>
   );
 }
-
-// ==================================================
-// LEADERBOARD CARD (used for each of the 3 categories)
-// ==================================================
 
 function LeaderboardCard({ title, icon: Icon, entries, accent, comingSoon }) {
   return (
@@ -314,7 +306,8 @@ function LeaderboardCard({ title, icon: Icon, entries, accent, comingSoon }) {
                 {entry.name}
               </span>
               <span className="text-xs font-black text-text-primary font-mono shrink-0">
-                {entry.value}%
+                {entry.value}
+                {title === "Grades" ? "" : "%"}
               </span>
             </div>
           ))}
@@ -325,14 +318,10 @@ function LeaderboardCard({ title, icon: Icon, entries, accent, comingSoon }) {
 }
 
 export default function StudentDashboard() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dashboardData, setDashboardData] = useState(DEFAULT_DASHBOARD_DATA);
-
-  // ==================================================
-  // ATTENDANCE (self records — no recordedBy/role restriction server-side,
-  // so mentor-recorded sessions are already included here)
-  // ==================================================
 
   const [attendanceRecords, setAttendanceRecords] = useState([]);
 
@@ -346,25 +335,18 @@ export default function StudentDashboard() {
       if (r.status === "present") present += 1;
       else if (r.status === "late") late += 1;
       else if (r.status === "absent") absent += 1;
-      else if (r.status === "excused")excuse += 1
+      else if (r.status === "excused") excuse += 1;
     });
 
     const gradeableSessions = present + late + absent + excuse;
     if (gradeableSessions === 0) return 100;
 
-    const score = present + late * 0.5 + excuse*0.25;
+    const score = present + late * 0.5 + excuse * 0.25;
     return Math.round((score / gradeableSessions) * 100);
   }, [attendanceRecords]);
 
-
   const [selfProgressPercent, setSelfProgressPercent] = useState(0);
   const [progressSummary, setProgressSummary] = useState([]);
-
-  // ==================================================
-  // ASSIGNMENTS / GRADES / DEADLINES / FEEDBACK
-  // ==================================================
-  // All four derived from GET /submissions/me — the same endpoint and
-  // parsing StudentAssignments.jsx already uses successfully.
 
   const [assignmentsSummary, setAssignmentsSummary] = useState({
     pending: 0,
@@ -373,16 +355,238 @@ export default function StudentDashboard() {
   const [derivedDeadlines, setDerivedDeadlines] = useState([]);
   const [derivedFeedback, setDerivedFeedback] = useState([]);
 
-  // ==================================================
-  // BATCH LEADERBOARD (attendance + progress; grades pending a
-  // batch-wide grades endpoint — shown as "coming soon" until then)
-  // ==================================================
-
   const [leaderboard, setLeaderboard] = useState({
     attendance: [],
     progress: [],
     grades: [],
   });
+
+  const scoreTopics = (topicsMap) => {
+    let totalScore = 0;
+    let count = 0;
+
+    Object.keys(topicsMap || {}).forEach((topicKey) => {
+      const items = Array.isArray(topicsMap[topicKey])
+        ? topicsMap[topicKey]
+        : [topicsMap[topicKey]];
+
+      items.forEach((item) => {
+        count++;
+        const status = item.status || "Not Started";
+        if (status === "Completed") totalScore += 100;
+        else if (status === "In Progress" || status === "Needs Help")
+          totalScore += 50;
+      });
+    });
+
+    return count > 0 ? Math.round(totalScore / count) : 0;
+  };
+
+  const loadLeaderboard = async () => {
+    try {
+      const [progressOverview, attendanceResponse, gradesResponse] =
+        await Promise.all([
+          getStudentProgress(),
+          API.get("/attendance/my-batch").catch((err) => {
+            console.error("Failed to load batch attendance:", err);
+            return null;
+          }),
+          API.get("/submissions/my-batch-grades").catch((err) => {
+            console.error("Failed to load batch grades:", err);
+            return null;
+          }),
+        ]);
+
+      const students = progressOverview?.students || [];
+
+      const nameById = {};
+      students.forEach((s) => {
+        nameById[s.id] = { name: s.name, initials: s.initials };
+      });
+
+      const progressRanking = students
+        .map((student) => ({
+          id: student.id,
+          name: student.name,
+          value: scoreTopics(student.progressMap),
+        }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 5);
+
+      let attendanceRanking = [];
+
+      if (attendanceResponse) {
+        const records =
+          attendanceResponse.data?.data?.attendance ||
+          attendanceResponse.data?.attendance ||
+          attendanceResponse.data?.data ||
+          [];
+
+        attendanceRanking = (Array.isArray(records) ? records : [])
+          .map((record) => ({
+            id: record.memberId,
+            name: nameById[record.memberId]?.name || "Student",
+            value: record.percentage,
+          }))
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 5);
+      }
+
+      let gradesRanking = [];
+
+      if (gradesResponse) {
+        const grades =
+          gradesResponse.data?.data?.grades ||
+          gradesResponse.data?.grades ||
+          gradesResponse.data?.data ||
+          [];
+
+        gradesRanking = (Array.isArray(grades) ? grades : [])
+          .filter((entry) => entry.gradedCount > 0)
+          .map((entry) => ({
+            id: entry.memberId,
+            name: nameById[entry.memberId]?.name || "Student",
+            value: entry.percentage,
+          }))
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 5);
+      }
+
+      setLeaderboard({
+        attendance: attendanceRanking,
+        progress: progressRanking,
+        grades: gradesRanking,
+      });
+
+      const selfStudent = students.find((s) => s.isSelf);
+
+      if (selfStudent) {
+        setSelfProgressPercent(scoreTopics(selfStudent.progressMap));
+
+        const topicsMap = selfStudent.progressMap || {};
+        const summary = Object.keys(topicsMap).map((topicKey) => {
+          const items = Array.isArray(topicsMap[topicKey])
+            ? topicsMap[topicKey]
+            : [topicsMap[topicKey]];
+
+          const percentage = scoreTopics({ [topicKey]: items });
+          const hasNeedsHelp = items.some(
+            (item) => item.status === "Needs Help",
+          );
+
+          let status = "Not Started";
+          if (percentage === 100) status = "Completed";
+          else if (hasNeedsHelp) status = "Needs Improvement";
+          else if (percentage > 0) status = "In Progress";
+
+          return {
+            id: topicKey,
+            topic: items[0]?.topic || topicKey,
+            percentage,
+            status,
+          };
+        });
+
+        setProgressSummary(summary);
+      }
+    } catch (error) {
+      console.error("Failed to load leaderboard/progress:", error);
+      setLeaderboard({ attendance: [], progress: [], grades: [] });
+    }
+  };
+
+  const loadAssignmentsData = async () => {
+    try {
+      const response = await API.get("/submissions/me");
+
+      let rawData = [];
+      if (Array.isArray(response.data?.data?.submissions)) {
+        rawData = response.data.data.submissions;
+      } else if (Array.isArray(response.data?.data)) {
+        rawData = response.data.data;
+      } else if (Array.isArray(response.data?.submissions)) {
+        rawData = response.data.submissions;
+      } else if (Array.isArray(response.data)) {
+        rawData = response.data;
+      }
+
+      const pending = rawData.filter((sub) =>
+        ["not_started", "needs_resubmission"].includes(sub.status),
+      ).length;
+
+      const graded = rawData.filter(
+        (sub) =>
+          ["graded", "reviewed"].includes(sub.status) &&
+          sub.score !== null &&
+          sub.score !== undefined,
+      );
+
+      const averageGrade =
+        graded.length > 0
+          ? Math.round(
+              graded.reduce((sum, sub) => {
+                const maxScore = sub.assignment?.maxScore || 100;
+                return sum + (sub.score / maxScore) * 100;
+              }, 0) / graded.length,
+            )
+          : 0;
+
+      setAssignmentsSummary({ pending, averageGrade });
+
+      const deadlines = rawData
+        .filter((sub) =>
+          ["not_started", "needs_resubmission"].includes(sub.status),
+        )
+        .filter((sub) => sub.assignment?.deadline)
+        .sort(
+          (a, b) =>
+            new Date(a.assignment.deadline) - new Date(b.assignment.deadline),
+        )
+        .slice(0, 5)
+        .map((sub) => ({
+          id: sub._id,
+          title: sub.assignment?.title || "Untitled Assignment",
+          date: new Date(sub.assignment.deadline).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          description: sub.assignment?.description || "",
+          status:
+            sub.status === "needs_resubmission"
+              ? "Needs Resubmission"
+              : "Not Started",
+        }));
+
+      setDerivedDeadlines(deadlines);
+
+      const feedbackItems = rawData
+        .filter((sub) => sub.feedback && sub.feedback.trim().length > 0)
+        .sort(
+          (a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0),
+        )
+        .slice(0, 5)
+        .map((sub) => ({
+          id: sub._id,
+          title: sub.assignment?.title || "Untitled Assignment",
+          score: sub.score,
+          maxScore: sub.assignment?.maxScore || 100,
+          feedback: sub.feedback,
+          date: sub.submittedAt
+            ? new Date(sub.submittedAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })
+            : "",
+        }));
+
+      setDerivedFeedback(feedbackItems);
+    } catch (error) {
+      console.error("Failed to load submissions for dashboard:", error);
+      setAssignmentsSummary({ pending: 0, averageGrade: 0 });
+      setDerivedDeadlines([]);
+      setDerivedFeedback([]);
+    }
+  };
 
   const scoreTopics = (topicsMap) => {
     let totalScore = 0;
@@ -622,11 +826,9 @@ export default function StudentDashboard() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        // Calls http://localhost:5000/api/dashboard using your Axios instance
         const response = await API.get("/dashboard/overview");
         const resData = response.data;
 
-        // Be defensive about response shape.
         const payload =
           resData?.data?.data ||
           (resData?.success ? resData.data : null) ||
@@ -634,11 +836,6 @@ export default function StudentDashboard() {
           resData ||
           {};
 
-        // Only student.firstName and announcements still rely on this
-        // endpoint — everything else (attendance, progress, assignments,
-        // grades, deadlines, feedback) is now computed from reliable,
-        // permission-scoped endpoints instead. See loadLeaderboard() and
-        // loadAssignmentsData().
         setDashboardData({
           student: payload.student || DEFAULT_DASHBOARD_DATA.student,
           announcements: Array.isArray(payload.announcements)
@@ -680,6 +877,20 @@ export default function StudentDashboard() {
   const cardStyle =
     "bg-surface border border-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200";
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  const studentName =
+    user?.name?.split(" ")[0] ||
+    user?.firstName ||
+    user?.fullName?.split(" ")[0] ||
+    student?.firstName ||
+    "Student";
+
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-20 text-center">
@@ -696,7 +907,9 @@ export default function StudentDashboard() {
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-red-500 mb-3 border border-red-500/20">
           <FiAlertCircle className="w-6 h-6" />
         </div>
-        <h3 className="text-sm font-bold text-text-primary mb-1">Could not load dashboard</h3>
+        <h3 className="text-sm font-bold text-text-primary mb-1">
+          Could not load dashboard
+        </h3>
         <p className="text-xs text-text-muted">{error}</p>
       </div>
     );
@@ -706,8 +919,7 @@ export default function StudentDashboard() {
     <div className="mx-auto max-w-7xl px-4 pb-12 space-y-8 animate-in fade-in duration-500">
       <div>
         <h2 className="text-xl sm:text-[28px] font-black text-text-primary tracking-tight">
-          Welcome back, {student?.firstName || "Student"}
-          <span className="text-primary">.</span>
+          {getGreeting()}, {studentName}
         </h2>
         <p className="text-xs sm:text-sm text-text-muted mt-0.5">
           Here's an overview of your bootcamp progress.
@@ -741,7 +953,6 @@ export default function StudentDashboard() {
         />
       </div>
 
-      {/* ATTENDANCE OVERVIEW: quick stats only, calendar removed */}
       <div className={cardStyle}>
         <SectionHeader
           title="Attendance Overview"
@@ -751,7 +962,6 @@ export default function StudentDashboard() {
         <AttendanceQuickStats records={attendanceRecords} />
       </div>
 
-      {/* BATCH LEADERBOARD */}
       <div className={cardStyle}>
         <div className="mb-5">
           <h3 className="text-sm sm:text-base font-bold text-text-primary tracking-tight">
@@ -794,15 +1004,21 @@ export default function StudentDashboard() {
             />
             <div className="space-y-6">
               {progressSummary.length === 0 ? (
-                <p className="text-xs text-text-muted text-center py-4">No progress records found.</p>
+                <p className="text-xs text-text-muted text-center py-4">
+                  No progress records found.
+                </p>
               ) : (
                 progressSummary.map((item, idx) => {
                   const topicKeyLower = (item.topic || "").toLowerCase();
-                  const config = TOPIC_ICON_MAP[topicKeyLower] || DEFAULT_TOPIC_CONFIG;
+                  const config =
+                    TOPIC_ICON_MAP[topicKeyLower] || DEFAULT_TOPIC_CONFIG;
                   const TopicIcon = config.icon;
 
                   return (
-                    <div key={item.id || idx} className="flex items-center gap-4">
+                    <div
+                      key={item.id || idx}
+                      className="flex items-center gap-4"
+                    >
                       <div
                         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.iconBg} ${config.iconColor} shadow-2xs`}
                       >
@@ -842,7 +1058,9 @@ export default function StudentDashboard() {
             />
             <div className="space-y-3.5">
               {derivedDeadlines.length === 0 ? (
-                <p className="text-xs text-text-muted text-center py-4">No upcoming deadlines.</p>
+                <p className="text-xs text-text-muted text-center py-4">
+                  No upcoming deadlines.
+                </p>
               ) : (
                 derivedDeadlines.map((deadline, idx) => (
                   <div
@@ -892,7 +1110,9 @@ export default function StudentDashboard() {
             />
             <div className="space-y-4">
               {announcements.length === 0 ? (
-                <p className="text-xs text-text-muted text-center py-4">No announcements available.</p>
+                <p className="text-xs text-text-muted text-center py-4">
+                  No announcements available.
+                </p>
               ) : (
                 announcements.map((announcement, idx) => (
                   <div
@@ -933,7 +1153,9 @@ export default function StudentDashboard() {
             />
             <div className="space-y-3.5">
               {derivedFeedback.length === 0 ? (
-                <p className="text-xs text-text-muted text-center py-4">No recent feedback recorded.</p>
+                <p className="text-xs text-text-muted text-center py-4">
+                  No recent feedback recorded.
+                </p>
               ) : (
                 derivedFeedback.map((feedback, idx) => (
                   <div
@@ -972,7 +1194,6 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      {/* ACTIVITY TIMELINE: announcements + deadlines + feedback merged and sorted */}
       <div className={cardStyle}>
         <SectionHeader
           title="Recent Activity"
