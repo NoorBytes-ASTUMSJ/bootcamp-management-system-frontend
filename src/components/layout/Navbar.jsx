@@ -10,6 +10,14 @@ import {
   Menu,
   X,
   ChevronRight,
+  Home,
+  Info,
+  Layers,
+  Users,
+  HelpCircle,
+  Mail,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import jemeaLogo from "../../assets/jemea-logo.jpg";
@@ -22,11 +30,11 @@ export default function Navbar({ currentView: propCurrentView }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const menuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   const activePath = location.pathname.substring(1) || "home";
   const currentView = propCurrentView || activePath;
 
-  // ገጽ ሲቀየር የሞባይል ሜኑውን በራሱ መዝጋት
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
@@ -45,10 +53,14 @@ export default function Navbar({ currentView: propCurrentView }) {
     }
   }, []);
 
+  // ከሜኑው ውጪ ባዶ ቦታ ሲነካ በራሱ እንዲዘጋ
   useEffect(() => {
     function handleClickOutside(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setIsOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+        setIsMobileMenuOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -77,12 +89,12 @@ export default function Navbar({ currentView: propCurrentView }) {
   };
 
   const navLinks = [
-    { id: "home", label: "Home", path: "/" },
-    { id: "about", label: "About", path: "/about" },
-    { id: "tracks", label: "Tracks", path: "/tracks" },
-    { id: "mentors", label: "Mentors", path: "/mentors" },
-    { id: "faq", label: "FAQ", path: "/faq" },
-    { id: "contact", label: "Contact", path: "/contact" },
+    { id: "home", label: "Home", path: "/", icon: Home },
+    { id: "about", label: "About", path: "/about", icon: Info },
+    { id: "tracks", label: "Tracks", path: "/tracks", icon: Layers },
+    { id: "mentors", label: "Mentors", path: "/mentors", icon: Users },
+    { id: "faq", label: "FAQ", path: "/faq", icon: HelpCircle },
+    { id: "contact", label: "Contact", path: "/contact", icon: Mail },
   ];
 
   const getDashboardPath = () => {
@@ -114,15 +126,14 @@ export default function Navbar({ currentView: propCurrentView }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-md border-b border-border transition-colors select-none">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* ================= 1. BRAND LOGO & TITLE (ቋሚ እና የማይሰበር) ================= */}
+    <header className="sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md border-b border-border transition-colors select-none">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
+        {/* 1. BRAND LOGO & TITLE */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 sm:gap-3 shrink-0 focus:outline-none cursor-pointer"
+          className="flex items-center gap-2 sm:gap-3 shrink-0 focus:outline-none cursor-pointer"
         >
-          {/* Logo Icon */}
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white p-0.5 border-2 border-slate-200/90 dark:border-border shadow-xs shrink-0 overflow-hidden flex items-center justify-center">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white p-0.5 border-2 border-slate-200/90 dark:border-border shadow-xs shrink-0 overflow-hidden flex items-center justify-center">
             <img
               src={jemeaLogo}
               alt="ASTU MSJ Official Logo"
@@ -133,18 +144,17 @@ export default function Navbar({ currentView: propCurrentView }) {
             />
           </div>
 
-          {/* ASTU MSJ Text + Badge (በአንድ መስመር ላይ ተቆልፏል) */}
-          <div className="flex items-center gap-2 shrink-0 whitespace-nowrap">
-            <span className="text-base sm:text-lg font-black tracking-tight text-text-primary shrink-0 leading-none">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 whitespace-nowrap">
+            <span className="text-sm sm:text-lg font-black tracking-tight text-text-primary shrink-0 leading-none">
               ASTU <span className="text-primary">MSJ</span>
             </span>
-            <span className="px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-mono font-bold bg-secondary text-primary uppercase border border-border-subtle tracking-wide shrink-0">
+            <span className="px-1.5 py-0.5 rounded-md text-[8px] sm:text-[10px] font-mono font-bold bg-secondary text-primary uppercase border border-border-subtle tracking-wide shrink-0">
               Bootcamp
             </span>
           </div>
         </Link>
 
-        {/* ================= 2. DESKTOP NAVIGATION ================= */}
+        {/* 2. DESKTOP NAVIGATION */}
         <nav className="hidden md:flex items-center gap-6 text-[13px] font-medium text-text-muted shrink-0">
           {navLinks.map((item) => (
             <Link
@@ -162,45 +172,46 @@ export default function Navbar({ currentView: propCurrentView }) {
           ))}
         </nav>
 
-        {/* ================= 3. RIGHT CONTROLS ================= */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Theme Toggle Button */}
+        {/* 3. RIGHT CONTROLS & MOBILE DROPDOWN CONTAINER */}
+        <div
+          className="flex items-center gap-2 sm:gap-3 shrink-0 relative"
+          ref={mobileMenuRef}
+        >
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-surface border border-border hover:border-primary/50 text-text-muted hover:text-primary shadow-xs transition-all duration-200 cursor-pointer focus:outline-none"
+            className="p-1.5 sm:p-2 rounded-xl bg-surface border border-border hover:border-primary/50 text-text-muted hover:text-primary shadow-xs transition-all duration-200 cursor-pointer focus:outline-none"
             title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             aria-label="Toggle theme"
           >
             {isDarkMode ? (
-              <Sun size={17} className="text-amber-400" />
+              <Sun size={16} className="text-amber-400" />
             ) : (
-              <Moon size={17} className="text-primary" />
+              <Moon size={16} className="text-primary" />
             )}
           </button>
 
-          {/* Logged in User Dropdown (Desktop & Mobile) */}
           {user ? (
             <div className="flex items-center gap-2">
               <Link
                 to={getAnnouncementsPath()}
-                className="p-2 rounded-xl bg-surface border border-border text-text-muted hover:text-primary transition-all relative"
+                className="p-1.5 sm:p-2 rounded-xl bg-surface border border-border text-text-muted hover:text-primary transition-all relative"
               >
-                <Bell size={17} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <Bell size={16} />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary animate-pulse" />
               </Link>
 
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="w-9 h-9 rounded-xl bg-secondary border border-border-subtle flex items-center justify-center text-primary cursor-pointer focus:outline-none"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-secondary border border-border-subtle flex items-center justify-center text-primary cursor-pointer focus:outline-none"
                 >
-                  <User size={17} />
+                  <User size={16} />
                 </button>
 
                 {isOpen && (
-                  <div className="absolute right-0 top-12 w-56 rounded-2xl bg-surface border border-border shadow-xl p-3 z-50">
-                    <div className="px-2.5 py-2 border-b border-border mb-2">
+                  <div className="absolute right-0 top-11 sm:top-12 w-52 rounded-2xl bg-surface border border-border shadow-xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-2 py-1.5 border-b border-border mb-1.5">
                       <p className="font-bold text-xs text-text-primary truncate">
                         {user.firstName
                           ? `${user.firstName} ${user.lastName || ""}`
@@ -215,17 +226,17 @@ export default function Navbar({ currentView: propCurrentView }) {
                         <Link
                           to={getDashboardPath()}
                           onClick={() => setIsOpen(false)}
-                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
+                          className="w-full flex items-center gap-2 px-2 py-1.5 rounded-xl text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
                         >
-                          <LayoutDashboard size={14} />
+                          <LayoutDashboard size={13} />
                           <span>Dashboard</span>
                         </Link>
                       )}
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                        className="w-full flex items-center gap-2 px-2 py-1.5 rounded-xl text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
                       >
-                        <LogOut size={14} />
+                        <LogOut size={13} />
                         <span>Log out</span>
                       </button>
                     </div>
@@ -234,7 +245,6 @@ export default function Navbar({ currentView: propCurrentView }) {
               </div>
             </div>
           ) : (
-            /* Desktop Auth Buttons */
             <div className="hidden md:flex items-center gap-2.5 shrink-0">
               <Link
                 to="/login"
@@ -251,62 +261,88 @@ export default function Navbar({ currentView: propCurrentView }) {
             </div>
           )}
 
-          {/* Mobile Hamburger Toggle Button (በስልክ ላይ ብቻ ይታያል) */}
+          {/* Mobile Menu Toggle Button */}
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl bg-surface border border-border text-text-primary hover:text-primary focus:outline-none cursor-pointer"
+            className="md:hidden p-1.5 rounded-xl bg-surface border border-border text-text-primary hover:text-primary focus:outline-none cursor-pointer"
             aria-label="Toggle Menu"
           >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
-        </div>
-      </div>
 
-      {/* ================= 4. MOBILE DRAWER / MENU PANEL ================= */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-border bg-background/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-4 duration-200 shadow-2xl">
-          {/* Navigation Links */}
-          <div className="flex flex-col space-y-1">
-            {navLinks.map((item) => (
-              <Link
-                key={item.id}
-                to={item.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
-                  currentView === item.id ||
-                  (item.id === "home" && currentView === "")
-                    ? "bg-primary/10 text-primary"
-                    : "text-text-muted hover:bg-surface hover:text-text-primary"
-                }`}
-              >
-                <span>{item.label}</span>
-                <ChevronRight size={14} className="opacity-50" />
-              </Link>
-            ))}
-          </div>
+          {/* ================= 4. COMPACT FLOATING DROPDOWN CARD ================= */}
+          {isMobileMenuOpen && (
+            <div className="absolute right-0 top-12 w-[220px] rounded-2xl bg-surface/98 backdrop-blur-xl border border-border shadow-2xl p-2 z-50 md:hidden animate-in fade-in zoom-in-95 duration-150 space-y-2">
+              {/* Menu Links */}
+              <div className="space-y-0.5">
+                {navLinks.map((item) => {
+                  const Icon = item.icon;
+                  const isActive =
+                    currentView === item.id ||
+                    (item.id === "home" && currentView === "");
+                  return (
+                    <Link
+                      key={item.id}
+                      to={item.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-xs"
+                          : "text-text-muted hover:bg-background hover:text-text-primary"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon
+                          size={13}
+                          className={isActive ? "text-white" : "opacity-70"}
+                        />
+                        <span>{item.label}</span>
+                      </div>
+                      <ChevronRight
+                        size={12}
+                        className={isActive ? "text-white" : "opacity-30"}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
 
-          {/* Mobile Auth Buttons (ያልገቡ ከሆነ) */}
-          {!user && (
-            <div className="pt-3 border-t border-border flex flex-col gap-2">
-              <Link
-                to="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-xl text-xs font-semibold bg-surface border border-border text-text-primary hover:border-primary/50 transition-colors"
-              >
-                Log In
-              </Link>
-              <Link
-                to="/role-select"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-xl text-xs font-semibold bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-all"
-              >
-                Sign Up for Batch 3
-              </Link>
+              {/* Bottom Auth Buttons */}
+              <div className="pt-2 border-t border-border space-y-1.5">
+                {user ? (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors cursor-pointer"
+                  >
+                    <LogOut size={13} />
+                    <span>Log out</span>
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold bg-background border border-border text-text-primary hover:border-primary/50 transition-colors"
+                    >
+                      <LogIn size={13} />
+                      <span>Log In</span>
+                    </Link>
+                    <Link
+                      to="/role-select"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold bg-primary text-primary-foreground shadow-xs hover:bg-primary-hover transition-all"
+                    >
+                      <UserPlus size={13} />
+                      <span>Sign Up</span>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>
-      )}
+      </div>
     </header>
   );
 }
