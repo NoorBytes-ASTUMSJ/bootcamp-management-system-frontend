@@ -87,9 +87,25 @@ export default function MentorRegister({
       return;
     }
 
-    if (step === 1 && formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+    // Step 1 Validation (Name length, Password length, Confirm password match)
+    if (step === 1) {
+      const trimmedName = formData.fullName.trim();
+      const letterCount = (trimmedName.match(/[a-zA-Z]/g) || []).length;
+
+      if (!trimmedName || letterCount < 3) {
+        setError("Full name must contain at least 3 letters.");
+        return;
+      }
+
+      if (!formData.password || formData.password.length < 8) {
+        setError("Password must be at least 8 characters long.");
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
     }
 
     if (
@@ -122,29 +138,28 @@ export default function MentorRegister({
         : formData.department;
 
     const payload = {
-      fullName: formData.fullName,
-      email: formData.email,
-      phone: formData.phone,
-      universityId: formData.studentId,
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      universityId: formData.studentId.trim(),
       university:
         formData.university || "Adama Science and Technology University",
-      telegramUsername: formData.telegramUsername,
+      telegramUsername: formData.telegramUsername.trim(),
       password: formData.password,
       role: "user",
       applicationType: "mentor",
       gender: formData.gender,
       year: formData.academicYear,
       department: finalDepartment,
-      github: formData.github,
+      github: formData.github.trim(),
       expertise: formData.mentorshipTrack,
-      experience: formData.relevantExperience,
-      motivation: formData.motivation,
+      experience: formData.relevantExperience.trim(),
+      motivation: formData.motivation.trim(),
     };
 
     try {
       const response = await API.post("/auth/register/mentor", payload);
 
-      // 1. ኢሜይሉ እስኪላክ ድረስ መጠበቅ (await)
       await sendConfirmationEmail({
         recipientName: formData.fullName,
         recipientEmail: formData.email,
@@ -270,7 +285,8 @@ export default function MentorRegister({
               <div className="space-y-3">
                 <div>
                   <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
-                    Full Name <span className="text-primary">*</span>
+                    Full Name (Min. 3 letters){" "}
+                    <span className="text-primary">*</span>
                   </label>
                   <div className="relative flex items-center">
                     <User
@@ -281,6 +297,7 @@ export default function MentorRegister({
                       type="text"
                       name="fullName"
                       required
+                      minLength={3}
                       placeholder="Ahmed Mohammed"
                       value={formData.fullName}
                       onChange={handleChange}
@@ -313,7 +330,8 @@ export default function MentorRegister({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
-                      Password <span className="text-primary">*</span>
+                      Password (Min. 8 chars){" "}
+                      <span className="text-primary">*</span>
                     </label>
                     <div className="relative flex items-center">
                       <Lock
@@ -324,6 +342,7 @@ export default function MentorRegister({
                         type={showPassword ? "text" : "password"}
                         name="password"
                         required
+                        minLength={8}
                         placeholder="••••••••"
                         value={formData.password}
                         onChange={handleChange}
@@ -356,6 +375,7 @@ export default function MentorRegister({
                         type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
                         required
+                        minLength={8}
                         placeholder="••••••••"
                         value={formData.confirmPassword}
                         onChange={handleChange}
