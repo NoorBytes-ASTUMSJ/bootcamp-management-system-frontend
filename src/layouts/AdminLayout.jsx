@@ -26,6 +26,13 @@ export default function AdminLayout() {
   const profileRef = useRef(null);
   const mobileNavRef = useRef(null);
 
+  // Sync initial theme
+  useEffect(() => {
+    if (document.documentElement.classList.contains("dark")) {
+      setIsDarkMode(true);
+    }
+  }, []);
+
   // Auto-close mobile menu on route change
   useEffect(() => {
     setIsMobileNavOpen(false);
@@ -110,7 +117,7 @@ export default function AdminLayout() {
 
           {/* Right Controls Container */}
           <div className="flex items-center gap-2 sm:gap-3" ref={mobileNavRef}>
-            {/* Theme Toggle Button */}
+            {/* Header Theme Toggle */}
             <button
               type="button"
               onClick={toggleDarkMode}
@@ -136,7 +143,7 @@ export default function AdminLayout() {
               </button>
 
               {isProfileOpen && (
-                <div className="absolute right-0 top-11 w-52 rounded-2xl bg-white dark:bg-[#1A1F29] border border-neutral-200 dark:border-neutral-800 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                <div className="absolute right-0 top-11 w-56 rounded-2xl bg-white dark:bg-[#1A1F29] border border-neutral-200 dark:border-neutral-800 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
                   <div className="px-2 py-1.5 border-b border-neutral-100 dark:border-neutral-800 mb-1">
                     <p className="font-bold text-xs text-neutral-900 dark:text-neutral-100 truncate">
                       {user?.name || "Admin User"}
@@ -146,6 +153,7 @@ export default function AdminLayout() {
                     </p>
                   </div>
 
+                  {/* Profile & Settings */}
                   <button
                     onClick={() => {
                       setIsProfileOpen(false);
@@ -157,6 +165,7 @@ export default function AdminLayout() {
                     <span>Profile & Settings</span>
                   </button>
 
+                  {/* Public Home */}
                   <button
                     onClick={() => {
                       setIsProfileOpen(false);
@@ -168,6 +177,33 @@ export default function AdminLayout() {
                     <span>Public Home</span>
                   </button>
 
+                  {/* Dark Mode Toggle Item */}
+                  <button
+                    onClick={toggleDarkMode}
+                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors cursor-pointer text-neutral-700 dark:text-neutral-300"
+                  >
+                    <div className="flex items-center gap-2">
+                      {isDarkMode ? (
+                        <Sun size={13} className="text-neutral-400" />
+                      ) : (
+                        <Moon size={13} className="text-neutral-400" />
+                      )}
+                      <span>Dark Mode</span>
+                    </div>
+                    <div className="flex items-center">
+                      {isDarkMode ? (
+                        <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500">
+                          <Check size={13} strokeWidth={3} />
+                        </div>
+                      ) : (
+                        <div className="w-3.5 h-3.5 rounded-full border border-neutral-300 dark:border-neutral-600" />
+                      )}
+                    </div>
+                  </button>
+
+                  <div className="border-t border-neutral-100 dark:border-neutral-800 my-1" />
+
+                  {/* Log out */}
                   <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
