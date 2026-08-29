@@ -589,7 +589,7 @@ export default function AttendanceManagement() {
                     Date <span className="text-[#B91C1C]">*</span>
                   </label>
                   <Popover>
-                    <PopoverTrigger asChild>
+                    <PopoverTrigger>
                       <div className="w-full justify-start text-left font-normal pl-3.5 py-2 bg-neutral-50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-700 rounded-xl text-xs text-neutral-900 dark:text-neutral-100 flex items-center cursor-pointer transition-all shadow-xs">
                         <FiCalendar className="mr-3 h-3.5 w-3.5 text-neutral-400" />
                         {selectedDate ? (
