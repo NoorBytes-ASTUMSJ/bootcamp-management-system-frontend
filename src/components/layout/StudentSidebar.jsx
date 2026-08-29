@@ -6,7 +6,6 @@ import {
   FiCheckCircle,
   FiTrendingUp,
   FiBookOpen,
-  FiUpload,
   FiBell,
   FiSettings,
 } from "react-icons/fi";
@@ -39,9 +38,56 @@ const NAV_CONFIG = [
   },
 ];
 
-export default function StudentSidebar() {
+export default function StudentSidebar({ isMobile = false, onItemClick }) {
+  // Mobile Floating Compact List
+  if (isMobile) {
+    return (
+      <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+        {NAV_CONFIG.map((group, index) => (
+          <div key={index} className="space-y-1">
+            <div className="px-2 text-[9px] font-mono font-bold tracking-wider text-neutral-400 dark:text-neutral-500 uppercase">
+              {group.section}
+            </div>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink
+                    key={item.name}
+                    to={item.path}
+                    onClick={onItemClick}
+                    className={({ isActive }) =>
+                      `w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-[#B91C1C] text-white shadow-xs"
+                          : "text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-[#151921]"
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <div className="flex items-center gap-2">
+                        <Icon
+                          size={13}
+                          className={
+                            isActive ? "text-white" : "text-neutral-400"
+                          }
+                        />
+                        <span>{item.name}</span>
+                      </div>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Desktop Persistent Sidebar
   return (
-    <aside className="w-56 bg-white dark:bg-[#151921] border-r border-neutral-200/80 dark:border-neutral-800/80 flex flex-col shrink-0 select-none z-10 fixed inset-y-0 left-0 h-screen">
+    <aside className="hidden md:flex w-56 bg-white dark:bg-[#151921] border-r border-neutral-200/80 dark:border-neutral-800/80 flex-col shrink-0 select-none z-10 fixed inset-y-0 left-0 h-screen">
       <div className="pt-6 pb-4 px-6">
         <h1 className="text-base font-black tracking-tight text-[#B91C1C]">
           ASTU MSJ
@@ -77,7 +123,7 @@ export default function StudentSidebar() {
                         <Icon
                           size={15}
                           className={
-                            isActive.toString().includes("true") // simple check for active icon color
+                            isActive
                               ? "text-[#B91C1C]"
                               : "text-neutral-400 dark:text-neutral-500"
                           }
