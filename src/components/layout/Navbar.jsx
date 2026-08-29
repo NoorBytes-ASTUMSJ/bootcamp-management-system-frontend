@@ -53,7 +53,7 @@ export default function Navbar({ currentView: propCurrentView }) {
     }
   }, []);
 
-  // ከሜኑው ውጪ ባዶ ቦታ ሲነካ በራሱ እንዲዘጋ
+  // Close menus when clicking outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -177,17 +177,24 @@ export default function Navbar({ currentView: propCurrentView }) {
           className="flex items-center gap-2 sm:gap-3 shrink-0 relative"
           ref={mobileMenuRef}
         >
+          {/* Theme Switcher Button */}
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-1.5 sm:p-2 rounded-xl bg-surface border border-border hover:border-primary/50 text-text-muted hover:text-primary shadow-xs transition-all duration-200 cursor-pointer focus:outline-none"
+            className="p-1.5 sm:p-2 rounded-xl bg-surface border border-border text-neutral-400 hover:text-primary hover:border-primary/50 dark:text-neutral-200 dark:hover:text-primary shadow-xs transition-all duration-200 cursor-pointer focus:outline-none"
             title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             aria-label="Toggle theme"
           >
             {isDarkMode ? (
-              <Sun size={16} className="text-amber-400" />
+              <Sun
+                size={16}
+                className="text-neutral-200 hover:text-primary transition-transform duration-200 hover:rotate-45"
+              />
             ) : (
-              <Moon size={16} className="text-primary" />
+              <Moon
+                size={16}
+                className="text-neutral-600 hover:text-primary transition-transform duration-200 hover:-rotate-12"
+              />
             )}
           </button>
 
