@@ -59,8 +59,7 @@ function LeaderboardCard({ title, icon: Icon, entries, accent, comingSoon }) {
                 {entry.name}
               </span>
               <span className="text-xs font-black text-neutral-900 dark:text-neutral-100 font-mono shrink-0">
-                {entry.value}
-                {title === "Grades" ? "" : "%"}
+                {entry.value}%
               </span>
             </div>
           ))}
@@ -131,12 +130,12 @@ export default function MainDashboard({ isDarkMode, onToggleTheme, onLogout }) {
   useEffect(() => {
     if (!selectedBatchId) return;
 
-    async function fetchProgressRanking() {
+    async function fetchRankings() {
       try {
         const res = await getProgressOverview(selectedBatchId);
         const students = res.students || [];
 
-        const ranking = students
+        const progressRanking = students
           .map((student) => ({
             id: student.id,
             name: student.name,
@@ -145,12 +144,12 @@ export default function MainDashboard({ isDarkMode, onToggleTheme, onLogout }) {
           .sort((a, b) => b.value - a.value)
           .slice(0, 5);
 
-        setProgressLeaderboard(ranking);
+        setProgressLeaderboard(progressRanking);
       } catch (e) {
-        console.error("Failed to load progress leaderboard", e);
+        console.error("Failed to load rankings", e);
       }
     }
-    fetchProgressRanking();
+    fetchRankings();
   }, [selectedBatchId]);
 
   const selectedBatch =
