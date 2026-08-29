@@ -222,6 +222,7 @@ export default function StudentProgress() {
         );
     }
   };
+
   const handleUpdateStatus = async (itemId, newStatus) => {
     if (saving || !itemId) {
       return;
@@ -237,14 +238,11 @@ export default function StudentProgress() {
       setData(refreshed);
 
       if (selectedColumnCell) {
-        const refreshedStudent = refreshed.students.find(
-          (s) => s.isSelf,
-        );
+        const refreshedStudent = refreshed.students.find((s) => s.isSelf);
 
         const refreshedItems =
-          (refreshedStudent?.progressMap || {})[
-            selectedColumnCell.topicKey
-          ] || [];
+          (refreshedStudent?.progressMap || {})[selectedColumnCell.topicKey] ||
+          [];
 
         const updatedStudentsInModal = selectedColumnCell.studentsData.map(
           (sObj) => {
@@ -310,10 +308,11 @@ export default function StudentProgress() {
       studentsData: studentsDataForColumn,
     });
   };
+
   return (
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100">
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-28 gap-2 text-xs text-neutral-500">
               <Loader2 className="animate-spin text-[#B91C1C]" size={20} />
@@ -330,28 +329,28 @@ export default function StudentProgress() {
                   </h2>
 
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                    See how your whole batch is tracking. You can only
-                    update your own task statuses.
+                    See how your whole batch is tracking. You can only update
+                    your own task statuses.
                   </p>
                 </div>
 
-                <span className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 shadow-2xs">
+                <span className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-[#151921] border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 shadow-2xs">
                   Batch: {data?.batchName || "N/A"}
                 </span>
               </div>
 
-              {/* Summary Cards */}
+              {/* Summary Cards with Hover Lift, Shadow Glow, and Accents */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-[#B91C1C]/50 hover:shadow-lg hover:shadow-red-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       My Progress
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-[#B91C1C]/10 flex items-center justify-center text-[#B91C1C]">
-                      <UserCircle2 size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-[#B91C1C]/10 flex items-center justify-center text-[#B91C1C]">
+                      <UserCircle2 size={14} />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                  <p className="text-2xl font-black text-[#B91C1C]">
                     {summaryStats.myProgress}%
                   </p>
                   <p className="text-[10px] text-neutral-400 mt-0.5">
@@ -359,13 +358,13 @@ export default function StudentProgress() {
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-[#B91C1C]/50 hover:shadow-lg hover:shadow-red-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       My Progress (Admin)
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
-                      <TrendingUp size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
+                      <TrendingUp size={14} />
                     </div>
                   </div>
                   <p className="text-2xl font-black text-neutral-900 dark:text-white">
@@ -376,13 +375,13 @@ export default function StudentProgress() {
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       Batchmates
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-300">
-                      <Users size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-300">
+                      <Users size={14} />
                     </div>
                   </div>
                   <p className="text-2xl font-black text-neutral-900 dark:text-white">
@@ -393,13 +392,13 @@ export default function StudentProgress() {
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       Tasks Visible
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
-                      <ListChecks size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
+                      <ListChecks size={14} />
                     </div>
                   </div>
                   <p className="text-2xl font-black text-neutral-900 dark:text-white">
@@ -412,11 +411,11 @@ export default function StudentProgress() {
               </div>
 
               {/* Search */}
-              <div className="bg-white dark:bg-[#151921] p-3.5 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs max-w-sm">
+              <div className="bg-white dark:bg-[#151921] p-3.5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs max-w-sm">
                 <div className="relative">
                   <Search
                     size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
 
                   <input
@@ -424,13 +423,13 @@ export default function StudentProgress() {
                     placeholder="Search by student name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-lg text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   />
                 </div>
               </div>
 
               {/* Main Table */}
-              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-sm">
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-sm transition-all duration-200">
                 <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
                   <h3 className="font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
                     Cohort Matrix ({filteredStudents.length} Students)
@@ -457,7 +456,7 @@ export default function StudentProgress() {
                               className="py-3.5 px-4 text-center cursor-pointer hover:bg-neutral-100/80 dark:hover:bg-neutral-800 transition-colors group"
                               title="Click to view full task details"
                             >
-                              <span className="underline decoration-neutral-300 dark:decoration-neutral-700 underline-offset-2 group-hover:text-[#B91C1C]">
+                              <span className="underline decoration-neutral-300 dark:decoration-neutral-700 underline-offset-2 group-hover:text-[#B91C1C] transition-colors">
                                 {col.title}
                               </span>
 
@@ -492,16 +491,19 @@ export default function StudentProgress() {
                           >
                             <td className="py-3.5 px-5 font-semibold text-neutral-900 dark:text-neutral-100">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300 shadow-2xs">
+                                <div className="w-8 h-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300 shadow-2xs">
                                   {st.initials ||
-                                    st.name?.split(" ").map((n) => n[0]).join("")}
+                                    st.name
+                                      ?.split(" ")
+                                      .map((n) => n[0])
+                                      .join("")}
                                 </div>
 
                                 <div>
                                   <p className="font-semibold text-neutral-900 dark:text-white flex items-center gap-1.5">
                                     {st.name}
                                     {st.isSelf && (
-                                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#B91C1C] text-white">
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-[#B91C1C] text-white shadow-2xs">
                                         You
                                       </span>
                                     )}
@@ -554,9 +556,10 @@ export default function StudentProgress() {
         </main>
       </div>
 
+      {/* Modal View */}
       {selectedColumnCell && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#151921] rounded-3xl border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-4">
               <div>
@@ -574,14 +577,14 @@ export default function StudentProgress() {
               <button
                 type="button"
                 onClick={() => setSelectedColumnCell(null)}
-                className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer"
+                className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
             </div>
 
             {/* Task Information */}
-            <div className="p-4 rounded-xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/50 space-y-3 text-xs">
+            <div className="p-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/50 space-y-3 text-xs">
               <h4 className="font-bold text-neutral-700 dark:text-neutral-200 uppercase tracking-wider text-[10px]">
                 Task & Resource Information
               </h4>
@@ -633,7 +636,7 @@ export default function StudentProgress() {
                   Instructions & Guidelines
                 </span>
 
-                <p className="text-neutral-700 dark:text-neutral-300 bg-white dark:bg-[#151921] p-3 rounded-lg border border-neutral-200/60 dark:border-neutral-800/80 whitespace-pre-wrap">
+                <p className="text-neutral-700 dark:text-neutral-300 bg-white dark:bg-[#151921] p-3 rounded-xl border border-neutral-200/60 dark:border-neutral-800/80 whitespace-pre-wrap">
                   {selectedColumnCell.instructions}
                 </p>
               </div>
@@ -645,7 +648,7 @@ export default function StudentProgress() {
                 Batch Status Breakdown
               </p>
 
-              <div className="max-h-[35vh] overflow-y-auto pr-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 rounded-xl bg-neutral-50/50 dark:bg-neutral-900/40">
+              <div className="max-h-[35vh] overflow-y-auto pr-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/40">
                 {selectedColumnCell.studentsData.map(({ student, items }) => {
                   const item = items[0];
 
@@ -662,7 +665,7 @@ export default function StudentProgress() {
                         <p className="font-semibold text-neutral-900 dark:text-white text-xs flex items-center gap-1.5">
                           {student.name}
                           {student.isSelf && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#B91C1C] text-white">
+                            <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-[#B91C1C] text-white">
                               You
                             </span>
                           )}
@@ -681,15 +684,11 @@ export default function StudentProgress() {
                                 onChange={(e) =>
                                   handleUpdateStatus(item.id, e.target.value)
                                 }
-                                className="px-2.5 py-1 rounded-md text-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 cursor-pointer focus:outline-none focus:border-[#B91C1C] disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-2.5 py-1 rounded-lg text-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 cursor-pointer focus:outline-none focus:border-[#B91C1C] disabled:opacity-50"
                               >
-                                <option value="Not Started">
-                                  Not Started
-                                </option>
+                                <option value="Not Started">Not Started</option>
 
-                                <option value="In Progress">
-                                  In Progress
-                                </option>
+                                <option value="In Progress">In Progress</option>
 
                                 <option value="Needs Help">Needs Help</option>
 
@@ -720,7 +719,7 @@ export default function StudentProgress() {
               <button
                 type="button"
                 onClick={() => setSelectedColumnCell(null)}
-                className="px-4 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
               >
                 Close
               </button>

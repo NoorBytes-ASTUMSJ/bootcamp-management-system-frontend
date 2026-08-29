@@ -28,10 +28,7 @@ export default function MentorProgress({
   onToggleTheme,
   onNavigateAdminView,
   onLogout,
-
-  
   currentUserId = null,
-
   currentUserName = "Mentor",
 }) {
   const [data, setData] = useState(null);
@@ -52,7 +49,6 @@ export default function MentorProgress({
     instructions: "",
   });
 
-
   useEffect(() => {
     loadData();
   }, []);
@@ -61,13 +57,10 @@ export default function MentorProgress({
     setLoading(true);
 
     try {
-    
       const overview = await getProgressOverview();
-
       setData(overview);
     } catch (error) {
       console.error("Failed to load mentor progress:", error);
-
       setData({
         students: [],
       });
@@ -96,7 +89,6 @@ export default function MentorProgress({
     };
   }, [studentsList]);
 
-
   const filteredStudents = useMemo(() => {
     const query = searchTerm.toLowerCase().trim();
 
@@ -106,9 +98,7 @@ export default function MentorProgress({
 
     return studentsList.filter((student) => {
       const name = student.name || student.studentName || "";
-
       const email = student.email || "";
-
       const track = student.track || "";
 
       return (
@@ -119,7 +109,6 @@ export default function MentorProgress({
     });
   }, [studentsList, searchTerm]);
 
- 
   const progressColumns = useMemo(() => {
     const columnsMap = new Map();
 
@@ -136,7 +125,6 @@ export default function MentorProgress({
 
           if (!itemId) {
             console.warn("Progress item has no ID:", item);
-
             return;
           }
 
@@ -145,10 +133,7 @@ export default function MentorProgress({
           if (!columnsMap.has(columnKey)) {
             columnsMap.set(columnKey, {
               key: columnKey,
-
               topicKey,
-
-              // ProgressTask._id
               itemId: columnKey,
               title: item.title || "Untitled Task",
               resourceType: item.resourceType || "Documentation",
@@ -202,7 +187,6 @@ export default function MentorProgress({
         );
     }
   };
-
 
   const calculateStudentTotal = (student) => {
     const topicsMap = student.progressMap || {};
@@ -280,15 +264,11 @@ export default function MentorProgress({
     };
   }, [studentsList, progressColumns]);
 
- 
   const openTaskDetails = (column) => {
-
     const mentorStudents = studentsList.filter((student) => {
-     
       if (currentUserId && student.mentorId) {
         return String(student.mentorId) === String(currentUserId);
       }
-
       return true;
     });
 
@@ -340,27 +320,17 @@ export default function MentorProgress({
     setSaving(true);
 
     try {
-     
-
       await createProgressItem({
         title: newProgressForm.title,
-
         topic: newProgressForm.topic,
-
         resourceType: newProgressForm.resourceType,
-
         resourceLink: newProgressForm.resourceLink,
-
         week: newProgressForm.week,
-
         instructions: newProgressForm.instructions,
-
         scope: "mentor",
       });
 
-      // Reload data
       await loadData();
-
       setIsCreateOpen(false);
 
       setNewProgressForm({
@@ -396,7 +366,6 @@ export default function MentorProgress({
 
     if (!itemId) {
       console.error("Cannot update progress: invalid task ID", itemId);
-
       return;
     }
 
@@ -404,14 +373,11 @@ export default function MentorProgress({
 
     try {
       await updateStudentProgressStatus(itemId, newStatus);
-
       const previousModal = selectedColumnCell;
-
       await loadData();
 
       if (previousModal) {
         const refreshedStudents = data?.students || [];
-
         const refreshedStudent = refreshedStudents.find(
           (student) => String(student.id) === String(studentId),
         );
@@ -425,15 +391,12 @@ export default function MentorProgress({
               if (String(studentData.student.id) === String(studentId)) {
                 return {
                   ...studentData,
-
                   student: refreshedStudent,
-
                   items: refreshedItems.filter(
                     (item) => String(item.id || item._id) === String(itemId),
                   ),
                 };
               }
-
               return studentData;
             },
           );
@@ -446,7 +409,6 @@ export default function MentorProgress({
       }
     } catch (error) {
       console.error("Failed to update progress status:", error);
-
       alert("Failed to update status. Please try again.");
     } finally {
       setSaving(false);
@@ -460,54 +422,44 @@ export default function MentorProgress({
 
     if (!targetItemId) {
       console.error("Cannot delete progress task: invalid ID", targetItemId);
-
       alert("Cannot delete this task because its ID is missing.");
-
       return;
     }
 
     setSaving(true);
 
     try {
-      /*
-       * targetItemId is ProgressTask._id.
-       */
       await deleteProgressItem(targetItemId);
-
       await loadData();
-
       setSelectedColumnCell(null);
     } catch (error) {
       console.error("Failed to delete mentor progress task:", error);
-
       const message =
         error?.response?.data?.message ||
         "Failed to delete progress task. Please try again.";
-
       alert(message);
     } finally {
       setSaving(false);
     }
   };
+
   return (
     <div className="flex h-screen w-full font-sans overflow-hidden bg-[#FAFBFC] dark:bg-[#0E1117] text-neutral-900 dark:text-neutral-100">
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <main className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-28 gap-2 text-xs text-neutral-500">
               <Loader2 className="animate-spin text-[#B91C1C]" size={20} />
-
               <span>Loading mentor progress...</span>
             </div>
           ) : (
             <>
-
+              {/* Header */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
                     Progress Management
                   </h2>
-
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                     {mentorBatch
                       ? `Managing students in ${mentorBatch.name}`
@@ -519,23 +471,23 @@ export default function MentorProgress({
                   <button
                     type="button"
                     onClick={() => setIsCreateOpen(true)}
-                    className="flex items-center gap-1.5 px-3.5 py-2 bg-[#B91C1C] hover:bg-[#991b1b] text-white rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-[#B91C1C] hover:bg-[#991b1b] text-white rounded-xl text-xs font-bold shadow-sm transition-all duration-200 hover:shadow-md hover:shadow-red-500/20 active:scale-98 cursor-pointer"
                   >
                     <Plus size={14} />
-
                     <span>Create Progress Task</span>
                   </button>
                 </div>
               </div>
 
+              {/* Summary Cards with Hover Lift, Shadows, and Border Transitions */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-[#B91C1C]/50 hover:shadow-lg hover:shadow-red-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       Students
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
-                      <Users size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
+                      <Users size={14} />
                     </div>
                   </div>
                   <p className="text-2xl font-black text-neutral-900 dark:text-white">
@@ -546,16 +498,16 @@ export default function MentorProgress({
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-[#B91C1C]/50 hover:shadow-lg hover:shadow-red-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       Avg. Progress
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-[#B91C1C]/10 flex items-center justify-center text-[#B91C1C]">
-                      <TrendingUp size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-[#B91C1C]/10 flex items-center justify-center text-[#B91C1C]">
+                      <TrendingUp size={14} />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                  <p className="text-2xl font-black text-[#B91C1C]">
                     {summaryStats.averageProgress}%
                   </p>
                   <p className="text-[10px] text-neutral-400 mt-0.5">
@@ -563,13 +515,13 @@ export default function MentorProgress({
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       Tasks Released
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-300">
-                      <ListChecks size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-300">
+                      <ListChecks size={14} />
                     </div>
                   </div>
                   <p className="text-2xl font-black text-neutral-900 dark:text-white">
@@ -580,16 +532,16 @@ export default function MentorProgress({
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-[#151921] rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-2xs">
+                <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-rose-500/50 hover:shadow-lg hover:shadow-rose-500/5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       Needs Help
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-300">
-                      <HelpCircle size={13} />
+                    <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-300">
+                      <HelpCircle size={14} />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-neutral-900 dark:text-white">
+                  <p className="text-2xl font-black text-rose-600 dark:text-rose-400">
                     {summaryStats.needsHelpCount}
                   </p>
                   <p className="text-[10px] text-neutral-400 mt-0.5">
@@ -598,30 +550,29 @@ export default function MentorProgress({
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-[#151921] p-3.5 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
+              {/* Search Bar */}
+              <div className="bg-white dark:bg-[#151921] p-3.5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-2xs">
                 <div className="relative max-w-md">
                   <Search
                     size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                   />
-
                   <input
                     type="text"
                     placeholder="Search students..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-lg text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-neutral-50/50 dark:bg-[#0E1117] border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   />
                 </div>
               </div>
 
-
-              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-sm">
+              {/* Main Table */}
+              <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden shadow-sm transition-all duration-200">
                 <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
                   <h3 className="font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
                     Batch Students
                   </h3>
-
                   <span className="text-[11px] text-neutral-400 font-medium">
                     {filteredStudents.length} Students
                   </span>
@@ -632,9 +583,7 @@ export default function MentorProgress({
                     <thead>
                       <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/80 dark:bg-neutral-800/40 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
                         <th className="py-3.5 px-5">Student Name</th>
-
                         <th className="py-3.5 px-4">Overall</th>
-
                         {progressColumns.length === 0 ? (
                           <th className="py-3.5 px-5 text-neutral-400 italic font-normal">
                             No progress tasks released for this batch yet
@@ -647,10 +596,9 @@ export default function MentorProgress({
                               className="py-3.5 px-4 text-center cursor-pointer hover:bg-neutral-100/80 dark:hover:bg-neutral-800 transition-colors group"
                               title="Click to view task details and your students' statuses"
                             >
-                              <span className="underline decoration-neutral-300 dark:decoration-neutral-700 underline-offset-2 group-hover:text-[#B91C1C]">
+                              <span className="underline decoration-neutral-300 dark:decoration-neutral-700 underline-offset-2 group-hover:text-[#B91C1C] transition-colors">
                                 {column.title}
                               </span>
-
                               <span className="block text-[9px] text-neutral-400 font-normal normal-case mt-0.5">
                                 Week {column.week} • {column.resourceType}
                               </span>
@@ -673,29 +621,24 @@ export default function MentorProgress({
                       ) : (
                         filteredStudents.map((student) => {
                           const computedTotal = calculateStudentTotal(student);
-
                           return (
                             <tr
                               key={student.id}
                               className="hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40 transition-colors"
                             >
-                              {/* STUDENT */}
-
                               <td className="py-3.5 px-5 font-semibold text-neutral-900 dark:text-neutral-100">
                                 <div className="flex items-center gap-2.5">
-                                  <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300">
+                                  <div className="w-8 h-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300 shadow-2xs">
                                     {student.initials ||
                                       (student.name || "S")
                                         .split(" ")
                                         .map((n) => n[0])
                                         .join("")}
                                   </div>
-
                                   <div>
                                     <p className="font-semibold text-neutral-900 dark:text-white">
                                       {student.name}
                                     </p>
-
                                     <p className="text-[10px] text-neutral-400 font-normal">
                                       {student.email}
                                     </p>
@@ -703,13 +646,9 @@ export default function MentorProgress({
                                 </div>
                               </td>
 
-                              {/* OVERALL */}
-
                               <td className="py-3.5 px-4 font-black text-[#B91C1C]">
                                 {computedTotal}%
                               </td>
-
-                              {/* TASK COLUMNS */}
 
                               {progressColumns.length === 0 ? (
                                 <td className="py-3.5 px-5 text-neutral-400">
@@ -721,13 +660,11 @@ export default function MentorProgress({
                                     (student.progressMap || {})[
                                       column.topicKey
                                     ] || [];
-
                                   const matchingItem = topicItems.find(
                                     (item) =>
                                       String(item.id || item._id) ===
                                       String(column.itemId),
                                   );
-
                                   const cellStatus = matchingItem
                                     ? matchingItem.status
                                     : "Not Started";
@@ -755,20 +692,19 @@ export default function MentorProgress({
           )}
         </main>
       </div>
+
+      {/* Modal View */}
       {selectedColumnCell && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            {/* HEADER */}
-
+          <div className="bg-white dark:bg-[#151921] rounded-3xl border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-4">
               <div>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 uppercase tracking-wider mb-1">
                   <BookOpen size={11} />
-                  Week {selectedColumnCell.week}
-                  {" • "}
+                  Week {selectedColumnCell.week} •{" "}
                   {selectedColumnCell.resourceType}
                 </span>
-
                 <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
                   {selectedColumnCell.title}
                 </h3>
@@ -777,15 +713,14 @@ export default function MentorProgress({
               <button
                 type="button"
                 onClick={() => setSelectedColumnCell(null)}
-                className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer"
+                className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
             </div>
 
-            {/* TASK INFORMATION */}
-
-            <div className="p-4 rounded-xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/50 space-y-3 text-xs">
+            {/* Task Information */}
+            <div className="p-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/50 space-y-3 text-xs">
               <h4 className="font-bold text-neutral-700 dark:text-neutral-200 uppercase tracking-wider text-[10px]">
                 Task & Resource Information
               </h4>
@@ -795,7 +730,6 @@ export default function MentorProgress({
                   <span className="text-neutral-400 block text-[10px]">
                     Released By
                   </span>
-
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200 capitalize">
                     {selectedColumnCell.releasedBy} (
                     {selectedColumnCell.creatorName})
@@ -806,7 +740,6 @@ export default function MentorProgress({
                   <span className="text-neutral-400 block text-[10px]">
                     Resource Type
                   </span>
-
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                     {selectedColumnCell.resourceType}
                   </span>
@@ -818,7 +751,6 @@ export default function MentorProgress({
                   <span className="text-neutral-400 block text-[10px] mb-0.5">
                     Resource Link / URL
                   </span>
-
                   <a
                     href={selectedColumnCell.resourceLink}
                     target="_blank"
@@ -826,7 +758,6 @@ export default function MentorProgress({
                     className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold hover:underline break-all"
                   >
                     <span>{selectedColumnCell.resourceLink}</span>
-
                     <ExternalLink size={12} />
                   </a>
                 </div>
@@ -836,40 +767,38 @@ export default function MentorProgress({
                 <span className="text-neutral-400 block text-[10px] mb-0.5">
                   Instructions & Guidelines
                 </span>
-
-                <p className="text-neutral-700 dark:text-neutral-300 bg-white dark:bg-[#151921] p-3 rounded-lg border border-neutral-200/60 dark:border-neutral-800/80 whitespace-pre-wrap">
+                <p className="text-neutral-700 dark:text-neutral-300 bg-white dark:bg-[#151921] p-3 rounded-xl border border-neutral-200/60 dark:border-neutral-800/80 whitespace-pre-wrap">
                   {selectedColumnCell.instructions}
                 </p>
               </div>
             </div>
 
+            {/* Student Breakdown */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                   My Students' Status
                 </p>
-
                 <button
                   type="button"
                   disabled={saving}
                   onClick={() => {
-                    const confirmed = window.confirm(
-                      `Are you sure you want to delete "${selectedColumnCell.title}"?`,
-                    );
-
-                    if (confirmed) {
+                    if (
+                      window.confirm(
+                        `Are you sure you want to delete "${selectedColumnCell.title}"?`,
+                      )
+                    ) {
                       handleDeleteColumnProgressItem(selectedColumnCell.itemId);
                     }
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <Trash2 size={13} />
-
                   <span>Delete Task</span>
                 </button>
               </div>
 
-              <div className="max-h-[35vh] overflow-y-auto pr-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 rounded-xl bg-neutral-50/50 dark:bg-neutral-900/40">
+              <div className="max-h-[35vh] overflow-y-auto pr-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/40">
                 {selectedColumnCell.studentsData.length === 0 ? (
                   <div className="p-8 text-center text-xs text-neutral-400">
                     No students assigned to you have this task.
@@ -877,7 +806,6 @@ export default function MentorProgress({
                 ) : (
                   selectedColumnCell.studentsData.map(({ student, items }) => {
                     const item = items[0];
-
                     return (
                       <div
                         key={student.id}
@@ -887,17 +815,13 @@ export default function MentorProgress({
                           <p className="font-semibold text-neutral-900 dark:text-white text-xs">
                             {student.name}
                           </p>
-
                           <p className="text-[10px] text-neutral-400">
                             {student.email}
                           </p>
                         </div>
-
                         <div className="flex items-center gap-3">
                           {item ? (
-                            <>
-                              {getStatusBadge(item.status)}
-                            </>
+                            getStatusBadge(item.status)
                           ) : (
                             <span className="text-[11px] text-neutral-400 italic">
                               Not assigned
@@ -911,13 +835,12 @@ export default function MentorProgress({
               </div>
             </div>
 
-            {/* FOOTER */}
-
+            {/* Footer */}
             <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800 flex justify-end">
               <button
                 type="button"
                 onClick={() => setSelectedColumnCell(null)}
-                className="px-4 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -926,24 +849,23 @@ export default function MentorProgress({
         </div>
       )}
 
+      {/* Create Modal */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#151921] rounded-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-white dark:bg-[#151921] rounded-3xl border border-neutral-200 dark:border-neutral-800 w-full max-w-md p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
               <div>
                 <h3 className="font-bold text-sm text-neutral-900 dark:text-white">
                   Create New Progress Task
                 </h3>
-
-                <p className="text-[10px] text-neutral-400 mt-1">
+                <p className="text-[10px] text-neutral-400 mt-0.5">
                   This task will be assigned only to your students.
                 </p>
               </div>
-
               <button
                 type="button"
                 onClick={() => setIsCreateOpen(false)}
-                className="text-neutral-400 hover:text-neutral-700 cursor-pointer"
+                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -953,13 +875,10 @@ export default function MentorProgress({
               onSubmit={handleCreateProgressItem}
               className="space-y-3 text-xs"
             >
-              {/* TITLE */}
-
               <div>
                 <label className="block font-bold mb-1 text-neutral-600 dark:text-neutral-300">
                   Task Title
                 </label>
-
                 <input
                   type="text"
                   required
@@ -971,17 +890,14 @@ export default function MentorProgress({
                       title: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
-
-              {/* TOPIC */}
 
               <div>
                 <label className="block font-bold mb-1 text-neutral-600 dark:text-neutral-300">
                   Category Topic
                 </label>
-
                 <input
                   type="text"
                   required
@@ -993,18 +909,15 @@ export default function MentorProgress({
                       topic: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
-
-              {/* RESOURCE + WEEK */}
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block font-bold mb-1 text-neutral-600 dark:text-neutral-300">
                     Resource Type
                   </label>
-
                   <select
                     value={newProgressForm.resourceType}
                     onChange={(e) =>
@@ -1013,14 +926,11 @@ export default function MentorProgress({
                         resourceType: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   >
                     <option value="Documentation">Documentation</option>
-
                     <option value="Video">Video</option>
-
                     <option value="Assignment">Assignment</option>
-
                     <option value="Quiz">Quiz</option>
                   </select>
                 </div>
@@ -1029,7 +939,6 @@ export default function MentorProgress({
                   <label className="block font-bold mb-1 text-neutral-600 dark:text-neutral-300">
                     Week
                   </label>
-
                   <input
                     type="number"
                     min="1"
@@ -1040,18 +949,15 @@ export default function MentorProgress({
                         week: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                   />
                 </div>
               </div>
-
-              {/* RESOURCE LINK */}
 
               <div>
                 <label className="block font-bold mb-1 text-neutral-600 dark:text-neutral-300">
                   Resource Link
                 </label>
-
                 <input
                   type="url"
                   placeholder="https://..."
@@ -1062,17 +968,14 @@ export default function MentorProgress({
                       resourceLink: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors"
                 />
               </div>
-
-              {/* INSTRUCTIONS */}
 
               <div>
                 <label className="block font-bold mb-1 text-neutral-600 dark:text-neutral-300">
                   Instructions
                 </label>
-
                 <textarea
                   rows={3}
                   placeholder="Task instructions..."
@@ -1083,25 +986,22 @@ export default function MentorProgress({
                       instructions: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0E1117] text-neutral-900 dark:text-white focus:outline-none focus:border-[#B91C1C] hover:border-[#B91C1C]/40 transition-colors resize-none"
                 />
               </div>
-
-              {/* BUTTONS */}
 
               <div className="pt-2 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-3.5 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
-
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-[#B91C1C] hover:bg-[#991b1b] text-white font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 rounded-xl bg-[#B91C1C] hover:bg-[#991b1b] text-white font-bold shadow-sm transition-all hover:shadow-md hover:shadow-red-500/20 active:scale-98 cursor-pointer disabled:opacity-50"
                 >
                   {saving ? "Saving..." : "Create Task"}
                 </button>
