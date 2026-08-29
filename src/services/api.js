@@ -1,9 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://noorbytes-astumsj-bootcamp-management.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -34,5 +32,31 @@ API.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+// --- PASSWORD RESET API METHODS ---
+
+/**
+ * @desc Request 6-digit OTP to user's email
+ */
+export const requestPasswordResetOTP = async (email) => {
+  const response = await API.post("/auth/forgot-password", { email });
+  return response.data;
+};
+
+/**
+ * @desc Verify OTP and reset password
+ */
+export const verifyOTPAndResetPassword = async ({
+  email,
+  otp,
+  newPassword,
+}) => {
+  const response = await API.post("/auth/reset-password", {
+    email,
+    otp,
+    newPassword,
+  });
+  return response.data;
+};
 
 export default API;

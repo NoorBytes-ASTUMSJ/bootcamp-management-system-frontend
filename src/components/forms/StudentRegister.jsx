@@ -91,9 +91,25 @@ export default function StudentRegister({
       return;
     }
 
-    if (step === 1 && formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+    // Step 1 Validation (Name length, Password length, Confirm password match)
+    if (step === 1) {
+      const trimmedName = formData.fullName.trim();
+      const letterCount = (trimmedName.match(/[a-zA-Z]/g) || []).length;
+
+      if (!trimmedName || letterCount < 3) {
+        setError("Full name must contain at least 3 letters.");
+        return;
+      }
+
+      if (!formData.password || formData.password.length < 8) {
+        setError("Password must be at least 8 characters long.");
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
     }
 
     if (
@@ -127,31 +143,30 @@ export default function StudentRegister({
         : formData.department;
 
     const payload = {
-      fullName: formData.fullName,
-      email: formData.email,
-      phone: formData.phone,
-      universityId: formData.studentId,
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      universityId: formData.studentId.trim(),
       university:
         formData.university || "Adama Science and Technology University",
-      telegramUsername: formData.telegramUsername,
+      telegramUsername: formData.telegramUsername.trim(),
       password: formData.password,
       role: "user",
       applicationType: "student",
       gender: formData.gender,
       year: formData.year,
       department: finalDepartment,
-      github: formData.github,
-      codeforces: formData.codeforces,
-      leetcode: formData.leetcode,
+      github: formData.github.trim(),
+      codeforces: formData.codeforces.trim(),
+      leetcode: formData.leetcode.trim(),
       dailyAvailableHours: Number(formData.dailyAvailableHours),
-      availabilityDescription: formData.availabilityDescription,
-      motivation: formData.motivation,
+      availabilityDescription: formData.availabilityDescription.trim(),
+      motivation: formData.motivation.trim(),
     };
 
     try {
       const response = await API.post("/auth/register/student", payload);
 
-      // 1. ኢሜይሉ እስኪላክ ድረስ መጠበቅ (await)
       await sendConfirmationEmail({
         recipientName: formData.fullName,
         recipientEmail: formData.email,
@@ -274,7 +289,8 @@ export default function StudentRegister({
               <div className="space-y-3">
                 <div>
                   <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
-                    Full Name <span className="text-primary">*</span>
+                    Full Name (Min. 3 letters){" "}
+                    <span className="text-primary">*</span>
                   </label>
                   <div className="relative flex items-center">
                     <User
@@ -285,6 +301,7 @@ export default function StudentRegister({
                       type="text"
                       name="fullName"
                       required
+                      minLength={3}
                       placeholder="Ahmed Mohammed"
                       value={formData.fullName}
                       onChange={handleChange}
@@ -317,7 +334,8 @@ export default function StudentRegister({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] font-mono font-bold tracking-wider text-text-muted uppercase mb-1">
-                      Password <span className="text-primary">*</span>
+                      Password (Min. 8 chars){" "}
+                      <span className="text-primary">*</span>
                     </label>
                     <div className="relative flex items-center">
                       <Lock
@@ -328,6 +346,7 @@ export default function StudentRegister({
                         type={showPassword ? "text" : "password"}
                         name="password"
                         required
+                        minLength={8}
                         placeholder="••••••••"
                         value={formData.password}
                         onChange={handleChange}
@@ -360,6 +379,7 @@ export default function StudentRegister({
                         type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
                         required
+                        minLength={8}
                         placeholder="••••••••"
                         value={formData.confirmPassword}
                         onChange={handleChange}

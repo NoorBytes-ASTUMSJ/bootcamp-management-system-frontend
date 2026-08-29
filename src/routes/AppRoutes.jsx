@@ -17,6 +17,7 @@ import Login from "../components/forms/Login";
 import RoleSelect from "../components/forms/RoleSelect";
 import StudentRegister from "../components/forms/StudentRegister";
 import MentorRegister from "../components/forms/MentorRegister";
+import ForgotPassword from "../components/forms/ForgotPassword";
 
 // Layouts & Student Pages
 import StudentLayout from "../layouts/StudentLayout";
@@ -139,13 +140,14 @@ export default function AppRoutes() {
             <Login
               onNavigateSignUp={() => navigate("/role-select")}
               onBackToPublic={() => navigate("/")}
-              onForgotPassword={() => alert("Forgot password flow...")}
+              onForgotPassword={() => navigate("/forgot-password")}
               onSuccessLogin={(userData) =>
                 navigate(getRedirectPath(userData?.role || user?.role))
               }
             />
           }
         />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/role-select"
           element={

@@ -27,6 +27,7 @@ export default function AllUsersManagement() {
   const [universityFilter, setUniversityFilter] = useState("ALL");
   const [genderFilter, setGenderFilter] = useState("ALL");
   const [batchFilter, setBatchFilter] = useState("ALL");
+  const [applicationTypeFilter, setApplicationTypeFilter] = useState("ALL");
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [detailStep, setDetailStep] = useState(1);
@@ -34,14 +35,17 @@ export default function AllUsersManagement() {
   const [availableBatches, setAvailableBatches] = useState([]);
   const [batchesLoading, setBatchesLoading] = useState(true);
 
+  // Real available universities, derived from an unfiltered fetch so the
+  // dropdown doesn't shrink to just the currently-selected university
+  // once a university filter is already applied.
+  const [availableUniversities, setAvailableUniversities] = useState([]);
+
   const [deleteUser, setDeleteUser] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
-
-  const availableUniversities = ["ASTU", "AAU", "JU", "HU"];
 
   const selectedUserRef = useRef(null);
 
@@ -62,6 +66,33 @@ export default function AllUsersManagement() {
       return [];
     } finally {
       setBatchesLoading(false);
+    }
+  }, []);
+
+  // One-time unfiltered fetch to build the real university filter list,
+  // independent of whatever filters the main table query is using.
+  const fetchUniversityOptions = useCallback(async () => {
+    try {
+      const rawData = await getAllUsers({
+        search: "",
+        role: "ALL",
+        university: "ALL",
+        gender: "ALL",
+        batch: "ALL",
+      });
+
+      const universities = Array.from(
+        new Set(
+          (Array.isArray(rawData) ? rawData : [])
+            .map((u) => u.university)
+            .filter(Boolean),
+        ),
+      ).sort();
+
+      setAvailableUniversities(universities);
+    } catch (error) {
+      console.error("Failed to fetch university list:", error);
+      setAvailableUniversities([]);
     }
   }, []);
 
@@ -90,7 +121,6 @@ export default function AllUsersManagement() {
                 .slice(0, 2)
             : "U";
 
-          // 1. የባች ስምን በሁሉም አማራጭ ፈልጎ ማግኘት
           const rawBatchId =
             u.batch?._id || (typeof u.batch === "string" ? u.batch : null);
           const matchedBatch = activeBatchList.find(
@@ -179,9 +209,10 @@ export default function AllUsersManagement() {
     const initializeData = async () => {
       const fetchedBatches = await fetchBatches();
       fetchUsers(fetchedBatches);
+      fetchUniversityOptions();
     };
     initializeData();
-  }, [fetchBatches]);
+  }, [fetchBatches, fetchUniversityOptions]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -190,6 +221,14 @@ export default function AllUsersManagement() {
 
     return () => clearTimeout(timer);
   }, [fetchUsers]);
+
+  // Applicant Type (Student / Mentor) filtered client-side on top of the
+  // server-filtered `users` list — applicationType is already present on
+  // every fetched record, so no backend round-trip is needed for this.
+  const displayedUsers = users.filter((user) => {
+    if (applicationTypeFilter === "ALL") return true;
+    return user.applicationType === applicationTypeFilter;
+  });
 
   const handleSelectUser = (user) => {
     setSelectedUser(user);
@@ -464,11 +503,11 @@ export default function AllUsersManagement() {
     </div>
   );
 
-  const totalUsersCount = users.length;
-  const membersCount = users.filter((user) =>
+  const totalUsersCount = displayedUsers.length;
+  const membersCount = displayedUsers.filter((user) =>
     ["student", "mentor", "admin"].includes(user.role),
   ).length;
-  const standardUsersCount = users.filter(
+  const standardUsersCount = displayedUsers.filter(
     (user) => user.role === "user",
   ).length;
 
@@ -593,6 +632,25 @@ export default function AllUsersManagement() {
 
                   <div className="relative">
                     <select
+                      value={applicationTypeFilter}
+                      onChange={(event) =>
+                        setApplicationTypeFilter(event.target.value)
+                      }
+                      className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#151921] border border-neutral-200/80 dark:border-neutral-800/80 text-neutral-600 dark:text-neutral-300 focus:outline-none cursor-pointer font-medium shadow-xs"
+                    >
+                      <option value="ALL">All Applicant Types</option>
+                      <option value="student">Student Applicants</option>
+                      <option value="mentor">Mentor Applicants</option>
+                    </select>
+
+                    <ChevronDown
+                      size={12}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <select
                       value={universityFilter}
                       onChange={(event) =>
                         setUniversityFilter(event.target.value)
@@ -678,7 +736,7 @@ export default function AllUsersManagement() {
                               Loading accounts...
                             </td>
                           </tr>
-                        ) : users.length === 0 ? (
+                        ) : displayedUsers.length === 0 ? (
                           <tr>
                             <td
                               colSpan={6}
@@ -688,7 +746,7 @@ export default function AllUsersManagement() {
                             </td>
                           </tr>
                         ) : (
-                          users.map((user) => (
+                          displayedUsers.map((user) => (
                             <tr
                               key={user.id}
                               onClick={() => handleSelectUser(user)}
@@ -771,7 +829,7 @@ export default function AllUsersManagement() {
                   </div>
 
                   <div className="px-5 py-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 bg-neutral-50/30 dark:bg-neutral-800/20">
-                    <span>Showing {users.length} user records</span>
+                    <span>Showing {displayedUsers.length} user records</span>
                   </div>
                 </div>
               </div>
