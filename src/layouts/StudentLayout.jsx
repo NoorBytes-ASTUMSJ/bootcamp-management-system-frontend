@@ -24,8 +24,8 @@ export default function StudentLayout() {
   }, []);
 
   const student = {
-    firstName: user?.firstName || user?.name || "Alex",
-    lastName: user?.lastName || "Johnson",
+    firstName: user?.firstName || user?.name || "student",
+    lastName: user?.lastName || "user",
   };
 
   // Compute active page title for the header
