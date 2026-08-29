@@ -10,10 +10,8 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
       ...(batchId && batchId !== "ALL" ? { batchId } : {}),
       ...extraParams,
     };
-    // Get dashboard students
-    const response = await API.get("/progress/dashboard", {
-      params: { ...params, scope: "global" }, // <-- Explicitly enforce scope global
-    });
+
+    const response = await API.get("/progress/dashboard", { params });
 
     const responseData = response.data?.data || response.data;
     const dashboardRows = responseData?.students || responseData || [];
@@ -31,24 +29,14 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
       progressResponse?.data ||
       [];
 
-    // Map dashboard rows
     const students = dashboardRows.map((row) => {
       const studentId = row.memberId;
 
-      // Find progress records for this student AND FILTER OUT mentor items (keep only global/admin)
       const studentItems = allProgressItems.filter((item) => {
         const itemStudentId =
           item?.student?._id || item?.student?.id || item?.student;
 
-        const matchesStudent = String(itemStudentId) === String(studentId);
-
-        // CRITICAL CHECK: Only allow global (admin-released) items
-        const isGlobalTask =
-          item?.scope === "global" ||
-          item?.releasedBy?.role === "admin" ||
-          !item?.releasedBy?.role;
-
-        return matchesStudent && isGlobalTask;
+        return String(itemStudentId) === String(studentId);
       });
 
       const progressMap = {};
@@ -75,7 +63,6 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
         });
       });
 
-      // Student initials
       const nameParts = (row.studentName || "Student").split(" ");
       const initials =
         nameParts.length > 1
@@ -90,7 +77,7 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
         batchId: row.batchId,
         batch: row.batchName,
         mentor: row.mentorName,
-        progress: row.overallProgress, // This comes straight from the backend calculation which is already filtered by scope="global"
+        progress: row.overallProgress,
         status: row.status,
         gender: row.gender,
         university: row.university,
@@ -112,6 +99,7 @@ export async function getProgressOverview(batchId = "", extraParams = {}) {
     };
   }
 }
+
 export async function getStudentProgress() {
   try {
     const response = await API.get("/progress/my-progress");
@@ -210,7 +198,6 @@ export async function createProgressItem(payload) {
       resourceLink: payload.resourceLink,
       weekNumber: parseInt(payload.week, 10) || 1,
       batchId: payload.batch,
-
       instructions: payload.instructions,
     });
 
@@ -293,8 +280,6 @@ export async function updateStudentProgressStatus(progressId, status) {
 }
 
 export async function deleteProgressItem(progressId) {
-  console.log("deleteProgressItem received ID:", progressId);
-
   if (!progressId || progressId === "undefined" || progressId === "null") {
     console.error("deleteProgressItem called with an invalid ID:", progressId);
 
